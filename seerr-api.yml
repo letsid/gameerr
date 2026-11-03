@@ -903,15 +903,81 @@ components:
         coverImageId:
           type: string
           nullable: true
-        firstReleaseDate:
+        slug:
           type: string
+        summary:
+          type: string
+        firstReleaseDate:
+          type: number
           nullable: true
+          description: Unix timestamp of the first release on any platform
+        year:
+          type: string
+          example: '2015'
         platforms:
           type: array
           items:
             type: number
+          description: IGDB platform IDs
+        totalRating:
+          type: number
+        totalRatingCount:
+          type: number
+        aggregatedRating:
+          type: number
+        aggregatedRatingCount:
+          type: number
+        hypes:
+          type: number
         mediaInfo:
           $ref: '#/components/schemas/MediaInfo'
+    Platform:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 6
+          description: IGDB platform ID
+        name:
+          type: string
+          example: PC (Microsoft Windows)
+        abbreviation:
+          type: string
+          example: PC
+        slug:
+          type: string
+        generation:
+          type: number
+        platformFamily:
+          type: number
+        platformType:
+          type: number
+    MetadataSettings:
+      type: object
+      properties:
+        defaultPlatforms:
+          type: array
+          items:
+            type: number
+          example: [6]
+        minRatingCount:
+          type: number
+          example: 50
+        recentReleaseDays:
+          type: number
+          example: 60
+        upcomingReleaseDays:
+          type: number
+          example: 90
+        igdbConfigured:
+          type: boolean
+          readOnly: true
+        rawgConfigured:
+          type: boolean
+          readOnly: true
+        openCriticConfigured:
+          type: boolean
+          readOnly: true
   securitySchemes:
     cookieAuth:
       type: apiKey
@@ -1992,6 +2058,37 @@ paths:
       responses:
         '204':
           description: Test notification attempted
+  /settings/metadata:
+    get:
+      summary: Get metadata settings
+      description: Returns discover defaults and which API keys are set. Keys themselves are never returned.
+      tags:
+        - settings
+      responses:
+        '200':
+          description: Metadata settings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetadataSettings'
+    post:
+      summary: Update metadata settings
+      description: Updates discover defaults. API keys are only read from the environment or the settings file.
+      tags:
+        - settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MetadataSettings'
+      responses:
+        '200':
+          description: Updated metadata settings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetadataSettings'
   /settings/discover:
     get:
       summary: Get all discover sliders
@@ -3354,8 +3451,8 @@ paths:
                     example: 2
   /search:
     get:
-      summary: Search for movies, TV shows, or people
-      description: Returns a list of movies, TV shows, or people a JSON object.
+      summary: Search for games
+      description: Searches IGDB for standalone games. Defaults to the platforms of the signed-in user.
       tags:
         - search
       parameters:
@@ -3371,6 +3468,12 @@ paths:
             type: number
             example: 1
             default: 1
+        - in: query
+          name: platforms
+          description: Comma separated IGDB platform IDs, or `all` for every platform
+          schema:
+            type: string
+            example: 6,167
       responses:
         '200':
           description: Results
@@ -3392,6 +3495,24 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/GameResult'
+  /platforms:
+    get:
+      summary: Get all platforms
+      description: Returns every IGDB platform, sorted by name.
+      tags:
+        - search
+      responses:
+        '200':
+          description: Platforms
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Platform'
   /discover/watchlist:
     get:
       summary: Get the Plex watchlist.
@@ -3430,6 +3551,58 @@ paths:
                         igdbId:
                           type: number
                           example: 14593
+  /discover/{list}:
+    get:
+      summary: Get a precomputed discover list
+      description: |
+        `recent` holds releases of the last days, `upcoming` the next releases, both ranked by IGDB hypes. `best` ranks by IGDB total rating among games with more ratings than the configured minimum. Lists are rebuilt nightly.
+      tags:
+        - search
+      parameters:
+        - in: path
+          name: list
+          required: true
+          schema:
+            type: string
+            enum: [recent, upcoming, best]
+        - in: query
+          name: platform
+          description: IGDB platform ID, defaults to the first platform of the signed-in user
+          schema:
+            type: number
+            example: 6
+        - in: query
+          name: page
+          schema:
+            type: number
+            example: 1
+            default: 1
+      responses:
+        '200':
+          description: Discover list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  list:
+                    type: string
+                  platform:
+                    type: number
+                  generatedAt:
+                    type: string
+                  page:
+                    type: number
+                  totalPages:
+                    type: number
+                  totalResults:
+                    type: number
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/GameResult'
+        '503':
+          description: IGDB is not configured
   /request:
     get:
       summary: Get all requests

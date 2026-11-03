@@ -1,5 +1,6 @@
 import { Blocklist } from '@server/entity/Blocklist';
 import DiscoverSlider from '@server/entity/DiscoverSlider';
+import GameMetadataCache from '@server/entity/GameMetadataCache';
 import Media from '@server/entity/Media';
 import { MediaRequest } from '@server/entity/MediaRequest';
 import { Session } from '@server/entity/Session';
@@ -20,6 +21,7 @@ const DB_SSL_PREFIX = 'DB_SSL_';
 const entities = [
   Blocklist,
   DiscoverSlider,
+  GameMetadataCache,
   Media,
   MediaRequest,
   Session,

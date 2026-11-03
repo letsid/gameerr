@@ -1,0 +1,228 @@
+[
+  {
+    "id": 513649,
+    "date": 1790726400,
+    "game": {
+      "id": 266054,
+      "name": "Swapdown",
+      "game_type": 0
+    },
+    "platform": 6,
+    "release_region": 8
+  },
+  {
+    "id": 638704,
+    "date": 1793145600,
+    "game": {
+      "id": 199374,
+      "name": "Grimmlins Tale",
+      "game_type": 0
+    },
+    "platform": 6,
+    "release_region": 8
+  },
+  {
+    "id": 694040,
+    "date": 1793059200,
+    "game": {
+      "id": 329134,
+      "hypes": 1,
+      "name": "Thyranya",
+      "game_type": 0
+    },
+    "platform": 6,
+    "release_region": 8
+  },
+  {
+    "id": 700148,
+    "date": 1790726400,
+    "game": {
+      "id": 330330,
+      "name": "A Forest Tale: Porasy",
+      "game_type": 0
+    },
+    "platform": 6,
+    "release_region": 8
+  },
+  {
+    "id": 727331,
+    "date": 1792540800,
+    "game": {
+      "id": 127780,
+      "hypes": 2,
+      "name": "The House in the Hollow",
+      "game_type": 0
+    },
+    "platform": 6,
+    "release_region": 8
+  },
+  {
+    "id": 731344,
+    "date": 1790812800,
+    "game": {
+      "id": 317382,
+      "hypes": 1,
+      "name": "Ominous Recall",
+      "game_type": 0
+    },
+    "platform": 6,
+    "release_region": 8
+  },
+  {
+    "id": 735878,
+    "date": 1790726400,
+    "game": {
+      "id": 334119,
+      "name": "100 Caliber Dash",
+      "game_type": 0
+    },
+    "platform": 6,
+    "release_region": 8
+  },
+  {
+    "id": 777645,
+    "date": 1790726400,
+    "game": {
+      "id": 357712,
+      "name": "Sketchy Driver",
+      "game_type": 0
+    },
+    "platform": 6,
+    "release_region": 8
+  },
+  {
+    "id": 786374,
+    "date": 1790726400,
+    "game": {
+      "id": 361271,
+      "name": "Project Octavia",
+      "game_type": 0
+    },
+    "platform": 6,
+    "release_region": 8
+  },
+  {
+    "id": 787844,
+    "date": 1790812800,
+    "game": {
+      "id": 361847,
+      "hypes": 3,
+      "name": "Steel Ark",
+      "game_type": 0
+    },
+    "platform": 6,
+    "release_region": 8
+  },
+  {
+    "id": 789133,
+    "date": 1790726400,
+    "game": {
+      "id": 361068,
+      "name": "Pigeon Guild",
+      "game_type": 0
+    },
+    "platform": 6,
+    "release_region": 8
+  },
+  {
+    "id": 792141,
+    "date": 1790726400,
+    "game": {
+      "id": 245989,
+      "name": "Industrix",
+      "game_type": 0
+    },
+    "platform": 6,
+    "release_region": 8
+  },
+  {
+    "id": 798579,
+    "date": 1793491200,
+    "game": {
+      "id": 317756,
+      "name": "M.E.M.O",
+      "game_type": 0
+    },
+    "platform": 6,
+    "release_region": 8
+  },
+  {
+    "id": 799882,
+    "date": 1790726400,
+    "game": {
+      "id": 282216,
+      "name": "Weefager",
+      "game_type": 0
+    },
+    "platform": 6,
+    "release_region": 8
+  },
+  {
+    "id": 799973,
+    "date": 1790726400,
+    "game": {
+      "id": 366612,
+      "hypes": 1,
+      "name": "Souls Alive: Origins",
+      "game_type": 0
+    },
+    "platform": 6,
+    "release_region": 8
+  },
+  {
+    "id": 817519,
+    "date": 1790726400,
+    "game": {
+      "id": 192510,
+      "name": "There\u0027s no way that tsundere girl I met in the infirmary will be my girlfriend",
+      "game_type": 0
+    },
+    "platform": 6,
+    "release_region": 8
+  },
+  {
+    "id": 818135,
+    "date": 1790726400,
+    "game": {
+      "id": 289983,
+      "hypes": 14,
+      "name": "The Midnight Walkers",
+      "game_type": 0
+    },
+    "platform": 6,
+    "release_region": 8
+  },
+  {
+    "id": 819483,
+    "date": 1790726400,
+    "game": {
+      "id": 373140,
+      "name": "Armada Pet Wars",
+      "game_type": 0
+    },
+    "platform": 6,
+    "release_region": 8
+  },
+  {
+    "id": 820288,
+    "date": 1790726400,
+    "game": {
+      "id": 133462,
+      "name": "Creep",
+      "game_type": 0
+    },
+    "platform": 6,
+    "release_region": 8
+  },
+  {
+    "id": 821838,
+    "date": 1790726400,
+    "game": {
+      "id": 361486,
+      "name": "Economic Miracle",
+      "game_type": 0
+    },
+    "platform": 6,
+    "release_region": 8
+  }
+]

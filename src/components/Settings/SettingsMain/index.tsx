@@ -2,6 +2,7 @@ import Button from '@app/components/Common/Button';
 import LoadingSpinner from '@app/components/Common/LoadingSpinner';
 import PageTitle from '@app/components/Common/PageTitle';
 import SensitiveInput from '@app/components/Common/SensitiveInput';
+import PlatformSelector from '@app/components/PlatformSelector';
 import CopyButton from '@app/components/Settings/CopyButton';
 import SettingsBadge from '@app/components/Settings/SettingsBadge';
 import { availableLanguages } from '@app/context/LanguageContext';
@@ -13,6 +14,7 @@ import defineMessages from '@app/utils/defineMessages';
 import { isValidURL } from '@app/utils/urlValidationHelper';
 import { ArrowDownOnSquareIcon } from '@heroicons/react/24/outline';
 import { ArrowPathIcon } from '@heroicons/react/24/solid';
+import type { MetadataSettingsResponse } from '@server/interfaces/api/settingsInterfaces';
 import type { UserSettingsGeneralResponse } from '@server/interfaces/api/userSettingsInterfaces';
 import type { MainSettings } from '@server/lib/settings';
 import type { AvailableLocale } from '@server/types/languages';
@@ -51,6 +53,13 @@ const messages = defineMessages('components.Settings.SettingsMain', {
   validationApplicationUrl: 'You must provide a valid URL',
   validationApplicationUrlTrailingSlash: 'URL must not end in a trailing slash',
   locale: 'Display Language',
+  defaultPlatforms: 'Default Platforms',
+  defaultPlatformsTip:
+    'Platforms for users who have not picked their own. Discover lists are built for these.',
+  minRatingCount: 'Minimum Ratings for Best Lists',
+  minRatingCountTip:
+    'A game needs more IGDB ratings than this to appear in score based lists.',
+  validationMinRatingCount: 'Enter a whole number of 0 or more',
   versionCheck: 'Version Check',
   versionCheckTip: 'Automatically check for new versions on GitHub.',
   validationUrl: 'You must provide a valid URL',
@@ -70,7 +79,15 @@ const SettingsMain = () => {
     currentUser ? `/api/v1/user/${currentUser.id}/settings/main` : null
   );
 
+  const { data: metadata, mutate: mutateMetadata } =
+    useSWR<MetadataSettingsResponse>('/api/v1/settings/metadata');
+
   const MainSettingsSchema = Yup.object().shape({
+    minRatingCount: Yup.number()
+      .typeError(intl.formatMessage(messages.validationMinRatingCount))
+      .integer(intl.formatMessage(messages.validationMinRatingCount))
+      .min(0, intl.formatMessage(messages.validationMinRatingCount))
+      .required(intl.formatMessage(messages.validationMinRatingCount)),
     applicationTitle: Yup.string().required(
       intl.formatMessage(messages.validationApplicationTitle)
     ),
@@ -135,6 +152,8 @@ const SettingsMain = () => {
             locale: data?.locale ?? 'en',
             cacheImages: data?.cacheImages,
             versionCheck: data?.versionCheck,
+            defaultPlatforms: metadata?.defaultPlatforms ?? [6],
+            minRatingCount: metadata?.minRatingCount ?? 50,
           }}
           enableReinitialize
           validationSchema={MainSettingsSchema}
@@ -150,6 +169,11 @@ const SettingsMain = () => {
                 cacheImages: values.cacheImages,
                 versionCheck: values?.versionCheck,
               });
+              await axios.post('/api/v1/settings/metadata', {
+                defaultPlatforms: values.defaultPlatforms,
+                minRatingCount: Number(values.minRatingCount),
+              });
+              mutateMetadata();
               mutate('/api/v1/settings/public');
               mutate('/api/v1/status?checkUpdateAvailable=false');
 
@@ -302,6 +326,49 @@ const SettingsMain = () => {
                         ))}
                       </Field>
                     </div>
+                  </div>
+                </div>
+                <div className="form-row">
+                  <label htmlFor="defaultPlatforms" className="text-label">
+                    <span>{intl.formatMessage(messages.defaultPlatforms)}</span>
+                    <span className="label-tip">
+                      {intl.formatMessage(messages.defaultPlatformsTip)}
+                    </span>
+                  </label>
+                  <div className="form-input-area">
+                    <div className="form-input-field relative z-20">
+                      <PlatformSelector
+                        id="defaultPlatforms"
+                        value={values.defaultPlatforms}
+                        onChange={(platforms) =>
+                          setFieldValue('defaultPlatforms', platforms)
+                        }
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="form-row">
+                  <label htmlFor="minRatingCount" className="text-label">
+                    <span>{intl.formatMessage(messages.minRatingCount)}</span>
+                    <span className="label-tip">
+                      {intl.formatMessage(messages.minRatingCountTip)}
+                    </span>
+                  </label>
+                  <div className="form-input-area">
+                    <div className="form-input-field">
+                      <Field
+                        type="text"
+                        inputMode="numeric"
+                        id="minRatingCount"
+                        name="minRatingCount"
+                        className="short"
+                      />
+                    </div>
+                    {errors.minRatingCount &&
+                      touched.minRatingCount &&
+                      typeof errors.minRatingCount === 'string' && (
+                        <div className="error">{errors.minRatingCount}</div>
+                      )}
                   </div>
                 </div>
                 <div className="form-row">

@@ -43,6 +43,8 @@ export interface PublicSettingsResponse {
   newPlexLogin: boolean;
   versionCheck: boolean;
   plexClientIdentifier: string;
+  defaultPlatforms: number[];
+  metadataConfigured: boolean;
 }
 
 export interface CacheItem {
@@ -72,4 +74,15 @@ export interface StatusResponse {
   updateAvailable?: boolean;
   commitsBehind?: number;
   restartRequired: boolean;
+}
+
+export interface MetadataSettingsResponse {
+  defaultPlatforms: number[];
+  minRatingCount: number;
+  recentReleaseDays: number;
+  upcomingReleaseDays: number;
+  // Whether a key is set, the keys themselves are never sent
+  igdbConfigured: boolean;
+  rawgConfigured: boolean;
+  openCriticConfigured: boolean;
 }

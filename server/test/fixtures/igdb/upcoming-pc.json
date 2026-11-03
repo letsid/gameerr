@@ -1,0 +1,142 @@
+[
+  {
+    "id": 343335,
+    "first_release_date": 1797206400,
+    "hypes": 132,
+    "name": "Silver Palace",
+    "platforms": [34, 6, 39, 167]
+  },
+  {
+    "id": 325599,
+    "first_release_date": 1799971200,
+    "hypes": 118,
+    "name": "Stranger Than Heaven",
+    "platforms": [169, 6, 167]
+  },
+  {
+    "id": 262712,
+    "first_release_date": 1799971200,
+    "hypes": 97,
+    "name": "Ananta",
+    "platforms": [34, 6, 39, 167]
+  },
+  {
+    "id": 67195,
+    "first_release_date": 1801094400,
+    "hypes": 74,
+    "name": "Witchbrook",
+    "platforms": [169, 508, 6, 167, 49, 130]
+  },
+  {
+    "id": 404044,
+    "first_release_date": 1796256000,
+    "hypes": 61,
+    "name": "Rayman Legends Retold",
+    "platforms": [169, 508, 6, 167]
+  },
+  {
+    "id": 348199,
+    "first_release_date": 1798675200,
+    "hypes": 61,
+    "name": "Mudang: Two Hearts",
+    "platforms": [169, 6, 167]
+  },
+  {
+    "id": 305550,
+    "first_release_date": 1796342400,
+    "hypes": 58,
+    "name": "Acts of Blood",
+    "platforms": [169, 6, 167]
+  },
+  {
+    "id": 314449,
+    "first_release_date": 1796083200,
+    "hypes": 48,
+    "name": "Hela: Of Mice \u0026 Magic",
+    "platforms": [169, 508, 6, 167]
+  },
+  {
+    "id": 372154,
+    "first_release_date": 1798675200,
+    "hypes": 42,
+    "name": "Bellum",
+    "platforms": [6]
+  },
+  {
+    "id": 186613,
+    "first_release_date": 1798675200,
+    "hypes": 41,
+    "name": "Showa American Story",
+    "platforms": [6, 167]
+  },
+  {
+    "id": 26200,
+    "first_release_date": 1798675200,
+    "hypes": 38,
+    "name": "Infinitesimals",
+    "platforms": [169, 6, 167]
+  },
+  {
+    "id": 236665,
+    "first_release_date": 1796860800,
+    "hypes": 37,
+    "name": "Professor Layton and the New World of Steam",
+    "platforms": [508, 6, 167, 130]
+  },
+  {
+    "id": 378225,
+    "first_release_date": 1799280000,
+    "hypes": 34,
+    "name": "Armatus",
+    "platforms": [169, 508, 6, 167]
+  },
+  {
+    "id": 361859,
+    "first_release_date": 1796256000,
+    "hypes": 34,
+    "name": "Warhammer 40,000: Dawn of War IV",
+    "platforms": [6]
+  },
+  {
+    "id": 381208,
+    "first_release_date": 1799971200,
+    "hypes": 31,
+    "name": "TankRat",
+    "platforms": [6, 167]
+  },
+  {
+    "id": 339619,
+    "first_release_date": 1798675200,
+    "hypes": 29,
+    "name": "Ikuma: The Frozen Compass",
+    "platforms": [169, 6, 167]
+  },
+  {
+    "id": 322835,
+    "first_release_date": 1798675200,
+    "hypes": 29,
+    "name": "Haunted by Femboy",
+    "platforms": [6]
+  },
+  {
+    "id": 366895,
+    "first_release_date": 1799884800,
+    "hypes": 26,
+    "name": "Danganronpa 2x2",
+    "platforms": [169, 508, 6, 167, 130]
+  },
+  {
+    "id": 370095,
+    "first_release_date": 1796342400,
+    "hypes": 24,
+    "name": "Petit Planet",
+    "platforms": [34, 6, 39]
+  },
+  {
+    "id": 336164,
+    "first_release_date": 1798675200,
+    "hypes": 24,
+    "name": "Dark Mass",
+    "platforms": [169, 6, 167]
+  }
+]

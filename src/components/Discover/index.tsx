@@ -1,12 +1,18 @@
+import Alert from '@app/components/Common/Alert';
 import Button from '@app/components/Common/Button';
 import ConfirmButton from '@app/components/Common/ConfirmButton';
 import LoadingSpinner from '@app/components/Common/LoadingSpinner';
 import PageTitle from '@app/components/Common/PageTitle';
 import Tooltip from '@app/components/Common/Tooltip';
 import DiscoverSliderEdit from '@app/components/Discover/DiscoverSliderEdit';
+import PlatformTabs from '@app/components/Discover/PlatformTabs';
 import RecentRequestsSlider from '@app/components/Discover/RecentRequestsSlider';
 import RecentlyAddedSlider from '@app/components/Discover/RecentlyAddedSlider';
 import WatchlistSlider from '@app/components/Discover/WatchlistSlider';
+import { sliderTitles } from '@app/components/Discover/constants';
+import MediaSlider from '@app/components/MediaSlider';
+import { usePreferredPlatforms } from '@app/hooks/usePlatforms';
+import useSettings from '@app/hooks/useSettings';
 import useToasts from '@app/hooks/useToasts';
 import { Permission, useUser } from '@app/hooks/useUser';
 import globalMessages from '@app/i18n/globalMessages';
@@ -38,7 +44,28 @@ const messages = defineMessages('components.Discover', {
     'Something went wrong resetting the discover customization settings.',
   customizediscover: 'Customize Discover',
   stopediting: 'Stop Editing',
+  igdbMissing:
+    'IGDB is not configured. Set IGDB_CLIENT_ID and IGDB_CLIENT_SECRET to load game lists.',
 });
+
+const SELECTED_PLATFORM_KEY = 'gameseerr.discover.platform';
+
+const readStoredPlatform = (): number | undefined => {
+  try {
+    const value = Number(window.localStorage.getItem(SELECTED_PLATFORM_KEY));
+    return Number.isInteger(value) && value > 0 ? value : undefined;
+  } catch {
+    return undefined;
+  }
+};
+
+const storePlatform = (platform: number) => {
+  try {
+    window.localStorage.setItem(SELECTED_PLATFORM_KEY, String(platform));
+  } catch {
+    // Storage can be unavailable, the selection then lasts for the visit
+  }
+};
 
 const Discover = () => {
   const intl = useIntl();
@@ -51,6 +78,23 @@ const Discover = () => {
   } = useSWR<DiscoverSlider[]>('/api/v1/settings/discover');
   const [sliders, setSliders] = useState<Partial<DiscoverSlider>[]>([]);
   const [isEditing, setIsEditing] = useState(false);
+  const { currentSettings } = useSettings();
+  const platforms = usePreferredPlatforms();
+  const [storedPlatform, setStoredPlatform] = useState<number>();
+
+  useEffect(() => {
+    setStoredPlatform(readStoredPlatform());
+  }, []);
+
+  const platform =
+    storedPlatform && platforms.includes(storedPlatform)
+      ? storedPlatform
+      : platforms[0];
+
+  const selectPlatform = (selected: number) => {
+    setStoredPlatform(selected);
+    storePlatform(selected);
+  };
 
   // We need to sync the state here so that we can modify the changes locally without commiting
   // anything to the server until the user decides to save the changes
@@ -105,6 +149,19 @@ const Discover = () => {
   return (
     <>
       <PageTitle title={intl.formatMessage(messages.discover)} />
+      {!currentSettings.metadataConfigured &&
+        hasPermission(Permission.ADMIN) && (
+          <div className="mt-4">
+            <Alert title={intl.formatMessage(messages.igdbMissing)} />
+          </div>
+        )}
+      {platforms.length > 1 && (
+        <PlatformTabs
+          platforms={platforms}
+          selected={platform}
+          onSelect={selectPlatform}
+        />
+      )}
       {hasPermission(Permission.ADMIN) && (
         <>
           <Transition
@@ -181,6 +238,36 @@ const Discover = () => {
             break;
           case DiscoverSliderType.WATCHLIST:
             sliderComponent = <WatchlistSlider />;
+            break;
+          case DiscoverSliderType.RECENT_RELEASES:
+            sliderComponent = (
+              <MediaSlider
+                sliderKey={`recent-${platform}`}
+                title={intl.formatMessage(sliderTitles.recentreleases)}
+                url="/api/v1/discover/recent"
+                extraParams={`platform=${platform}`}
+              />
+            );
+            break;
+          case DiscoverSliderType.UPCOMING:
+            sliderComponent = (
+              <MediaSlider
+                sliderKey={`upcoming-${platform}`}
+                title={intl.formatMessage(sliderTitles.upcoming)}
+                url="/api/v1/discover/upcoming"
+                extraParams={`platform=${platform}`}
+              />
+            );
+            break;
+          case DiscoverSliderType.ALL_TIME_BEST:
+            sliderComponent = (
+              <MediaSlider
+                sliderKey={`best-${platform}`}
+                title={intl.formatMessage(sliderTitles.alltimebest)}
+                url="/api/v1/discover/best"
+                extraParams={`platform=${platform}`}
+              />
+            );
             break;
           default:
             // Slider types without a game implementation yet render nothing

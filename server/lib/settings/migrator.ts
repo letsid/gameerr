@@ -22,9 +22,15 @@ export const runMigrations = async (
     }
     await fs.writeFile(BACKUP_PATH, JSON.stringify(settings, undefined, ' '));
 
-    const migrations = (await fs.readdir(migrationsDir)).filter(
-      (file) => file.endsWith('.js') || file.endsWith('.ts')
-    );
+    // The folder holds no migrations yet, so the build does not emit it
+    const migrations = (
+      await fs.readdir(migrationsDir).catch((e: NodeJS.ErrnoException) => {
+        if (e.code === 'ENOENT') {
+          return [] as string[];
+        }
+        throw e;
+      })
+    ).filter((file) => file.endsWith('.js') || file.endsWith('.ts'));
 
     const settingsBefore = JSON.stringify(migrated);
 

@@ -96,6 +96,28 @@ export interface NetworkSettings {
   apiRequestTimeout: number;
 }
 
+/**
+ * Metadata sources and discover defaults. API credentials may also be
+ * supplied through the environment, which takes precedence (see
+ * getMetadataCredentials).
+ */
+export interface MetadataSettings {
+  igdbClientId: string;
+  igdbClientSecret: string;
+  rawgApiKey: string;
+  rapidApiKey: string;
+  /**
+   * IGDB platform ids used when a user has not picked their own
+   */
+  defaultPlatforms: number[];
+  /**
+   * Minimum number of IGDB ratings before a game can enter score based lists
+   */
+  minRatingCount: number;
+  recentReleaseDays: number;
+  upcomingReleaseDays: number;
+}
+
 interface PublicSettings {
   initialized: boolean;
 }
@@ -121,6 +143,8 @@ interface FullPublicSettings extends PublicSettings {
   newPlexLogin: boolean;
   versionCheck: boolean;
   plexClientIdentifier: string;
+  defaultPlatforms: number[];
+  metadataConfigured: boolean;
 }
 
 export interface NotificationAgentConfig {
@@ -261,7 +285,10 @@ interface JobSettings {
   schedule: string;
 }
 
-export type JobId = 'plex-refresh-token' | 'image-cache-cleanup';
+export type JobId =
+  | 'plex-refresh-token'
+  | 'image-cache-cleanup'
+  | 'discover-lists-refresh';
 
 export interface AllSettings {
   clientId: string;
@@ -271,12 +298,38 @@ export interface AllSettings {
   main: MainSettings;
   plex: PlexSettings;
   jellyfin: JellyfinSettings;
+  metadata: MetadataSettings;
   public: PublicSettings;
   notifications: NotificationSettings;
   jobs: Record<JobId, JobSettings>;
   network: NetworkSettings;
   migrations: string[];
 }
+
+export interface MetadataCredentials {
+  igdbClientId: string;
+  igdbClientSecret: string;
+  rawgApiKey: string;
+  rapidApiKey: string;
+}
+
+/**
+ * Resolves API credentials, preferring environment variables over the
+ * settings file so keys never have to be written to disk.
+ */
+export const getMetadataCredentials = (
+  settings: Settings = getSettings()
+): MetadataCredentials => {
+  const metadata = settings.metadata;
+  const env = process.env;
+
+  return {
+    igdbClientId: env.IGDB_CLIENT_ID || metadata.igdbClientId,
+    igdbClientSecret: env.IGDB_CLIENT_SECRET || metadata.igdbClientSecret,
+    rawgApiKey: env.RAWG_API_KEY || metadata.rawgApiKey,
+    rapidApiKey: env.RAPIDAPI_KEY || metadata.rapidApiKey,
+  };
+};
 
 const SETTINGS_PATH = process.env.CONFIG_DIRECTORY
   ? `${process.env.CONFIG_DIRECTORY}/settings.json`
@@ -328,6 +381,17 @@ class Settings {
         jellyfinForgotPasswordUrl: '',
         serverId: '',
         apiKey: '',
+      },
+      metadata: {
+        igdbClientId: '',
+        igdbClientSecret: '',
+        rawgApiKey: '',
+        rapidApiKey: '',
+        // PC (Microsoft Windows)
+        defaultPlatforms: [6],
+        minRatingCount: 50,
+        recentReleaseDays: 60,
+        upcomingReleaseDays: 90,
       },
       public: {
         initialized: false,
@@ -447,6 +511,9 @@ class Settings {
         'image-cache-cleanup': {
           schedule: '0 0 5 * * *',
         },
+        'discover-lists-refresh': {
+          schedule: '0 30 3 * * *',
+        },
       },
       network: {
         csrfProtection: false,
@@ -500,6 +567,14 @@ class Settings {
     this.data.jellyfin = mergeSettings(this.data.jellyfin, data);
   }
 
+  get metadata(): MetadataSettings {
+    return this.data.metadata;
+  }
+
+  set metadata(data: MetadataSettings) {
+    this.data.metadata = mergeSettings(this.data.metadata, data);
+  }
+
   get public(): PublicSettings {
     return this.data.public;
   }
@@ -531,6 +606,8 @@ class Settings {
       newPlexLogin: this.data.main.newPlexLogin,
       versionCheck: this.data.main.versionCheck,
       plexClientIdentifier: this.data.clientId,
+      defaultPlatforms: this.data.metadata.defaultPlatforms,
+      metadataConfigured: !!getMetadataCredentials(this).igdbClientId,
     };
   }
 

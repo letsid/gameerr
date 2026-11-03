@@ -186,6 +186,8 @@ CoreApp.getInitialProps = async (initialProps) => {
     newPlexLogin: true,
     versionCheck: true,
     plexClientIdentifier: '',
+    defaultPlatforms: [6],
+    metadataConfigured: false,
   };
 
   if (ctx.res) {

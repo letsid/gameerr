@@ -1,0 +1,103 @@
+[
+  {
+    "id": 167,
+    "abbreviation": "PS5",
+    "alternative_name": "PS5",
+    "generation": 9,
+    "name": "PlayStation 5",
+    "platform_family": 1,
+    "slug": "ps5",
+    "platform_type": 1
+  },
+  {
+    "id": 48,
+    "abbreviation": "PS4",
+    "alternative_name": "PS4",
+    "generation": 8,
+    "name": "PlayStation 4",
+    "platform_family": 1,
+    "slug": "ps4--1",
+    "platform_type": 1
+  },
+  {
+    "id": 3,
+    "abbreviation": "Linux",
+    "alternative_name": "GNU/Linux",
+    "name": "Linux",
+    "platform_family": 4,
+    "slug": "linux",
+    "platform_type": 4
+  },
+  {
+    "id": 39,
+    "abbreviation": "iOS",
+    "name": "iOS",
+    "slug": "ios",
+    "platform_type": 4
+  },
+  {
+    "id": 6,
+    "abbreviation": "PC",
+    "alternative_name": "mswin",
+    "name": "PC (Microsoft Windows)",
+    "slug": "win",
+    "platform_type": 4
+  },
+  {
+    "id": 508,
+    "abbreviation": "Switch 2",
+    "alternative_name": "Switch 2",
+    "generation": 9,
+    "name": "Nintendo Switch 2",
+    "platform_family": 5,
+    "slug": "switch-2",
+    "platform_type": 1
+  },
+  {
+    "id": 169,
+    "abbreviation": "Series X|S",
+    "alternative_name": "XSX",
+    "generation": 9,
+    "name": "Xbox Series X|S",
+    "platform_family": 2,
+    "slug": "series-x-s",
+    "platform_type": 1
+  },
+  {
+    "id": 34,
+    "abbreviation": "Android",
+    "alternative_name": "Infocusa3",
+    "name": "Android",
+    "platform_family": 4,
+    "slug": "android",
+    "platform_type": 4
+  },
+  {
+    "id": 49,
+    "abbreviation": "XONE",
+    "alternative_name": "XONE",
+    "generation": 8,
+    "name": "Xbox One",
+    "platform_family": 2,
+    "slug": "xboxone",
+    "platform_type": 1
+  },
+  {
+    "id": 14,
+    "abbreviation": "Mac",
+    "alternative_name": "Mac OS",
+    "name": "Mac",
+    "slug": "mac",
+    "platform_type": 4
+  },
+  {
+    "id": 130,
+    "abbreviation": "Switch",
+    "alternative_name": "NX",
+    "generation": 8,
+    "name": "Nintendo Switch",
+    "platform_family": 5,
+    "slug": "switch",
+    "platform_type": 1
+  }
+]

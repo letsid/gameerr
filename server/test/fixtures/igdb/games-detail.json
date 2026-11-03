@@ -1,0 +1,1100 @@
+[
+  {
+    "id": 1020,
+    "aggregated_rating": 88.13793103448276,
+    "aggregated_rating_count": 27,
+    "cover": {
+      "id": 120937,
+      "image_id": "co2lbd"
+    },
+    "external_games": [
+      {
+        "id": 1935351,
+        "uid": "B00NOP3QF4",
+        "external_game_source": 20
+      },
+      {
+        "id": 1935867,
+        "uid": "B0062KIC2A",
+        "external_game_source": 20
+      },
+      {
+        "id": 1932096,
+        "uid": "B00KL3W626",
+        "external_game_source": 20
+      },
+      {
+        "id": 1936544,
+        "uid": "B00KWBFV7O",
+        "external_game_source": 20
+      },
+      {
+        "id": 1936553,
+        "uid": "B006IS6VKQ",
+        "external_game_source": 20
+      },
+      {
+        "id": 1936631,
+        "uid": "B00KWBFXLI",
+        "external_game_source": 20
+      },
+      {
+        "id": 1936881,
+        "uid": "B007SV41OA",
+        "external_game_source": 20
+      },
+      {
+        "id": 1937182,
+        "uid": "B00KXX4UWI",
+        "external_game_source": 20
+      },
+      {
+        "id": 1937291,
+        "uid": "B00KXX4UYQ",
+        "external_game_source": 20
+      },
+      {
+        "id": 1937403,
+        "uid": "B01G2M29Z8",
+        "external_game_source": 20
+      },
+      {
+        "id": 1937473,
+        "uid": "B0062KICQ6",
+        "external_game_source": 20
+      },
+      {
+        "id": 1937971,
+        "uid": "B00KW2FM5E",
+        "external_game_source": 20
+      },
+      {
+        "id": 1938297,
+        "uid": "B0071L2QD0",
+        "external_game_source": 20
+      },
+      {
+        "id": 1933656,
+        "uid": "B07BH4BLRP",
+        "external_game_source": 20
+      },
+      {
+        "id": 1928851,
+        "uid": "B00KVXB5YQ",
+        "external_game_source": 20
+      },
+      {
+        "id": 1933180,
+        "uid": "B00B6ZBGVK",
+        "external_game_source": 20
+      },
+      {
+        "id": 1932997,
+        "uid": "B0151BRGPO",
+        "external_game_source": 20
+      },
+      {
+        "id": 1932255,
+        "uid": "B00KL3W478",
+        "external_game_source": 20
+      },
+      {
+        "id": 1934115,
+        "uid": "B0071L2QHG",
+        "external_game_source": 20
+      },
+      {
+        "id": 1934605,
+        "uid": "B07K6LZR6G",
+        "external_game_source": 20
+      },
+      {
+        "id": 1865443,
+        "uid": "B00KW2FKAQ",
+        "external_game_source": 20
+      },
+      {
+        "id": 1936407,
+        "uid": "B00KW4UVSU",
+        "external_game_source": 20
+      },
+      {
+        "id": 123664,
+        "uid": "36765",
+        "external_game_source": 3
+      },
+      {
+        "id": 1928484,
+        "uid": "B078918FCH",
+        "external_game_source": 20
+      },
+      {
+        "id": 1930050,
+        "uid": "B01NA6PWAW",
+        "external_game_source": 20
+      },
+      {
+        "id": 1935747,
+        "uid": "B0151BRH0I",
+        "external_game_source": 20
+      },
+      {
+        "id": 1936890,
+        "uid": "B007SV43IO",
+        "external_game_source": 20
+      },
+      {
+        "id": 1865693,
+        "uid": "B00KXX4UV4",
+        "external_game_source": 20
+      },
+      {
+        "id": 1865794,
+        "uid": "B00KW4UW4S",
+        "external_game_source": 20
+      },
+      {
+        "id": 213597,
+        "uid": "xbox36066acd000-77fe-1000-9115-d802545408a7",
+        "external_game_source": 11
+      },
+      {
+        "id": 1936116,
+        "uid": "B00L0WZN8G",
+        "external_game_source": 20
+      },
+      {
+        "id": 2635398,
+        "uid": "B09WZ6F8P5",
+        "external_game_source": 20
+      },
+      {
+        "id": 2635395,
+        "uid": "B09WZ6F8P5",
+        "external_game_source": 20
+      },
+      {
+        "id": 2416118,
+        "uid": "B09X1WRYNG",
+        "external_game_source": 20
+      },
+      {
+        "id": 1929423,
+        "uid": "B00KL4AROO",
+        "external_game_source": 20
+      },
+      {
+        "id": 3222237,
+        "uid": "B073QW8QBG",
+        "external_game_source": 20
+      },
+      {
+        "id": 1937066,
+        "uid": "B0071L2QNA",
+        "external_game_source": 20
+      },
+      {
+        "id": 1929848,
+        "uid": "B018TCAN7U",
+        "external_game_source": 20
+      },
+      {
+        "id": 1928312,
+        "uid": "B00WY2G178",
+        "external_game_source": 20
+      },
+      {
+        "id": 189925,
+        "uid": "UCT1tnevF8bn9Nwr6ZHA9Mag",
+        "external_game_source": 10
+      },
+      {
+        "id": 2631631,
+        "uid": "B09WZLKY2J",
+        "external_game_source": 20
+      },
+      {
+        "id": 1928645,
+        "uid": "B0050SYILE",
+        "external_game_source": 20
+      },
+      {
+        "id": 3219918,
+        "uid": "B00L8XUEBI",
+        "external_game_source": 20
+      },
+      {
+        "id": 2635401,
+        "uid": "B09WZ6F8P5",
+        "external_game_source": 20
+      },
+      {
+        "id": 3229833,
+        "uid": "B00KWUZPNK",
+        "external_game_source": 20
+      },
+      {
+        "id": 210553,
+        "uid": "BPJ686W6S0NH",
+        "external_game_source": 11
+      },
+      {
+        "id": 2631633,
+        "uid": "B09WZLKY2J",
+        "external_game_source": 20
+      },
+      {
+        "id": 2118073,
+        "uid": "bd136eaa-528f-4f54-af01-92124e014a94",
+        "external_game_source": 26
+      },
+      {
+        "id": 2161127,
+        "uid": "66acd000-77fe-1000-9115-d802545408a7",
+        "external_game_source": 31
+      },
+      {
+        "id": 3225774,
+        "uid": "B0GXB4BXDG",
+        "external_game_source": 20
+      },
+      {
+        "id": 1932585,
+        "uid": "B00KWAVLBK",
+        "external_game_source": 20
+      },
+      {
+        "id": 1936690,
+        "uid": "B00LAT8Z70",
+        "external_game_source": 20
+      },
+      {
+        "id": 1936733,
+        "uid": "B00KWBG038",
+        "external_game_source": 20
+      },
+      {
+        "id": 1928369,
+        "uid": "B00KVSQAGO",
+        "external_game_source": 20
+      },
+      {
+        "id": 1929516,
+        "uid": "B00G7LO6OC",
+        "external_game_source": 20
+      },
+      {
+        "id": 1929044,
+        "uid": "B0050SXKU4",
+        "external_game_source": 20
+      },
+      {
+        "id": 1936560,
+        "uid": "B006ISA47W",
+        "external_game_source": 20
+      },
+      {
+        "id": 1936210,
+        "uid": "B00A3OVMSW",
+        "external_game_source": 20
+      },
+      {
+        "id": 189339,
+        "uid": "UChoveWrDASwMxB5_iNot07A",
+        "external_game_source": 10
+      },
+      {
+        "id": 2171945,
+        "uid": "201930",
+        "external_game_source": 36
+      },
+      {
+        "id": 2436454,
+        "uid": "B09X5TQ66G",
+        "external_game_source": 20
+      },
+      {
+        "id": 3218948,
+        "uid": "B08C7Y24KL",
+        "external_game_source": 20
+      },
+      {
+        "id": 2416128,
+        "uid": "B09X1Y8NP6",
+        "external_game_source": 20
+      },
+      {
+        "id": 1928346,
+        "uid": "B00KVSQ848",
+        "external_game_source": 20
+      },
+      {
+        "id": 3223097,
+        "uid": "B075VZBGDZ",
+        "external_game_source": 20
+      },
+      {
+        "id": 3190405,
+        "uid": "B00B200UV6",
+        "external_game_source": 20
+      },
+      {
+        "id": 11827,
+        "uid": "271590",
+        "external_game_source": 1
+      },
+      {
+        "id": 245105,
+        "uid": "32982",
+        "external_game_source": 14
+      }
+    ],
+    "first_release_date": 1379376000,
+    "genres": [
+      {
+        "id": 5,
+        "name": "Shooter"
+      },
+      {
+        "id": 10,
+        "name": "Racing"
+      },
+      {
+        "id": 31,
+        "name": "Adventure"
+      }
+    ],
+    "name": "Grand Theft Auto V",
+    "platforms": [169, 9, 48, 6, 167, 12, 49],
+    "rating": 89.63850482829011,
+    "rating_count": 6011,
+    "release_dates": [
+      {
+        "id": 20291,
+        "date": 1416268800,
+        "platform": 48,
+        "release_region": 8
+      },
+      {
+        "id": 403430,
+        "date": 1428883200,
+        "platform": 6,
+        "release_region": 8
+      },
+      {
+        "id": 20294,
+        "date": 1379376000,
+        "platform": 9,
+        "release_region": 8
+      },
+      {
+        "id": 20293,
+        "date": 1379376000,
+        "platform": 12,
+        "release_region": 8
+      },
+      {
+        "id": 20290,
+        "date": 1416268800,
+        "platform": 49,
+        "release_region": 8
+      },
+      {
+        "id": 934896,
+        "date": 1741996800,
+        "platform": 169,
+        "release_region": 8
+      },
+      {
+        "id": 934897,
+        "date": 1741996800,
+        "platform": 167,
+        "release_region": 8
+      }
+    ],
+    "slug": "grand-theft-auto-v",
+    "summary": "Grand Theft Auto V is a vast open world game set in Los Santos, a sprawling sun-soaked metropolis struggling to stay afloat in an era of economic uncertainty and cheap reality TV. The game blends storytelling and gameplay in new ways as players repeatedly jump in and out of the lives of the game’s three lead characters, playing all sides of the game’s interwoven story.",
+    "total_rating": 88.88821793138644,
+    "total_rating_count": 6038,
+    "game_type": 0
+  },
+  {
+    "id": 1942,
+    "aggregated_rating": 91.73076923076923,
+    "aggregated_rating_count": 26,
+    "cover": {
+      "id": 480513,
+      "image_id": "coaarl"
+    },
+    "external_games": [
+      {
+        "id": 1935171,
+        "uid": "B00T3SPV36",
+        "external_game_source": 20
+      },
+      {
+        "id": 189745,
+        "uid": "UCprFOIVpCqQLUMsWBNwt0PQ",
+        "external_game_source": 10
+      },
+      {
+        "id": 1934807,
+        "uid": "B00WTI2HV6",
+        "external_game_source": 20
+      },
+      {
+        "id": 1931970,
+        "uid": "B00WTI3SGO",
+        "external_game_source": 20
+      },
+      {
+        "id": 3222322,
+        "uid": "B00R119Y44",
+        "external_game_source": 20
+      },
+      {
+        "id": 11306,
+        "uid": "292030",
+        "external_game_source": 1
+      },
+      {
+        "id": 1937739,
+        "uid": "B00KNZNVLM",
+        "external_game_source": 20
+      },
+      {
+        "id": 119254,
+        "uid": "41484",
+        "external_game_source": 3
+      },
+      {
+        "id": 1928370,
+        "uid": "B07SH3D6HT",
+        "external_game_source": 20
+      },
+      {
+        "id": 211029,
+        "uid": "BR765873CQJD",
+        "external_game_source": 11
+      },
+      {
+        "id": 3223128,
+        "uid": "B078JDW2XH",
+        "external_game_source": 20
+      },
+      {
+        "id": 78478,
+        "uid": "1207664663",
+        "external_game_source": 5
+      },
+      {
+        "id": 2067884,
+        "uid": "1207664643",
+        "external_game_source": 5
+      },
+      {
+        "id": 246257,
+        "uid": "115977",
+        "external_game_source": 14
+      },
+      {
+        "id": 2176359,
+        "uid": "204794",
+        "external_game_source": 36
+      }
+    ],
+    "first_release_date": 1431993600,
+    "genres": [
+      {
+        "id": 12,
+        "name": "Role-playing (RPG)"
+      },
+      {
+        "id": 31,
+        "name": "Adventure"
+      }
+    ],
+    "hypes": 179,
+    "name": "The Witcher 3: Wild Hunt",
+    "platforms": [169, 48, 508, 6, 167, 49, 130],
+    "rating": 93.77365387735142,
+    "rating_count": 5513,
+    "release_dates": [
+      {
+        "id": 974208,
+        "date": 1431993600,
+        "platform": 48,
+        "release_region": 8
+      },
+      {
+        "id": 974209,
+        "date": 1670976000,
+        "platform": 167,
+        "release_region": 8
+      },
+      {
+        "id": 974210,
+        "date": 1431993600,
+        "platform": 49,
+        "release_region": 8
+      },
+      {
+        "id": 974211,
+        "date": 1670976000,
+        "platform": 169,
+        "release_region": 8
+      },
+      {
+        "id": 974206,
+        "date": 1611792000,
+        "platform": 130,
+        "release_region": 8
+      },
+      {
+        "id": 974207,
+        "date": 1431993600,
+        "platform": 6,
+        "release_region": 8
+      },
+      {
+        "id": 974212,
+        "date": 1790640000,
+        "platform": 508,
+        "release_region": 8
+      }
+    ],
+    "slug": "the-witcher-3-wild-hunt",
+    "summary": "The Witcher 3: Wild Hunt is an open-world action role-playing game developed by CD Projekt Red.\n\nSet in a dark fantasy world, the game follows Geralt of Rivia, a monster hunter searching for his adopted daughter, Ciri, while navigating political conflicts and supernatural threats. Gameplay features exploration, combat, character progression, and branching narratives shaped by player choices. Widely acclaimed for its writing, world-building, and depth, it is considered one of the most influential RPGs of its generation.",
+    "total_rating": 92.75221155406032,
+    "total_rating_count": 5539,
+    "game_type": 0
+  },
+  {
+    "id": 119133,
+    "aggregated_rating": 96.9,
+    "aggregated_rating_count": 10,
+    "cover": {
+      "id": 212094,
+      "image_id": "co4jni"
+    },
+    "external_games": [
+      {
+        "id": 3190333,
+        "uid": "B09MG5LQ18",
+        "external_game_source": 20
+      },
+      {
+        "id": 2062011,
+        "uid": "B09743F8P6",
+        "external_game_source": 20
+      },
+      {
+        "id": 2063046,
+        "uid": "B0977MY2WM",
+        "external_game_source": 20
+      },
+      {
+        "id": 2062942,
+        "uid": "B0977QP5L6",
+        "external_game_source": 20
+      },
+      {
+        "id": 1930111,
+        "uid": "B07SPYK271",
+        "external_game_source": 20
+      },
+      {
+        "id": 1932061,
+        "uid": "B07SMBNTSJ",
+        "external_game_source": 20
+      },
+      {
+        "id": 1775842,
+        "uid": "73745",
+        "external_game_source": 3
+      },
+      {
+        "id": 1933890,
+        "uid": "B07T8J15JQ",
+        "external_game_source": 20
+      },
+      {
+        "id": 2270864,
+        "uid": "9P3J32CTXLRZ",
+        "external_game_source": 11
+      },
+      {
+        "id": 2271018,
+        "uid": "B09QPYZ6R2",
+        "external_game_source": 20
+      },
+      {
+        "id": 2271058,
+        "uid": "B09QPZHJH9",
+        "external_game_source": 20
+      },
+      {
+        "id": 2225572,
+        "uid": "B09QQYB8D9",
+        "external_game_source": 20
+      },
+      {
+        "id": 2635204,
+        "uid": "B097M66Y91",
+        "external_game_source": 20
+      },
+      {
+        "id": 2088476,
+        "uid": "B09D4KSL1B",
+        "external_game_source": 20
+      },
+      {
+        "id": 2254892,
+        "uid": "B09QPYZ6R2",
+        "external_game_source": 20
+      },
+      {
+        "id": 2254895,
+        "uid": "B09SMC6J15",
+        "external_game_source": 20
+      },
+      {
+        "id": 2254935,
+        "uid": "B09SQ6VGTB",
+        "external_game_source": 20
+      },
+      {
+        "id": 2184011,
+        "uid": "B09P1LTGH5",
+        "external_game_source": 20
+      },
+      {
+        "id": 2233957,
+        "uid": "B09R3BZHXX",
+        "external_game_source": 20
+      },
+      {
+        "id": 2241900,
+        "uid": "B09QPYY5HJ",
+        "external_game_source": 20
+      },
+      {
+        "id": 2682210,
+        "uid": "B0B7RSBXFT",
+        "external_game_source": 20
+      },
+      {
+        "id": 3232857,
+        "uid": "B07T8J27XQ",
+        "external_game_source": 20
+      },
+      {
+        "id": 2254996,
+        "uid": "B09QPYY5HJ",
+        "external_game_source": 20
+      },
+      {
+        "id": 2682054,
+        "uid": "B0B7RSBXFT",
+        "external_game_source": 20
+      },
+      {
+        "id": 2882831,
+        "uid": "B09R3C1QHH",
+        "external_game_source": 20
+      },
+      {
+        "id": 2635202,
+        "uid": "B097M66Y91",
+        "external_game_source": 20
+      },
+      {
+        "id": 2062880,
+        "uid": "B0977PVNYX",
+        "external_game_source": 20
+      },
+      {
+        "id": 2225478,
+        "uid": "B09QQT2NWG",
+        "external_game_source": 20
+      },
+      {
+        "id": 2183928,
+        "uid": "B09P1LBC7K",
+        "external_game_source": 20
+      },
+      {
+        "id": 2254918,
+        "uid": "B09QPZHJH9",
+        "external_game_source": 20
+      },
+      {
+        "id": 2233934,
+        "uid": "B09R3HR7NY",
+        "external_game_source": 20
+      },
+      {
+        "id": 2636625,
+        "uid": "B09SMC6J15",
+        "external_game_source": 20
+      },
+      {
+        "id": 2167564,
+        "uid": "B09L1C64SN",
+        "external_game_source": 20
+      },
+      {
+        "id": 2682308,
+        "uid": "B0B7RSBXFT",
+        "external_game_source": 20
+      },
+      {
+        "id": 2271134,
+        "uid": "B09QPYY5HJ",
+        "external_game_source": 20
+      },
+      {
+        "id": 2233945,
+        "uid": "B09R3DSJMS",
+        "external_game_source": 20
+      },
+      {
+        "id": 2857523,
+        "uid": "B09R3HR7NY",
+        "external_game_source": 20
+      },
+      {
+        "id": 2636627,
+        "uid": "B09SMC6J15",
+        "external_game_source": 20
+      },
+      {
+        "id": 2233921,
+        "uid": "B09R3C1QHH",
+        "external_game_source": 20
+      },
+      {
+        "id": 2184002,
+        "uid": "B09P1MVC4J",
+        "external_game_source": 20
+      },
+      {
+        "id": 2062922,
+        "uid": "B0977LKSQ6",
+        "external_game_source": 20
+      },
+      {
+        "id": 2241788,
+        "uid": "B09QPYZ6R2",
+        "external_game_source": 20
+      },
+      {
+        "id": 3219800,
+        "uid": "B0H7Q922M5",
+        "external_game_source": 20
+      },
+      {
+        "id": 2063058,
+        "uid": "B0979YW1Z9",
+        "external_game_source": 20
+      },
+      {
+        "id": 2084186,
+        "uid": "1245620",
+        "external_game_source": 1
+      },
+      {
+        "id": 2064411,
+        "uid": "B097M66Y91",
+        "external_game_source": 20
+      },
+      {
+        "id": 2636628,
+        "uid": "B09SMC6J15",
+        "external_game_source": 20
+      },
+      {
+        "id": 2241810,
+        "uid": "B09QPZHJH9",
+        "external_game_source": 20
+      },
+      {
+        "id": 2062924,
+        "uid": "B097B15N2T",
+        "external_game_source": 20
+      },
+      {
+        "id": 2167628,
+        "uid": "B09L19LT8Q",
+        "external_game_source": 20
+      },
+      {
+        "id": 3223289,
+        "uid": "B09W9WGSVL",
+        "external_game_source": 20
+      },
+      {
+        "id": 1914490,
+        "uid": "512953",
+        "external_game_source": 14
+      },
+      {
+        "id": 3190344,
+        "uid": "B09MG3FTNC",
+        "external_game_source": 20
+      },
+      {
+        "id": 2172221,
+        "uid": "10000333",
+        "external_game_source": 36
+      }
+    ],
+    "first_release_date": 1645747200,
+    "genres": [
+      {
+        "id": 12,
+        "name": "Role-playing (RPG)"
+      },
+      {
+        "id": 31,
+        "name": "Adventure"
+      }
+    ],
+    "hypes": 96,
+    "name": "Elden Ring",
+    "platforms": [169, 48, 508, 6, 167, 49],
+    "rating": 93.46297270793316,
+    "rating_count": 2330,
+    "release_dates": [
+      {
+        "id": 831464,
+        "date": 1645747200,
+        "platform": 6,
+        "release_region": 8
+      },
+      {
+        "id": 831465,
+        "date": 1645747200,
+        "platform": 48,
+        "release_region": 8
+      },
+      {
+        "id": 831466,
+        "date": 1645747200,
+        "platform": 167,
+        "release_region": 8
+      },
+      {
+        "id": 831467,
+        "date": 1645747200,
+        "platform": 49,
+        "release_region": 8
+      },
+      {
+        "id": 831468,
+        "date": 1645747200,
+        "platform": 169,
+        "release_region": 8
+      },
+      {
+        "id": 921938,
+        "date": 1787875200,
+        "platform": 508,
+        "release_region": 8
+      }
+    ],
+    "slug": "elden-ring",
+    "summary": "Elden Ring is an action RPG developed by FromSoftware and published by Bandai Namco Entertainment, released in February 2022. Directed by Hidetaka Miyazaki, with world-building contributions from novelist George R. R. Martin, the game features an expansive open world called the Lands Between. Players assume the role of a customisable character known as the Tarnished, who must explore this world, battle formidable enemies, and seek to restore the Elden Ring to become the Elden Lord.\n\nThe game builds on the challenging gameplay mechanics familiar from the Dark Souls series but introduces a more open-ended structure with vast exploration, dynamic weather, and a day-night cycle. It offers deep lore, complex characters, and an interconnected world filled with secrets, dungeons, and powerful bosses.",
+    "total_rating": 95.18148635396659,
+    "total_rating_count": 2340,
+    "game_type": 0
+  },
+  {
+    "id": 217590,
+    "aggregated_rating": 88.16666666666667,
+    "aggregated_rating_count": 6,
+    "cover": {
+      "id": 354215,
+      "image_id": "co7lbb"
+    },
+    "external_games": [
+      {
+        "id": 3190320,
+        "uid": "B0CKSX2S72",
+        "external_game_source": 20
+      },
+      {
+        "id": 2872439,
+        "uid": "B0CPM34CNJ",
+        "external_game_source": 20
+      },
+      {
+        "id": 2751154,
+        "uid": "B0CGFC3VBL",
+        "external_game_source": 20
+      },
+      {
+        "id": 2879183,
+        "uid": "B0CQ8HX7V4",
+        "external_game_source": 20
+      },
+      {
+        "id": 2882837,
+        "uid": "B0CQ8KFKBV",
+        "external_game_source": 20
+      },
+      {
+        "id": 2879037,
+        "uid": "B0CRXBT65S",
+        "external_game_source": 20
+      },
+      {
+        "id": 2881122,
+        "uid": "B0CQ8HX7V4",
+        "external_game_source": 20
+      },
+      {
+        "id": 2881042,
+        "uid": "B0CQ8KFKBV",
+        "external_game_source": 20
+      },
+      {
+        "id": 2875627,
+        "uid": "B0CR44BNT9",
+        "external_game_source": 20
+      },
+      {
+        "id": 2882303,
+        "uid": "9PPSM14VKCLW",
+        "external_game_source": 11
+      },
+      {
+        "id": 2874695,
+        "uid": "B0CQLJ4TDL",
+        "external_game_source": 20
+      },
+      {
+        "id": 2619551,
+        "uid": "1778820",
+        "external_game_source": 1
+      },
+      {
+        "id": 2751186,
+        "uid": "B0CGFCGBYD",
+        "external_game_source": 20
+      },
+      {
+        "id": 2873895,
+        "uid": "B0CQLKXY7N",
+        "external_game_source": 20
+      },
+      {
+        "id": 2879070,
+        "uid": "B0CQ8KFKBV",
+        "external_game_source": 20
+      },
+      {
+        "id": 2874701,
+        "uid": "B0CQLKXY7N",
+        "external_game_source": 20
+      },
+      {
+        "id": 2873865,
+        "uid": "B0CQLJ4TDL",
+        "external_game_source": 20
+      },
+      {
+        "id": 2882972,
+        "uid": "B0CQ8HX7V4",
+        "external_game_source": 20
+      },
+      {
+        "id": 2914505,
+        "uid": "B0CNZ32F6W",
+        "external_game_source": 20
+      },
+      {
+        "id": 3218942,
+        "uid": "B0H4QP22CS",
+        "external_game_source": 20
+      },
+      {
+        "id": 2872419,
+        "uid": "B0CPM2J8S4",
+        "external_game_source": 20
+      },
+      {
+        "id": 2874717,
+        "uid": "B0CQLJ634V",
+        "external_game_source": 20
+      },
+      {
+        "id": 2914501,
+        "uid": "B0CNZ32F6W",
+        "external_game_source": 20
+      },
+      {
+        "id": 2875596,
+        "uid": "B0CR433N4R",
+        "external_game_source": 20
+      },
+      {
+        "id": 2873914,
+        "uid": "B0CQLJ634V",
+        "external_game_source": 20
+      },
+      {
+        "id": 2914503,
+        "uid": "B0CNZ32F6W",
+        "external_game_source": 20
+      },
+      {
+        "id": 2734063,
+        "uid": "10006270",
+        "external_game_source": 36
+      },
+      {
+        "id": 2586910,
+        "uid": "538054672",
+        "external_game_source": 14
+      }
+    ],
+    "first_release_date": 1706227200,
+    "genres": [
+      {
+        "id": 4,
+        "name": "Fighting"
+      }
+    ],
+    "hypes": 4,
+    "name": "Tekken 8",
+    "platforms": [169, 6, 167],
+    "rating": 75.46102434295943,
+    "rating_count": 128,
+    "release_dates": [
+      {
+        "id": 506076,
+        "date": 1706227200,
+        "platform": 169,
+        "release_region": 8
+      },
+      {
+        "id": 506075,
+        "date": 1706227200,
+        "platform": 167,
+        "release_region": 8
+      },
+      {
+        "id": 560676,
+        "date": 1706227200,
+        "platform": 6,
+        "release_region": 8
+      }
+    ],
+    "slug": "tekken-8",
+    "summary": "Tekken 8 is a 3D fighting game and the eighth main installment in the Tekken series, notable for being the first entry to debut on home consoles rather than in arcades. Built on Unreal Engine 5, the game introduces the \"Heat\" system, which rewards aggressive play by granting enhanced moves and chip damage while in an activated state, and replaces the prior \"Screw\" mechanic with \"Tornado\" hits. The game features crossplay across PlayStation 5, Windows, and Xbox Series X/S. Additional modes include Arcade Quest, an online lobby with customizable avatars and tournament play, and a cinematic story mode. It is the final Tekken game involving longtime series director Katsuhiro Harada before his departure from Bandai Namco.",
+    "total_rating": 81.81384550481306,
+    "total_rating_count": 134,
+    "game_type": 0
+  }
+]

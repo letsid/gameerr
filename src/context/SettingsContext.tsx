@@ -26,6 +26,9 @@ const defaultSettings = {
   newPlexLogin: true,
   versionCheck: true,
   plexClientIdentifier: '',
+  // PC (Microsoft Windows)
+  defaultPlatforms: [6],
+  metadataConfigured: false,
 };
 
 export const SettingsContext = React.createContext<SettingsContextProps>({

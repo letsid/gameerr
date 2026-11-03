@@ -1,4 +1,8 @@
 import { MediaServerType } from '@server/constants/server';
+import {
+  isDiscoverRefreshRunning,
+  refreshAllDiscoverLists,
+} from '@server/lib/discover';
 import ImageProxy from '@server/lib/imageproxy';
 import refreshToken from '@server/lib/refreshToken';
 import type { JobId } from '@server/lib/settings';
@@ -62,6 +66,35 @@ export const startJobs = (): void => {
       ImageProxy.clearCache('avatar');
     }),
   });
+
+  // Precompute discover lists so pages never wait on IGDB
+  scheduledJobs.push({
+    id: 'discover-lists-refresh',
+    name: 'Discover Lists Refresh',
+    type: 'process',
+    interval: 'hours',
+    cronSchedule: jobs['discover-lists-refresh'].schedule,
+    running: isDiscoverRefreshRunning,
+    job: schedule.scheduleJob(jobs['discover-lists-refresh'].schedule, () => {
+      logger.info('Starting scheduled job: Discover Lists Refresh', {
+        label: 'Jobs',
+      });
+      refreshAllDiscoverLists().catch((e) =>
+        logger.error('Discover lists refresh failed', {
+          label: 'Jobs',
+          errorMessage: e.message,
+        })
+      );
+    }),
+  });
+
+  // Fill in lists that are missing, e.g. on first start
+  refreshAllDiscoverLists({ force: false }).catch((e) =>
+    logger.error('Initial discover lists refresh failed', {
+      label: 'Jobs',
+      errorMessage: e.message,
+    })
+  );
 
   logger.info('Scheduled jobs loaded', { label: 'Jobs' });
 };

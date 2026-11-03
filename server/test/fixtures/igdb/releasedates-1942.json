@@ -1,0 +1,58 @@
+[
+  {
+    "id": 974208,
+    "date": 1431993600,
+    "game": 1942,
+    "platform": 48,
+    "status": 6,
+    "release_region": 8
+  },
+  {
+    "id": 974210,
+    "date": 1431993600,
+    "game": 1942,
+    "platform": 49,
+    "status": 6,
+    "release_region": 8
+  },
+  {
+    "id": 974206,
+    "date": 1611792000,
+    "game": 1942,
+    "platform": 130,
+    "status": 6,
+    "release_region": 8
+  },
+  {
+    "id": 974207,
+    "date": 1431993600,
+    "game": 1942,
+    "platform": 6,
+    "status": 6,
+    "release_region": 8
+  },
+  {
+    "id": 974211,
+    "date": 1670976000,
+    "game": 1942,
+    "platform": 169,
+    "status": 6,
+    "release_region": 8
+  },
+  {
+    "id": 974212,
+    "date": 1790640000,
+    "game": 1942,
+    "platform": 508,
+    "status": 6,
+    "release_region": 8
+  },
+  {
+    "id": 974209,
+    "date": 1670976000,
+    "game": 1942,
+    "platform": 167,
+    "status": 6,
+    "release_region": 8
+  }
+]

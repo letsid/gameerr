@@ -1,0 +1,142 @@
+[
+  {
+    "id": 1454,
+    "name": "Suikoden II",
+    "total_rating": 95.83152744431017,
+    "total_rating_count": 116,
+    "game_type": 0
+  },
+  {
+    "id": 119133,
+    "name": "Elden Ring",
+    "total_rating": 95.18148635396659,
+    "total_rating_count": 2340,
+    "game_type": 0
+  },
+  {
+    "id": 119171,
+    "name": "Baldur\u0027s Gate III",
+    "total_rating": 94.76293906840701,
+    "total_rating_count": 1658,
+    "game_type": 0
+  },
+  {
+    "id": 19560,
+    "name": "God of War",
+    "total_rating": 94.09163010545902,
+    "total_rating_count": 3644,
+    "game_type": 0
+  },
+  {
+    "id": 25076,
+    "name": "Red Dead Redemption 2",
+    "total_rating": 93.6293092571558,
+    "total_rating_count": 3923,
+    "game_type": 0
+  },
+  {
+    "id": 74,
+    "name": "Mass Effect 2",
+    "total_rating": 93.39617527476315,
+    "total_rating_count": 2802,
+    "game_type": 0
+  },
+  {
+    "id": 112875,
+    "name": "God of War Ragnarök",
+    "total_rating": 92.75998102727763,
+    "total_rating_count": 1200,
+    "game_type": 0
+  },
+  {
+    "id": 1942,
+    "name": "The Witcher 3: Wild Hunt",
+    "total_rating": 92.75221155406032,
+    "total_rating_count": 5539,
+    "game_type": 0
+  },
+  {
+    "id": 298526,
+    "name": "Kingdom Come: Deliverance II",
+    "total_rating": 92.61164906288519,
+    "total_rating_count": 280,
+    "game_type": 0
+  },
+  {
+    "id": 132181,
+    "name": "Resident Evil 4",
+    "total_rating": 92.27830794989762,
+    "total_rating_count": 702,
+    "game_type": 8
+  },
+  {
+    "id": 272,
+    "name": "Unreal Tournament",
+    "total_rating": 92.06461524591461,
+    "total_rating_count": 289,
+    "game_type": 0
+  },
+  {
+    "id": 9643,
+    "name": "Return of the Obra Dinn",
+    "total_rating": 92.06396150557984,
+    "total_rating_count": 514,
+    "game_type": 0
+  },
+  {
+    "id": 116,
+    "name": "Star Wars: Knights of the Old Republic",
+    "total_rating": 92.02083407867448,
+    "total_rating_count": 1503,
+    "game_type": 0
+  },
+  {
+    "id": 72,
+    "name": "Portal 2",
+    "total_rating": 91.88764458610211,
+    "total_rating_count": 4533,
+    "game_type": 0
+  },
+  {
+    "id": 732,
+    "name": "Grand Theft Auto: San Andreas",
+    "total_rating": 91.6162691182403,
+    "total_rating_count": 4109,
+    "game_type": 0
+  },
+  {
+    "id": 14593,
+    "name": "Hollow Knight",
+    "total_rating": 91.52377623821606,
+    "total_rating_count": 2279,
+    "game_type": 0
+  },
+  {
+    "id": 863,
+    "name": "Sid Meier\u0027s Alpha Centauri",
+    "total_rating": 91.52141408759186,
+    "total_rating_count": 64,
+    "game_type": 0
+  },
+  {
+    "id": 113112,
+    "name": "Hades",
+    "total_rating": 91.48058967337309,
+    "total_rating_count": 1797,
+    "game_type": 0
+  },
+  {
+    "id": 999,
+    "name": "Oddworld: Abe\u0027s Oddysee",
+    "total_rating": 91.27763679209453,
+    "total_rating_count": 258,
+    "game_type": 0
+  },
+  {
+    "id": 12517,
+    "name": "Undertale",
+    "total_rating": 91.17851246491277,
+    "total_rating_count": 1909,
+    "game_type": 0
+  }
+]

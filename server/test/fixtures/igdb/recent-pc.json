@@ -1,0 +1,198 @@
+[
+  {
+    "id": 225582,
+    "first_release_date": 1790208000,
+    "hypes": 242,
+    "name": "Control Resonant",
+    "platforms": [169, 6, 167, 14],
+    "total_rating": 83.64698269543709,
+    "total_rating_count": 40,
+    "game_type": 0
+  },
+  {
+    "id": 250618,
+    "first_release_date": 1793232000,
+    "hypes": 227,
+    "name": "Phantom Blade Zero",
+    "platforms": [6, 167],
+    "game_type": 0
+  },
+  {
+    "id": 305160,
+    "first_release_date": 1791244800,
+    "hypes": 115,
+    "name": "Gears of War: E-Day",
+    "platforms": [169, 6],
+    "total_rating": 80.44451495301476,
+    "total_rating_count": 17,
+    "game_type": 0
+  },
+  {
+    "id": 222342,
+    "first_release_date": 1790208000,
+    "hypes": 105,
+    "name": "Silent Hill: Townfall",
+    "platforms": [6, 167],
+    "total_rating": 78.17130331596168,
+    "total_rating_count": 33,
+    "game_type": 0
+  },
+  {
+    "id": 347637,
+    "first_release_date": 1790812800,
+    "hypes": 90,
+    "name": "End of Abyss",
+    "platforms": [169, 6, 167],
+    "total_rating": 79.91509163667868,
+    "total_rating_count": 7,
+    "game_type": 0
+  },
+  {
+    "id": 361833,
+    "first_release_date": 1791849600,
+    "hypes": 88,
+    "name": "Valor Mortis",
+    "platforms": [169, 6, 167],
+    "total_rating": 82.38350512219172,
+    "total_rating_count": 10,
+    "game_type": 0
+  },
+  {
+    "id": 389434,
+    "first_release_date": 1792022400,
+    "hypes": 81,
+    "name": "Castlevania: Belmont\u0027s Curse",
+    "platforms": [169, 6, 167, 130],
+    "total_rating": 80.13986114489924,
+    "total_rating_count": 12,
+    "game_type": 0
+  },
+  {
+    "id": 381248,
+    "first_release_date": 1791244800,
+    "hypes": 81,
+    "name": "Star Wars: Galactic Racer",
+    "platforms": [169, 6, 167],
+    "total_rating": 84.27270803033022,
+    "total_rating_count": 11,
+    "game_type": 0
+  },
+  {
+    "id": 403310,
+    "first_release_date": 1792713600,
+    "hypes": 61,
+    "name": "Call of Duty: Modern Warfare 4",
+    "platforms": [169, 508, 6, 167],
+    "total_rating": 84.93419523145427,
+    "total_rating_count": 26,
+    "game_type": 0
+  },
+  {
+    "id": 356552,
+    "first_release_date": 1791417600,
+    "hypes": 61,
+    "name": "Clive Barker\u0027s Hellraiser: Revival",
+    "platforms": [169, 508, 6, 167],
+    "total_rating": 70.8152698279194,
+    "total_rating_count": 17,
+    "game_type": 0
+  },
+  {
+    "id": 381247,
+    "first_release_date": 1790899200,
+    "hypes": 58,
+    "name": "Ace Combat 8: Wings of Theve",
+    "platforms": [169, 6, 167],
+    "total_rating": 80.56165455619839,
+    "total_rating_count": 13,
+    "game_type": 0
+  },
+  {
+    "id": 348202,
+    "first_release_date": 1789516800,
+    "hypes": 56,
+    "name": "Aniimo",
+    "platforms": [169, 34, 6, 39, 167],
+    "total_rating": 90.0,
+    "total_rating_count": 14,
+    "game_type": 0
+  },
+  {
+    "id": 203301,
+    "first_release_date": 1790640000,
+    "hypes": 47,
+    "name": "Nivalis Nights",
+    "platforms": [6],
+    "total_rating": 76.0,
+    "total_rating_count": 1,
+    "game_type": 0
+  },
+  {
+    "id": 313597,
+    "first_release_date": 1791417600,
+    "hypes": 41,
+    "name": "Silver Pines",
+    "platforms": [169, 508, 6, 167, 130],
+    "total_rating": 89.92286476402299,
+    "total_rating_count": 14,
+    "game_type": 0
+  },
+  {
+    "id": 322158,
+    "first_release_date": 1789430400,
+    "hypes": 39,
+    "name": "Active Matter",
+    "platforms": [169, 3, 6, 167],
+    "total_rating": 90.0,
+    "total_rating_count": 5,
+    "game_type": 0
+  },
+  {
+    "id": 388285,
+    "first_release_date": 1788998400,
+    "hypes": 36,
+    "name": "Wardogs",
+    "platforms": [169, 6, 167],
+    "total_rating": 80.30995238457798,
+    "total_rating_count": 18,
+    "game_type": 0
+  },
+  {
+    "id": 362096,
+    "first_release_date": 1788825600,
+    "hypes": 34,
+    "name": "Halloween: The Game",
+    "platforms": [169, 6, 167],
+    "total_rating": 59.95490417136415,
+    "total_rating_count": 8,
+    "game_type": 0
+  },
+  {
+    "id": 317622,
+    "first_release_date": 1793664000,
+    "hypes": 33,
+    "name": "ArcheAge Chronicles",
+    "platforms": [169, 6, 167],
+    "game_type": 0
+  },
+  {
+    "id": 405454,
+    "first_release_date": 1792627200,
+    "hypes": 31,
+    "name": "Final Fantasy Resonance",
+    "platforms": [169, 508, 6, 167, 130],
+    "total_rating": 88.8,
+    "total_rating_count": 5,
+    "game_type": 8
+  },
+  {
+    "id": 404716,
+    "first_release_date": 1793232000,
+    "hypes": 30,
+    "name": "The Wolf Among Us Remastered",
+    "platforms": [6, 167, 49, 130],
+    "total_rating": 85.5,
+    "total_rating_count": 2,
+    "game_type": 9
+  }
+]

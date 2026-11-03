@@ -1,0 +1,72 @@
+[
+  {
+    "id": 3880027,
+    "game_id": 17269,
+    "popularity_type": 1,
+    "value": 0.003608215538596,
+    "calculated_at": 1793665244
+  },
+  {
+    "id": 3888006,
+    "game_id": 87622,
+    "popularity_type": 1,
+    "value": 0.002907190805383,
+    "calculated_at": 1793665244
+  },
+  {
+    "id": 3874917,
+    "game_id": 1020,
+    "popularity_type": 1,
+    "value": 0.002762862183839,
+    "calculated_at": 1793665244
+  },
+  {
+    "id": 5166748,
+    "game_id": 403310,
+    "popularity_type": 1,
+    "value": 0.002359331139931,
+    "calculated_at": 1793665244
+  },
+  {
+    "id": 3900539,
+    "game_id": 250618,
+    "popularity_type": 1,
+    "value": 0.002285694088123,
+    "calculated_at": 1793665244
+  },
+  {
+    "id": 3890284,
+    "game_id": 117297,
+    "popularity_type": 1,
+    "value": 0.002094237753422,
+    "calculated_at": 1793665244
+  },
+  {
+    "id": 3892064,
+    "game_id": 135400,
+    "popularity_type": 1,
+    "value": 0.001879217562142,
+    "calculated_at": 1793665244
+  },
+  {
+    "id": 5113491,
+    "game_id": 340570,
+    "popularity_type": 1,
+    "value": 0.001687761227441,
+    "calculated_at": 1793665244
+  },
+  {
+    "id": 3908455,
+    "game_id": 341660,
+    "popularity_type": 1,
+    "value": 0.00149630489274,
+    "calculated_at": 1793665244
+  },
+  {
+    "id": 3891825,
+    "game_id": 133748,
+    "popularity_type": 1,
+    "value": 0.001407940430571,
+    "calculated_at": 1793665244
+  }
+]

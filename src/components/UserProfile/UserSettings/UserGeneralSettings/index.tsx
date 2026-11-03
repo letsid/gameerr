@@ -2,6 +2,7 @@ import Badge from '@app/components/Common/Badge';
 import Button from '@app/components/Common/Button';
 import LoadingSpinner from '@app/components/Common/LoadingSpinner';
 import PageTitle from '@app/components/Common/PageTitle';
+import PlatformSelector from '@app/components/PlatformSelector';
 import QuotaSelector from '@app/components/QuotaSelector';
 import { availableLanguages } from '@app/context/LanguageContext';
 import useLocale from '@app/hooks/useLocale';
@@ -49,6 +50,9 @@ const messages = defineMessages(
     gamerequestlimit: 'Game Request Limit',
     enableOverride: 'Override Global Limit',
     applanguage: 'Display Language',
+    platforms: 'Platforms',
+    platformsTip:
+      'Discover, search and scores follow these platforms. Leave empty to use the server default.',
     languageDefault: 'Default ({language})',
     validationemailrequired: 'Email required',
     validationemailformat: 'Valid email required',
@@ -133,6 +137,7 @@ const UserGeneralSettings = () => {
           locale: data?.locale,
           gameQuotaLimit: data?.gameQuotaLimit,
           gameQuotaDays: data?.gameQuotaDays,
+          preferredPlatforms: data?.preferredPlatforms ?? [],
         }}
         validationSchema={UserGeneralSettingsSchema}
         enableReinitialize
@@ -145,6 +150,9 @@ const UserGeneralSettings = () => {
               locale: values.locale,
               gameQuotaLimit: gameQuotaEnabled ? values.gameQuotaLimit : null,
               gameQuotaDays: gameQuotaEnabled ? values.gameQuotaDays : null,
+              preferredPlatforms: values.preferredPlatforms.length
+                ? values.preferredPlatforms
+                : null,
             });
 
             if (currentUser?.id === user?.id && setLocale) {
@@ -322,6 +330,25 @@ const UserGeneralSettings = () => {
                         </option>
                       ))}
                     </Field>
+                  </div>
+                </div>
+              </div>
+              <div className="form-row">
+                <label htmlFor="preferredPlatforms" className="text-label">
+                  <span>{intl.formatMessage(messages.platforms)}</span>
+                  <span className="label-tip">
+                    {intl.formatMessage(messages.platformsTip)}
+                  </span>
+                </label>
+                <div className="form-input-area">
+                  <div className="form-input-field relative z-20">
+                    <PlatformSelector
+                      id="preferredPlatforms"
+                      value={values.preferredPlatforms}
+                      onChange={(platforms) =>
+                        setFieldValue('preferredPlatforms', platforms)
+                      }
+                    />
                   </div>
                 </div>
               </div>

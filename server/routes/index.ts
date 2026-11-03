@@ -21,6 +21,7 @@ import authRoutes from './auth';
 import blocklistRoutes from './blocklist';
 import discoverRoutes from './discover';
 import mediaRoutes from './media';
+import platformRoutes from './platforms';
 import requestRoutes from './request';
 import searchRoutes from './search';
 import user from './user';
@@ -137,6 +138,7 @@ router.get(
 );
 router.use('/settings', isAuthenticated(Permission.ADMIN), settingsRoutes);
 router.use('/search', isAuthenticated(), searchRoutes);
+router.use('/platforms', isAuthenticated(), platformRoutes);
 router.use('/discover', isAuthenticated(), discoverRoutes);
 router.use('/request', isAuthenticated(), requestRoutes);
 router.use('/watchlist', isAuthenticated(), watchlistRoutes);

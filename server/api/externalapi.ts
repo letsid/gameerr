@@ -86,7 +86,7 @@ class ExternalAPI {
 
   protected async post<T>(
     endpoint: string,
-    data?: Record<string, unknown>,
+    data?: Record<string, unknown> | string,
     config?: AxiosRequestConfig,
     ttl?: number
   ): Promise<T> {

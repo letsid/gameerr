@@ -1,0 +1,79 @@
+[
+  {
+    "id": 1,
+    "popularity_source": 121,
+    "name": "Visits",
+    "updated_at": 1739923772,
+    "external_popularity_source": 121
+  },
+  {
+    "id": 3,
+    "popularity_source": 121,
+    "name": "Playing",
+    "updated_at": 1739927049,
+    "external_popularity_source": 121
+  },
+  {
+    "id": 2,
+    "popularity_source": 121,
+    "name": "Want to Play",
+    "updated_at": 1739927498,
+    "external_popularity_source": 121
+  },
+  {
+    "id": 4,
+    "popularity_source": 121,
+    "name": "Played",
+    "updated_at": 1739927671,
+    "external_popularity_source": 121
+  },
+  {
+    "id": 8,
+    "popularity_source": 1,
+    "name": "Total Reviews",
+    "updated_at": 1739938874,
+    "external_popularity_source": 1
+  },
+  {
+    "id": 7,
+    "popularity_source": 1,
+    "name": "Negative Reviews",
+    "updated_at": 1739938870,
+    "external_popularity_source": 1
+  },
+  {
+    "id": 5,
+    "popularity_source": 1,
+    "name": "24hr Peak Players",
+    "updated_at": 1739938870,
+    "external_popularity_source": 1
+  },
+  {
+    "id": 6,
+    "popularity_source": 1,
+    "name": "Postitive Reviews",
+    "updated_at": 1739938870,
+    "external_popularity_source": 1
+  },
+  {
+    "id": 10,
+    "popularity_source": 1,
+    "name": "Most Wishlisted Upcoming",
+    "updated_at": 1740193819,
+    "external_popularity_source": 1
+  },
+  {
+    "id": 9,
+    "popularity_source": 1,
+    "name": "Global Top Sellers",
+    "updated_at": 1740193871,
+    "external_popularity_source": 1
+  },
+  {
+    "id": 34,
+    "popularity_source": 14,
+    "name": "24hr Hours Watched",
+    "updated_at": 1763415056,
+    "external_popularity_source": 14
+  }
+]

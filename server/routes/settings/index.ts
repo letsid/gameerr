@@ -10,15 +10,18 @@ import type { PlexConnection } from '@server/interfaces/api/plexInterfaces';
 import type {
   LogMessage,
   LogsResultsResponse,
+  MetadataSettingsResponse,
   SettingsAboutResponse,
 } from '@server/interfaces/api/settingsInterfaces';
 import { scheduledJobs } from '@server/job/schedule';
 import type { AvailableCacheIds } from '@server/lib/cache';
 import cacheManager from '@server/lib/cache';
+import { refreshAllDiscoverLists } from '@server/lib/discover';
 import ImageProxy from '@server/lib/imageproxy';
 import { Permission } from '@server/lib/permissions';
+import { normalizePlatformIds } from '@server/lib/platforms';
 import type { JobId, MainSettings } from '@server/lib/settings';
-import { getSettings } from '@server/lib/settings';
+import { getMetadataCredentials, getSettings } from '@server/lib/settings';
 import logger from '@server/logger';
 import { isAuthenticated } from '@server/middleware/auth';
 import discoverSettingRoutes from '@server/routes/settings/discover';
@@ -35,6 +38,7 @@ import { escapeRegExp, merge, omit, set, sortBy } from 'lodash';
 import { rescheduleJob } from 'node-schedule';
 import path from 'path';
 import { URL } from 'url';
+import { z } from 'zod';
 import notificationRoutes from './notifications';
 
 const settingsRoutes = Router();
@@ -71,6 +75,75 @@ settingsRoutes.post('/main', async (req, res) => {
 
   return res.status(200).json(settings.main);
 });
+
+const metadataSettingsBody = z
+  .object({
+    defaultPlatforms: z.array(z.coerce.number().int().positive()).min(1),
+    minRatingCount: z.coerce.number().int().min(0).max(100000),
+    recentReleaseDays: z.coerce.number().int().min(1).max(365),
+    upcomingReleaseDays: z.coerce.number().int().min(1).max(730),
+  })
+  .partial();
+
+const metadataSettingsResponse = (): MetadataSettingsResponse => {
+  const metadata = getSettings().metadata;
+  const credentials = getMetadataCredentials();
+
+  return {
+    defaultPlatforms: metadata.defaultPlatforms,
+    minRatingCount: metadata.minRatingCount,
+    recentReleaseDays: metadata.recentReleaseDays,
+    upcomingReleaseDays: metadata.upcomingReleaseDays,
+    igdbConfigured:
+      !!credentials.igdbClientId && !!credentials.igdbClientSecret,
+    rawgConfigured: !!credentials.rawgApiKey,
+    openCriticConfigured: !!credentials.rapidApiKey,
+  };
+};
+
+settingsRoutes.get<never, MetadataSettingsResponse>('/metadata', (_req, res) =>
+  res.status(200).json(metadataSettingsResponse())
+);
+
+// API keys are deliberately not accepted here, they come from the
+// environment or the settings file
+settingsRoutes.post<never, MetadataSettingsResponse>(
+  '/metadata',
+  async (req, res, next) => {
+    const body = metadataSettingsBody.safeParse(req.body);
+
+    if (!body.success) {
+      return next({ status: 400, message: 'Invalid metadata settings.' });
+    }
+
+    const settings = getSettings();
+    const listsChanged =
+      body.data.minRatingCount !== undefined ||
+      body.data.recentReleaseDays !== undefined ||
+      body.data.upcomingReleaseDays !== undefined;
+
+    settings.metadata = {
+      ...settings.metadata,
+      ...body.data,
+      ...(body.data.defaultPlatforms
+        ? { defaultPlatforms: normalizePlatformIds(body.data.defaultPlatforms) }
+        : {}),
+    };
+    await settings.save();
+
+    if (listsChanged || body.data.defaultPlatforms) {
+      // Rebuild in the background so the new rules show up without waiting a night
+      refreshAllDiscoverLists({ force: listsChanged }).catch((e) =>
+        logger.error('Discover refresh after settings change failed', {
+          label: 'API',
+          errorMessage: e.message,
+        })
+      );
+    }
+
+    return res.status(200).json(metadataSettingsResponse());
+  }
+);
 
 settingsRoutes.get('/network', (req, res) => {
   const settings = getSettings();

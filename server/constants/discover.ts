@@ -14,15 +14,33 @@ export enum DiscoverSliderType {
 
 export const defaultSliders: Partial<DiscoverSlider>[] = [
   {
-    type: DiscoverSliderType.RECENT_REQUESTS,
+    type: DiscoverSliderType.RECENT_RELEASES,
     enabled: true,
     isBuiltIn: true,
     order: 0,
   },
   {
-    type: DiscoverSliderType.WATCHLIST,
+    type: DiscoverSliderType.UPCOMING,
     enabled: true,
     isBuiltIn: true,
     order: 1,
+  },
+  {
+    type: DiscoverSliderType.ALL_TIME_BEST,
+    enabled: true,
+    isBuiltIn: true,
+    order: 2,
+  },
+  {
+    type: DiscoverSliderType.RECENT_REQUESTS,
+    enabled: true,
+    isBuiltIn: true,
+    order: 3,
+  },
+  {
+    type: DiscoverSliderType.WATCHLIST,
+    enabled: true,
+    isBuiltIn: true,
+    order: 4,
   },
 ];
