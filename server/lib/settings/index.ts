@@ -14,33 +14,12 @@ const mergeSettings = <T>(current: T, incoming: Partial<T>): T =>
     Array.isArray(srcValue) ? srcValue : undefined
   ) as T;
 
-export interface Library {
-  id: string;
-  name: string;
-  enabled: boolean;
-  type: 'show' | 'movie';
-  lastScan?: number;
-}
-
-export interface Region {
-  iso_3166_1: string;
-  english_name: string;
-  name?: string;
-}
-
-export interface Language {
-  iso_639_1: string;
-  english_name: string;
-  name: string;
-}
-
 export interface PlexSettings {
   name: string;
   machineId?: string;
   ip: string;
   port: number;
   useSsl?: boolean;
-  libraries: Library[];
   webAppUrl?: string;
 }
 
@@ -52,70 +31,12 @@ export interface JellyfinSettings {
   urlBase?: string;
   externalHostname?: string;
   jellyfinForgotPasswordUrl?: string;
-  libraries: Library[];
   serverId: string;
   apiKey: string;
 }
-export interface TautulliSettings {
-  hostname?: string;
-  port?: number;
-  useSsl?: boolean;
-  urlBase?: string;
-  apiKey?: string;
-  externalUrl?: string;
-}
-
-export interface DVRSettings {
-  id: number;
-  name: string;
-  hostname: string;
-  port: number;
-  apiKey: string;
-  useSsl: boolean;
-  baseUrl?: string;
-  activeProfileId: number;
-  activeProfileName: string;
-  activeDirectory: string;
-  tags: number[];
-  is4k: boolean;
-  isDefault: boolean;
-  externalUrl?: string;
-  syncEnabled: boolean;
-  preventSearch: boolean;
-  tagRequests: boolean;
-  overrideRule: number[];
-}
-
-export interface RadarrSettings extends DVRSettings {
-  minimumAvailability: string;
-}
-
-export interface SonarrSettings extends DVRSettings {
-  seriesType: 'standard' | 'daily' | 'anime';
-  animeSeriesType: 'standard' | 'daily' | 'anime';
-  activeAnimeProfileId?: number;
-  activeAnimeProfileName?: string;
-  activeAnimeDirectory?: string;
-  activeAnimeLanguageProfileId?: number;
-  activeLanguageProfileId?: number;
-  animeTags?: number[];
-  enableSeasonFolders: boolean;
-  monitorNewItems: 'all' | 'none';
-}
-
 interface Quota {
   quotaLimit?: number;
   quotaDays?: number;
-}
-
-export enum MetadataProviderType {
-  TMDB = 'tmdb',
-  TVDB = 'tvdb',
-}
-
-export interface MetadataSettings {
-  tv: MetadataProviderType;
-  anime: MetadataProviderType;
 }
 
 export interface ProxySettings {
@@ -136,8 +57,7 @@ export interface MainSettings {
   cacheImages: boolean;
   defaultPermissions: number;
   defaultQuotas: {
-    movie: Quota;
-    tv: Quota;
+    game: Quota;
   };
   hideAvailable: boolean;
   hideBlocklisted: boolean;
@@ -145,18 +65,8 @@ export interface MainSettings {
   localLogin: boolean;
   mediaServerLogin: boolean;
   newPlexLogin: boolean;
-  discoverRegion: string;
-  streamingRegion: string;
-  originalLanguage: string;
-  blocklistRegion: string;
-  blocklistLanguage: string;
-  blocklistedTags: string;
-  blocklistedTagsLimit: number;
   mediaServerType: number;
-  partialRequestsEnabled: boolean;
-  enableSpecialEpisodes: boolean;
   locale: string;
-  youtubeUrl: string;
   versionCheck: boolean;
 }
 
@@ -198,17 +108,10 @@ interface FullPublicSettings extends PublicSettings {
   hideRequested: boolean;
   localLogin: boolean;
   mediaServerLogin: boolean;
-  movie4kEnabled: boolean;
-  series4kEnabled: boolean;
-  discoverRegion: string;
-  streamingRegion: string;
-  originalLanguage: string;
   mediaServerType: number;
   jellyfinExternalHost?: string;
   jellyfinForgotPasswordUrl?: string;
   jellyfinServerName?: string;
-  partialRequestsEnabled: boolean;
-  enableSpecialEpisodes: boolean;
   cacheImages: boolean;
   vapidPublic: string;
   enablePushRegistration: boolean;
@@ -216,7 +119,6 @@ interface FullPublicSettings extends PublicSettings {
   emailEnabled: boolean;
   userEmailRequired: boolean;
   newPlexLogin: boolean;
-  youtubeUrl: string;
   versionCheck: boolean;
   plexClientIdentifier: string;
 }
@@ -359,20 +261,7 @@ interface JobSettings {
   schedule: string;
 }
 
-export type JobId =
-  | 'plex-recently-added-scan'
-  | 'plex-full-scan'
-  | 'plex-watchlist-sync'
-  | 'plex-refresh-token'
-  | 'radarr-scan'
-  | 'sonarr-scan'
-  | 'download-sync'
-  | 'download-sync-reset'
-  | 'jellyfin-recently-added-scan'
-  | 'jellyfin-full-scan'
-  | 'image-cache-cleanup'
-  | 'availability-sync'
-  | 'process-blocklisted-tags';
+export type JobId = 'plex-refresh-token' | 'image-cache-cleanup';
 
 export interface AllSettings {
   clientId: string;
@@ -382,14 +271,10 @@ export interface AllSettings {
   main: MainSettings;
   plex: PlexSettings;
   jellyfin: JellyfinSettings;
-  tautulli: TautulliSettings;
-  radarr: RadarrSettings[];
-  sonarr: SonarrSettings[];
   public: PublicSettings;
   notifications: NotificationSettings;
   jobs: Record<JobId, JobSettings>;
   network: NetworkSettings;
-  metadataSettings: MetadataSettings;
   migrations: string[];
 }
 
@@ -409,13 +294,12 @@ class Settings {
       vapidPublic: '',
       main: {
         apiKey: '',
-        applicationTitle: 'Seerr',
+        applicationTitle: 'Gameseerr',
         applicationUrl: '',
         cacheImages: false,
         defaultPermissions: Permission.REQUEST,
         defaultQuotas: {
-          movie: {},
-          tv: {},
+          game: {},
         },
         hideAvailable: false,
         hideBlocklisted: false,
@@ -423,26 +307,16 @@ class Settings {
         localLogin: true,
         mediaServerLogin: true,
         newPlexLogin: true,
-        discoverRegion: '',
-        streamingRegion: '',
-        originalLanguage: '',
-        blocklistRegion: '',
-        blocklistLanguage: '',
-        blocklistedTags: '',
-        blocklistedTagsLimit: 50,
         mediaServerType: MediaServerType.NOT_CONFIGURED,
-        partialRequestsEnabled: true,
-        enableSpecialEpisodes: false,
         locale: 'en',
-        youtubeUrl: '',
-        versionCheck: true,
+        // Release checks point at upstream Seerr, which says nothing about this fork
+        versionCheck: false,
       },
       plex: {
         name: '',
         ip: '',
         port: 32400,
         useSsl: false,
-        libraries: [],
       },
       jellyfin: {
         name: '',
@@ -452,17 +326,9 @@ class Settings {
         urlBase: '',
         externalHostname: '',
         jellyfinForgotPasswordUrl: '',
-        libraries: [],
         serverId: '',
         apiKey: '',
       },
-      tautulli: {},
-      metadataSettings: {
-        tv: MetadataProviderType.TMDB,
-        anime: MetadataProviderType.TMDB,
-      },
-      radarr: [],
-      sonarr: [],
       public: {
         initialized: false,
       },
@@ -480,7 +346,7 @@ class Settings {
               ignoreTls: false,
               requireTls: false,
               allowSelfSigned: false,
-              senderName: 'Seerr',
+              senderName: 'Gameseerr',
               usePublicLogo: false,
             },
           },
@@ -541,7 +407,7 @@ class Settings {
             options: {
               webhookUrl: '',
               jsonPayload:
-                'IntcbiAgXCJub3RpZmljYXRpb25fdHlwZVwiOiBcInt7bm90aWZpY2F0aW9uX3R5cGV9fVwiLFxuICBcImV2ZW50XCI6IFwie3tldmVudH19XCIsXG4gIFwic3ViamVjdFwiOiBcInt7c3ViamVjdH19XCIsXG4gIFwibWVzc2FnZVwiOiBcInt7bWVzc2FnZX19XCIsXG4gIFwiaW1hZ2VcIjogXCJ7e2ltYWdlfX1cIixcbiAgXCJ7e21lZGlhfX1cIjoge1xuICAgIFwibWVkaWFfdHlwZVwiOiBcInt7bWVkaWFfdHlwZX19XCIsXG4gICAgXCJ0bWRiSWRcIjogXCJ7e21lZGlhX3RtZGJpZH19XCIsXG4gICAgXCJ0dmRiSWRcIjogXCJ7e21lZGlhX3R2ZGJpZH19XCIsXG4gICAgXCJzdGF0dXNcIjogXCJ7e21lZGlhX3N0YXR1c319XCIsXG4gICAgXCJzdGF0dXM0a1wiOiBcInt7bWVkaWFfc3RhdHVzNGt9fVwiXG4gIH0sXG4gIFwie3tyZXF1ZXN0fX1cIjoge1xuICAgIFwicmVxdWVzdF9pZFwiOiBcInt7cmVxdWVzdF9pZH19XCIsXG4gICAgXCJyZXF1ZXN0ZWRCeV9lbWFpbFwiOiBcInt7cmVxdWVzdGVkQnlfZW1haWx9fVwiLFxuICAgIFwicmVxdWVzdGVkQnlfdXNlcm5hbWVcIjogXCJ7e3JlcXVlc3RlZEJ5X3VzZXJuYW1lfX1cIixcbiAgICBcInJlcXVlc3RlZEJ5X2F2YXRhclwiOiBcInt7cmVxdWVzdGVkQnlfYXZhdGFyfX1cIixcbiAgICBcInJlcXVlc3RlZEJ5X3NldHRpbmdzX2Rpc2NvcmRJZFwiOiBcInt7cmVxdWVzdGVkQnlfc2V0dGluZ3NfZGlzY29yZElkfX1cIixcbiAgICBcInJlcXVlc3RlZEJ5X3NldHRpbmdzX3RlbGVncmFtQ2hhdElkXCI6IFwie3tyZXF1ZXN0ZWRCeV9zZXR0aW5nc190ZWxlZ3JhbUNoYXRJZH19XCJcbiAgfSxcbiAgXCJ7e2lzc3VlfX1cIjoge1xuICAgIFwiaXNzdWVfaWRcIjogXCJ7e2lzc3VlX2lkfX1cIixcbiAgICBcImlzc3VlX3R5cGVcIjogXCJ7e2lzc3VlX3R5cGV9fVwiLFxuICAgIFwiaXNzdWVfc3RhdHVzXCI6IFwie3tpc3N1ZV9zdGF0dXN9fVwiLFxuICAgIFwicmVwb3J0ZWRCeV9lbWFpbFwiOiBcInt7cmVwb3J0ZWRCeV9lbWFpbH19XCIsXG4gICAgXCJyZXBvcnRlZEJ5X3VzZXJuYW1lXCI6IFwie3tyZXBvcnRlZEJ5X3VzZXJuYW1lfX1cIixcbiAgICBcInJlcG9ydGVkQnlfYXZhdGFyXCI6IFwie3tyZXBvcnRlZEJ5X2F2YXRhcn19XCIsXG4gICAgXCJyZXBvcnRlZEJ5X3NldHRpbmdzX2Rpc2NvcmRJZFwiOiBcInt7cmVwb3J0ZWRCeV9zZXR0aW5nc19kaXNjb3JkSWR9fVwiLFxuICAgIFwicmVwb3J0ZWRCeV9zZXR0aW5nc190ZWxlZ3JhbUNoYXRJZFwiOiBcInt7cmVwb3J0ZWRCeV9zZXR0aW5nc190ZWxlZ3JhbUNoYXRJZH19XCJcbiAgfSxcbiAgXCJ7e2NvbW1lbnR9fVwiOiB7XG4gICAgXCJjb21tZW50X21lc3NhZ2VcIjogXCJ7e2NvbW1lbnRfbWVzc2FnZX19XCIsXG4gICAgXCJjb21tZW50ZWRCeV9lbWFpbFwiOiBcInt7Y29tbWVudGVkQnlfZW1haWx9fVwiLFxuICAgIFwiY29tbWVudGVkQnlfdXNlcm5hbWVcIjogXCJ7e2NvbW1lbnRlZEJ5X3VzZXJuYW1lfX1cIixcbiAgICBcImNvbW1lbnRlZEJ5X2F2YXRhclwiOiBcInt7Y29tbWVudGVkQnlfYXZhdGFyfX1cIixcbiAgICBcImNvbW1lbnRlZEJ5X3NldHRpbmdzX2Rpc2NvcmRJZFwiOiBcInt7Y29tbWVudGVkQnlfc2V0dGluZ3NfZGlzY29yZElkfX1cIixcbiAgICBcImNvbW1lbnRlZEJ5X3NldHRpbmdzX3RlbGVncmFtQ2hhdElkXCI6IFwie3tjb21tZW50ZWRCeV9zZXR0aW5nc190ZWxlZ3JhbUNoYXRJZH19XCJcbiAgfSxcbiAgXCJ7e2V4dHJhfX1cIjogW11cbn0i',
+                'IntcbiAgXCJub3RpZmljYXRpb25fdHlwZVwiOiBcInt7bm90aWZpY2F0aW9uX3R5cGV9fVwiLFxuICBcImV2ZW50XCI6IFwie3tldmVudH19XCIsXG4gIFwic3ViamVjdFwiOiBcInt7c3ViamVjdH19XCIsXG4gIFwibWVzc2FnZVwiOiBcInt7bWVzc2FnZX19XCIsXG4gIFwiaW1hZ2VcIjogXCJ7e2ltYWdlfX1cIixcbiAgXCJ7e21lZGlhfX1cIjoge1xuICAgIFwibWVkaWFfdHlwZVwiOiBcInt7bWVkaWFfdHlwZX19XCIsXG4gICAgXCJpZ2RiSWRcIjogXCJ7e21lZGlhX2lnZGJpZH19XCIsXG4gICAgXCJzdGVhbUFwcElkXCI6IFwie3ttZWRpYV9zdGVhbWFwcGlkfX1cIixcbiAgICBcInN0YXR1c1wiOiBcInt7bWVkaWFfc3RhdHVzfX1cIlxuICB9LFxuICBcInt7cmVxdWVzdH19XCI6IHtcbiAgICBcInJlcXVlc3RfaWRcIjogXCJ7e3JlcXVlc3RfaWR9fVwiLFxuICAgIFwicGxhdGZvcm1cIjogXCJ7e3JlcXVlc3RfcGxhdGZvcm19fVwiLFxuICAgIFwicmVxdWVzdGVkQnlfZW1haWxcIjogXCJ7e3JlcXVlc3RlZEJ5X2VtYWlsfX1cIixcbiAgICBcInJlcXVlc3RlZEJ5X3VzZXJuYW1lXCI6IFwie3tyZXF1ZXN0ZWRCeV91c2VybmFtZX19XCIsXG4gICAgXCJyZXF1ZXN0ZWRCeV9hdmF0YXJcIjogXCJ7e3JlcXVlc3RlZEJ5X2F2YXRhcn19XCIsXG4gICAgXCJyZXF1ZXN0ZWRCeV9zZXR0aW5nc19kaXNjb3JkSWRcIjogXCJ7e3JlcXVlc3RlZEJ5X3NldHRpbmdzX2Rpc2NvcmRJZH19XCIsXG4gICAgXCJyZXF1ZXN0ZWRCeV9zZXR0aW5nc190ZWxlZ3JhbUNoYXRJZFwiOiBcInt7cmVxdWVzdGVkQnlfc2V0dGluZ3NfdGVsZWdyYW1DaGF0SWR9fVwiXG4gIH0sXG4gIFwie3tleHRyYX19XCI6IFtdXG59Ig==',
             },
           },
           webpush: {
@@ -575,44 +441,11 @@ class Settings {
         },
       },
       jobs: {
-        'plex-recently-added-scan': {
-          schedule: '0 */5 * * * *',
-        },
-        'plex-full-scan': {
-          schedule: '0 0 3 * * *',
-        },
-        'plex-watchlist-sync': {
-          schedule: '0 */3 * * * *',
-        },
         'plex-refresh-token': {
           schedule: '0 0 5 * * *',
         },
-        'radarr-scan': {
-          schedule: '0 0 4 * * *',
-        },
-        'sonarr-scan': {
-          schedule: '0 30 4 * * *',
-        },
-        'availability-sync': {
-          schedule: '0 0 5 * * *',
-        },
-        'download-sync': {
-          schedule: '0 * * * * *',
-        },
-        'download-sync-reset': {
-          schedule: '0 0 1 * * *',
-        },
-        'jellyfin-recently-added-scan': {
-          schedule: '0 */5 * * * *',
-        },
-        'jellyfin-full-scan': {
-          schedule: '0 0 3 * * *',
-        },
         'image-cache-cleanup': {
           schedule: '0 0 5 * * *',
-        },
-        'process-blocklisted-tags': {
-          schedule: '0 30 1 */7 * *',
         },
       },
       network: {
@@ -667,41 +500,6 @@ class Settings {
     this.data.jellyfin = mergeSettings(this.data.jellyfin, data);
   }
 
-  get tautulli(): TautulliSettings {
-    return this.data.tautulli;
-  }
-
-  set tautulli(data: TautulliSettings) {
-    this.data.tautulli = mergeSettings(this.data.tautulli, data);
-  }
-
-  get metadataSettings(): MetadataSettings {
-    return this.data.metadataSettings;
-  }
-
-  set metadataSettings(data: MetadataSettings) {
-    this.data.metadataSettings = mergeSettings(
-      this.data.metadataSettings,
-      data
-    );
-  }
-
-  get radarr(): RadarrSettings[] {
-    return this.data.radarr;
-  }
-
-  set radarr(data: RadarrSettings[]) {
-    this.data.radarr = data;
-  }
-
-  get sonarr(): SonarrSettings[] {
-    return this.data.sonarr;
-  }
-
-  set sonarr(data: SonarrSettings[]) {
-    this.data.sonarr = data;
-  }
-
   get public(): PublicSettings {
     return this.data.public;
   }
@@ -722,18 +520,7 @@ class Settings {
       mediaServerLogin: this.data.main.mediaServerLogin,
       jellyfinExternalHost: this.data.jellyfin.externalHostname,
       jellyfinForgotPasswordUrl: this.data.jellyfin.jellyfinForgotPasswordUrl,
-      movie4kEnabled: this.data.radarr.some(
-        (radarr) => radarr.is4k && radarr.isDefault
-      ),
-      series4kEnabled: this.data.sonarr.some(
-        (sonarr) => sonarr.is4k && sonarr.isDefault
-      ),
-      discoverRegion: this.data.main.discoverRegion,
-      streamingRegion: this.data.main.streamingRegion,
-      originalLanguage: this.data.main.originalLanguage,
       mediaServerType: this.main.mediaServerType,
-      partialRequestsEnabled: this.data.main.partialRequestsEnabled,
-      enableSpecialEpisodes: this.data.main.enableSpecialEpisodes,
       cacheImages: this.data.main.cacheImages,
       vapidPublic: this.vapidPublic,
       enablePushRegistration: this.data.notifications.agents.webpush.enabled,
@@ -742,7 +529,6 @@ class Settings {
       userEmailRequired:
         this.data.notifications.agents.email.options.userEmailRequired,
       newPlexLogin: this.data.main.newPlexLogin,
-      youtubeUrl: this.data.main.youtubeUrl,
       versionCheck: this.data.main.versionCheck,
       plexClientIdentifier: this.data.clientId,
     };

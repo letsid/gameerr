@@ -25,9 +25,7 @@ import {
   RelationCount,
   UpdateDateColumn,
 } from 'typeorm';
-import Issue from './Issue';
 import { MediaRequest } from './MediaRequest';
-import SeasonRequest from './SeasonRequest';
 import { UserPushSubscription } from './UserPushSubscription';
 import { UserSettings } from './UserSettings';
 
@@ -125,16 +123,10 @@ export class User {
   public watchlists: Watchlist[];
 
   @Column({ nullable: true })
-  public movieQuotaLimit?: number;
+  public gameQuotaLimit?: number;
 
   @Column({ nullable: true })
-  public movieQuotaDays?: number;
-
-  @Column({ nullable: true })
-  public tvQuotaLimit?: number;
-
-  @Column({ nullable: true })
-  public tvQuotaDays?: number;
+  public gameQuotaDays?: number;
 
   @OneToOne(() => UserSettings, (settings) => settings.user, {
     cascade: true,
@@ -145,9 +137,6 @@ export class User {
 
   @OneToMany(() => UserPushSubscription, (pushSub) => pushSub.user)
   public pushSubscriptions: UserPushSubscription[];
-
-  @OneToMany(() => Issue, (issue) => issue.createdBy, { cascade: true })
-  public createdIssues: Issue[];
 
   @DbAwareColumn({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   public createdAt: Date;
@@ -291,98 +280,40 @@ export class User {
       type: 'or',
     });
 
-    const movieQuotaLimit = !canBypass
-      ? (this.movieQuotaLimit ?? defaultQuotas.movie.quotaLimit)
+    const gameQuotaLimit = !canBypass
+      ? (this.gameQuotaLimit ?? defaultQuotas.game.quotaLimit)
       : 0;
-    const movieQuotaDays = this.movieQuotaDays ?? defaultQuotas.movie.quotaDays;
+    const gameQuotaDays = this.gameQuotaDays ?? defaultQuotas.game.quotaDays;
 
-    // Count movie requests made during quota period
-    const movieDate = new Date();
-    if (movieQuotaDays) {
-      movieDate.setDate(movieDate.getDate() - movieQuotaDays);
+    // Count game requests made during quota period
+    const gameDate = new Date();
+    if (gameQuotaDays) {
+      gameDate.setDate(gameDate.getDate() - gameQuotaDays);
     }
 
-    const movieQuotaUsed = movieQuotaLimit
+    const gameQuotaUsed = gameQuotaLimit
       ? await requestRepository.count({
           where: {
             requestedBy: {
               id: this.id,
             },
-            ...(movieQuotaDays ? { createdAt: AfterDate(movieDate) } : {}),
-            type: MediaType.MOVIE,
+            ...(gameQuotaDays ? { createdAt: AfterDate(gameDate) } : {}),
+            type: MediaType.GAME,
             status: Not(MediaRequestStatus.DECLINED),
             ignoreQuota: false,
           },
         })
       : 0;
 
-    const tvQuotaLimit = !canBypass
-      ? (this.tvQuotaLimit ?? defaultQuotas.tv.quotaLimit)
-      : 0;
-    const tvQuotaDays = this.tvQuotaDays ?? defaultQuotas.tv.quotaDays;
-
-    // Count tv season requests made during quota period
-    const tvDate = new Date();
-    if (tvQuotaDays) {
-      tvDate.setDate(tvDate.getDate() - tvQuotaDays);
-    }
-    const tvQuotaStartDate = tvDate.toJSON();
-    const tvQuotaUsedQuery = requestRepository
-      .createQueryBuilder('request')
-      .leftJoin('request.requestedBy', 'requestedBy')
-      .where('request.type = :requestType', {
-        requestType: MediaType.TV,
-      })
-      .andWhere('requestedBy.id = :userId', {
-        userId: this.id,
-      })
-      .andWhere('request.status != :declinedStatus', {
-        declinedStatus: MediaRequestStatus.DECLINED,
-      });
-
-    if (tvQuotaDays) {
-      tvQuotaUsedQuery.andWhere('request.createdAt > :date', {
-        date: tvQuotaStartDate,
-      });
-    }
-
-    const tvQuotaUsed = tvQuotaLimit
-      ? (
-          await tvQuotaUsedQuery
-            .andWhere('request.ignoreQuota = :ignoreQuota', {
-              ignoreQuota: false,
-            })
-            .addSelect((subQuery) => {
-              return subQuery
-                .select('COUNT(season.id)', 'seasonCount')
-                .from(SeasonRequest, 'season')
-                .leftJoin('season.request', 'parentRequest')
-                .where('parentRequest.id = request.id');
-            }, 'seasonCount')
-            .getMany()
-        ).reduce((sum: number, req: MediaRequest) => sum + req.seasonCount, 0)
-      : 0;
-
     return {
-      movie: {
-        days: movieQuotaDays,
-        limit: movieQuotaLimit,
-        used: movieQuotaUsed,
-        remaining: movieQuotaLimit
-          ? Math.max(0, movieQuotaLimit - movieQuotaUsed)
+      game: {
+        days: gameQuotaDays,
+        limit: gameQuotaLimit,
+        used: gameQuotaUsed,
+        remaining: gameQuotaLimit
+          ? Math.max(0, gameQuotaLimit - gameQuotaUsed)
           : undefined,
-        restricted: !!(
-          movieQuotaLimit && movieQuotaLimit - movieQuotaUsed <= 0
-        ),
-      },
-      tv: {
-        days: tvQuotaDays,
-        limit: tvQuotaLimit,
-        used: tvQuotaUsed,
-        remaining: tvQuotaLimit
-          ? Math.max(0, tvQuotaLimit - tvQuotaUsed)
-          : undefined,
-        restricted: !!(tvQuotaLimit && tvQuotaLimit - tvQuotaUsed <= 0),
+        restricted: !!(gameQuotaLimit && gameQuotaLimit - gameQuotaUsed <= 0),
       },
     };
   }

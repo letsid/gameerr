@@ -36,8 +36,7 @@ const messages = defineMessages('components.Settings.SettingsUsers', {
   newPlexLogin: 'Enable New {mediaServerName} Sign-In',
   newPlexLoginTip:
     'Allow {mediaServerName} users to sign in without first being imported',
-  movieRequestLimitLabel: 'Global Movie Request Limit',
-  tvRequestLimitLabel: 'Global Series Request Limit',
+  gameRequestLimitLabel: 'Global Game Request Limit',
   defaultPermissions: 'Default Permissions',
   defaultPermissionsTip: 'Initial permissions assigned to new users',
   disabledMediaServerLoginWarning:
@@ -110,10 +109,8 @@ const SettingsUsers = () => {
             localLogin: data?.localLogin,
             mediaServerLogin: data?.mediaServerLogin,
             newPlexLogin: data?.newPlexLogin,
-            movieQuotaLimit: data?.defaultQuotas.movie.quotaLimit ?? 0,
-            movieQuotaDays: data?.defaultQuotas.movie.quotaDays ?? 7,
-            tvQuotaLimit: data?.defaultQuotas.tv.quotaLimit ?? 0,
-            tvQuotaDays: data?.defaultQuotas.tv.quotaDays ?? 7,
+            gameQuotaLimit: data?.defaultQuotas.game.quotaLimit ?? 0,
+            gameQuotaDays: data?.defaultQuotas.game.quotaDays ?? 7,
             defaultPermissions: data?.defaultPermissions ?? 0,
           }}
           validationSchema={schema}
@@ -125,13 +122,9 @@ const SettingsUsers = () => {
                 mediaServerLogin: values.mediaServerLogin,
                 newPlexLogin: values.newPlexLogin,
                 defaultQuotas: {
-                  movie: {
-                    quotaLimit: values.movieQuotaLimit,
-                    quotaDays: values.movieQuotaDays,
-                  },
-                  tv: {
-                    quotaLimit: values.tvQuotaLimit,
-                    quotaDays: values.tvQuotaDays,
+                  game: {
+                    quotaLimit: values.gameQuotaLimit,
+                    quotaDays: values.gameQuotaDays,
                   },
                 },
                 defaultPermissions: values.defaultPermissions,
@@ -248,31 +241,16 @@ const SettingsUsers = () => {
                 </div>
                 <div className="form-row">
                   <label htmlFor="applicationTitle" className="text-label">
-                    {intl.formatMessage(messages.movieRequestLimitLabel)}
+                    {intl.formatMessage(messages.gameRequestLimitLabel)}
                   </label>
                   <div className="form-input-area">
                     <QuotaSelector
                       onChange={setFieldValue}
-                      dayFieldName="movieQuotaDays"
-                      limitFieldName="movieQuotaLimit"
-                      mediaType="movie"
-                      defaultDays={values.movieQuotaDays}
-                      defaultLimit={values.movieQuotaLimit}
-                    />
-                  </div>
-                </div>
-                <div className="form-row">
-                  <label htmlFor="applicationTitle" className="text-label">
-                    {intl.formatMessage(messages.tvRequestLimitLabel)}
-                  </label>
-                  <div className="form-input-area">
-                    <QuotaSelector
-                      onChange={setFieldValue}
-                      dayFieldName="tvQuotaDays"
-                      limitFieldName="tvQuotaLimit"
-                      mediaType="tv"
-                      defaultDays={values.tvQuotaDays}
-                      defaultLimit={values.tvQuotaLimit}
+                      dayFieldName="gameQuotaDays"
+                      limitFieldName="gameQuotaLimit"
+                      mediaType="game"
+                      defaultDays={values.gameQuotaDays}
+                      defaultLimit={values.gameQuotaLimit}
                     />
                   </div>
                 </div>

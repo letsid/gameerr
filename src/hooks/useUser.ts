@@ -29,13 +29,9 @@ export interface User {
 type NotificationAgentTypes = Record<NotificationAgentKey, number>;
 
 export interface UserSettings {
-  discoverRegion?: string;
-  streamingRegion?: string;
-  originalLanguage?: string;
   locale?: string;
+  preferredPlatforms?: number[] | null;
   notificationTypes: Partial<NotificationAgentTypes>;
-  watchlistSyncMovies?: boolean;
-  watchlistSyncTv?: boolean;
 }
 
 interface UserHookResponse {

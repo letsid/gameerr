@@ -1,5 +1,3 @@
-import type Issue from '@server/entity/Issue';
-import type IssueComment from '@server/entity/IssueComment';
 import type Media from '@server/entity/Media';
 import type { MediaRequest } from '@server/entity/MediaRequest';
 import type { User } from '@server/entity/User';
@@ -17,8 +15,10 @@ export interface NotificationPayload {
   message?: string;
   extra?: { name: string; value: string }[];
   request?: MediaRequest;
-  issue?: Issue;
-  comment?: IssueComment;
+  /**
+   * Display name of the fulfillment provider involved, if any
+   */
+  fulfillmentProvider?: string;
   pendingRequestsCount?: number;
   isAdmin?: boolean;
 }

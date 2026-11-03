@@ -627,18 +627,14 @@ describe('GET /auth/me', () => {
 
     assert.strictEqual(res.status, 200);
     assert.deepStrictEqual(Object.keys(res.body.settings).sort(), [
-      'discoverRegion',
       'locale',
       'notificationTypes',
-      'originalLanguage',
-      'streamingRegion',
-      'watchlistSyncMovies',
-      'watchlistSyncTv',
+      'preferredPlatforms',
     ]);
     assert.strictEqual(res.body.settings.locale, allowlistedSettings.locale);
-    assert.strictEqual(
-      res.body.settings.discoverRegion,
-      allowlistedSettings.discoverRegion
+    assert.deepStrictEqual(
+      res.body.settings.preferredPlatforms,
+      allowlistedSettings.preferredPlatforms
     );
     assertNoCredentials(res.body);
   });

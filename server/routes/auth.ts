@@ -16,6 +16,7 @@ import { getAppVersion } from '@server/utils/appVersion';
 import { getHostname } from '@server/utils/getHostname';
 import axios from 'axios';
 import { Router } from 'express';
+import gravatarUrl from 'gravatar-url';
 import net from 'net';
 import validator from 'validator';
 import { z } from 'zod';
@@ -56,12 +57,8 @@ authRoutes.get('/me', isAuthenticated(), async (req, res) => {
     ...user.toJSON(),
     settings: user.settings && {
       locale: user.settings.locale,
-      discoverRegion: user.settings.discoverRegion,
-      streamingRegion: user.settings.streamingRegion,
-      originalLanguage: user.settings.originalLanguage,
+      preferredPlatforms: user.settings.preferredPlatforms,
       notificationTypes: user.settings.notificationTypes,
-      watchlistSyncMovies: user.settings.watchlistSyncMovies,
-      watchlistSyncTv: user.settings.watchlistSyncTv,
     },
   });
 });
@@ -858,6 +855,98 @@ authRoutes.post(
     }
   }
 );
+
+const localSetupBody = z.object({
+  email: z.string().trim().min(1),
+  password: z.string().min(8),
+  username: z.string().trim().optional(),
+});
+
+// Serializes setup attempts so two concurrent calls cannot both create an admin
+let localSetupInProgress = Promise.resolve();
+
+/**
+ * Creates the first admin as a local account. Only allowed while no user
+ * exists yet, after that the app is set up for local sign-in only.
+ */
+authRoutes.post('/local/setup', async (req, res, next) => {
+  const body = localSetupBody.safeParse(req.body);
+
+  if (
+    !body.success ||
+    !validator.isEmail(body.data.email, { require_tld: false })
+  ) {
+    return next({
+      status: 400,
+      message:
+        'A valid email address and a password with at least 8 characters are required.',
+    });
+  }
+
+  const run = localSetupInProgress.then(async () => {
+    const settings = getSettings();
+    const userRepository = getRepository(User);
+
+    if (settings.public.initialized || (await userRepository.count()) > 0) {
+      return null;
+    }
+
+    const email = body.data.email.toLowerCase();
+    const user = new User({
+      email,
+      username: body.data.username || undefined,
+      permissions: Permission.ADMIN,
+      avatar: gravatarUrl(email, { default: 'mm', size: 200 }),
+      userType: UserType.LOCAL,
+    });
+    await user.setPassword(body.data.password);
+    await userRepository.save(user);
+
+    settings.main.mediaServerType = MediaServerType.LOCAL;
+    settings.main.localLogin = true;
+    await settings.save();
+    startJobs();
+
+    return user;
+  });
+  localSetupInProgress = run.then(
+    () => undefined,
+    () => undefined
+  );
+
+  try {
+    const user = await run;
+
+    if (!user) {
+      return next({
+        status: 403,
+        message: 'Setup has already been completed.',
+      });
+    }
+
+    logger.info('Created initial local admin user', {
+      label: 'API',
+      ip: req.ip,
+      userId: user.id,
+    });
+
+    if (req.session) {
+      req.session.userId = user.id;
+    }
+
+    return res.status(200).json(user.filter());
+  } catch (e) {
+    logger.error('Something went wrong creating the local admin user', {
+      label: 'API',
+      errorMessage: e.message,
+      ip: req.ip,
+    });
+    return next({
+      status: 500,
+      message: 'Unable to create the admin user.',
+    });
+  }
+});
 
 authRoutes.post('/local', async (req, res, next) => {
   const settings = getSettings();

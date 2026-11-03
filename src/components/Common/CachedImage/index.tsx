@@ -6,7 +6,7 @@ const imageLoader: ImageLoader = ({ src }) => src;
 
 export type CachedImageProps = ImageProps & {
   src: string;
-  type: 'tmdb' | 'avatar' | 'tvdb';
+  type: 'igdb' | 'avatar';
 };
 
 /**
@@ -18,19 +18,10 @@ const CachedImage = ({ src, type, ...props }: CachedImageProps) => {
 
   let imageUrl: string;
 
-  if (type === 'tmdb') {
-    // tmdb stuff
+  if (type === 'igdb') {
     imageUrl =
       currentSettings.cacheImages && !src.startsWith('/')
-        ? src.replace(/^https:\/\/image\.tmdb\.org\//, '/imageproxy/tmdb/')
-        : src;
-  } else if (type === 'tvdb') {
-    imageUrl =
-      currentSettings.cacheImages && !src.startsWith('/')
-        ? src.replace(
-            /^https:\/\/artworks\.thetvdb\.com\//,
-            '/imageproxy/tvdb/'
-          )
+        ? src.replace(/^https:\/\/images\.igdb\.com\//, '/imageproxy/igdb/')
         : src;
   } else if (type === 'avatar') {
     // jellyfin avatar (if any)

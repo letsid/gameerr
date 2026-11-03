@@ -1,4 +1,3 @@
-import BlocklistedTagsBadge from '@app/components/BlocklistedTagsBadge';
 import Badge from '@app/components/Common/Badge';
 import Button from '@app/components/Common/Button';
 import LoadingSpinner from '@app/components/Common/LoadingSpinner';
@@ -8,7 +7,6 @@ import { useUser } from '@app/hooks/useUser';
 import globalMessages from '@app/i18n/globalMessages';
 import defineMessages from '@app/utils/defineMessages';
 import { CalendarIcon, TrashIcon, UserIcon } from '@heroicons/react/24/solid';
-import type { MediaType } from '@server/constants/media';
 import type { Blocklist } from '@server/entity/Blocklist';
 import axios from 'axios';
 import Link from 'next/link';
@@ -22,15 +20,13 @@ const messages = defineMessages('component.BlocklistBlock', {
 });
 
 interface BlocklistBlockProps {
-  tmdbId: number;
-  mediaType: MediaType;
+  igdbId: number;
   onUpdate?: () => void;
   onDelete?: () => void;
 }
 
 const BlocklistBlock = ({
-  tmdbId,
-  mediaType,
+  igdbId,
   onUpdate,
   onDelete,
 }: BlocklistBlockProps) => {
@@ -38,15 +34,13 @@ const BlocklistBlock = ({
   const intl = useIntl();
   const [isUpdating, setIsUpdating] = useState(false);
   const { addToast } = useToasts();
-  const { data } = useSWR<Blocklist>(
-    `/api/v1/blocklist/${tmdbId}?mediaType=${mediaType}`
-  );
+  const { data } = useSWR<Blocklist>(`/api/v1/blocklist/${igdbId}`);
 
-  const removeFromBlocklist = async (tmdbId: number, title?: string) => {
+  const removeFromBlocklist = async (title?: string) => {
     setIsUpdating(true);
 
     try {
-      await axios.delete(`/api/v1/blocklist/${tmdbId}?mediaType=${mediaType}`);
+      await axios.delete(`/api/v1/blocklist/${igdbId}`);
 
       addToast(
         <span>
@@ -83,7 +77,7 @@ const BlocklistBlock = ({
       <div className="flex items-center justify-between">
         <div className="mr-6 min-w-0 flex-1 flex-col items-center text-sm leading-5">
           <div className="white mb-1 flex flex-nowrap">
-            {data.user ? (
+            {data.user && (
               <>
                 <Tooltip content={intl.formatMessage(messages.blocklistedby)}>
                   <UserIcon className="mr-1.5 h-5 w-5 min-w-0 flex-shrink-0" />
@@ -102,14 +96,7 @@ const BlocklistBlock = ({
                   </Link>
                 </span>
               </>
-            ) : data.blocklistedTags ? (
-              <>
-                <span className="w-40 truncate md:w-auto">
-                  {intl.formatMessage(messages.blocklistedby)}:&nbsp;
-                </span>
-                <BlocklistedTagsBadge data={data} />
-              </>
-            ) : null}
+            )}
           </div>
         </div>
         <div className="ml-2 flex flex-shrink-0 flex-wrap">
@@ -118,7 +105,7 @@ const BlocklistBlock = ({
           >
             <Button
               buttonType="danger"
-              onClick={() => removeFromBlocklist(data.tmdbId, data.title)}
+              onClick={() => removeFromBlocklist(data.title)}
               disabled={isUpdating}
             >
               <TrashIcon className="icon-sm" />

@@ -1,5 +1,3 @@
-import { IssueStatus, IssueTypeName } from '@server/constants/issue';
-import { MediaStatus } from '@server/constants/media';
 import { getRepository } from '@server/datasource';
 import { User } from '@server/entity/User';
 import { getIntl } from '@server/i18n';
@@ -58,11 +56,8 @@ class PushbulletAgent
 
       let status = '';
       switch (type) {
-        case Notification.MEDIA_AUTO_REQUESTED:
-          status =
-            payload.media?.status === MediaStatus.PENDING
-              ? intl.formatMessage(globalMessages.pendingApproval)
-              : intl.formatMessage(globalMessages.processing);
+        case Notification.MEDIA_FULFILLMENT:
+          status = intl.formatMessage(globalMessages.processing);
           break;
         case Notification.MEDIA_PENDING:
           status = intl.formatMessage(globalMessages.pendingApproval);
@@ -85,16 +80,6 @@ class PushbulletAgent
       if (status) {
         body += `\n${intl.formatMessage(globalMessages.requestStatus)}: ${status}`;
       }
-    } else if (payload.comment) {
-      body += `\n\n${intl.formatMessage(globalMessages.commentFrom, { userName: payload.comment.user.displayName })}:\n${payload.comment.message}`;
-    } else if (payload.issue) {
-      body += `\n\n${intl.formatMessage(globalMessages.reportedBy)}: ${payload.issue.createdBy.displayName}`;
-      body += `\n${intl.formatMessage(globalMessages.issueType)}: ${IssueTypeName[payload.issue.issueType]}`;
-      body += `\n${intl.formatMessage(globalMessages.issueStatus)}: ${
-        payload.issue.status === IssueStatus.OPEN
-          ? intl.formatMessage(globalMessages.open)
-          : intl.formatMessage(globalMessages.resolved)
-      }`;
     }
 
     for (const extra of payload.extra ?? []) {

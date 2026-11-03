@@ -1,30 +1,29 @@
-import type { MediaType } from '@server/constants/media';
 import type { MediaRequest } from '@server/entity/MediaRequest';
 import type { NonFunctionProperties, PaginatedResponse } from './common';
 
 export interface RequestResultsResponse extends PaginatedResponse {
   results: (NonFunctionProperties<MediaRequest> & {
-    profileName?: string;
     canRemove?: boolean;
   })[];
-  serviceErrors: {
-    radarr: { id: number; name: string }[];
-    sonarr: { id: number; name: string }[];
-  };
 }
 
 export type MediaRequestBody = {
-  mediaType: MediaType;
-  mediaId: number;
-  tvdbId?: number;
-  seasons?: number[] | 'all';
-  is4k?: boolean;
-  serverId?: number;
-  profileId?: number;
-  profileName?: string;
-  rootFolder?: string;
-  languageProfileId?: number;
+  igdbId: number;
+  /**
+   * IGDB platform id the game is requested for
+   */
+  platform: number;
   userId?: number;
-  tags?: number[];
   ignoreQuota?: boolean;
 };
+
+export interface RequestCountResponse {
+  total: number;
+  pending: number;
+  approved: number;
+  declined: number;
+  processing: number;
+  available: number;
+  completed: number;
+  failed: number;
+}

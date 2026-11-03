@@ -7,21 +7,15 @@ import {
   ClockIcon,
   CogIcon,
   EllipsisHorizontalIcon,
-  ExclamationTriangleIcon,
   EyeSlashIcon,
-  FilmIcon,
   SparklesIcon,
-  TvIcon,
   UsersIcon,
 } from '@heroicons/react/24/outline';
 import {
   ClockIcon as FilledClockIcon,
   CogIcon as FilledCogIcon,
-  ExclamationTriangleIcon as FilledExclamationTriangleIcon,
   EyeSlashIcon as FilledEyeSlashIcon,
-  FilmIcon as FilledFilmIcon,
   SparklesIcon as FilledSparklesIcon,
-  TvIcon as FilledTvIcon,
   UsersIcon as FilledUsersIcon,
   XMarkIcon,
 } from '@heroicons/react/24/solid';
@@ -32,8 +26,6 @@ import { useIntl } from 'react-intl';
 
 interface MobileMenuProps {
   pendingRequestsCount: number;
-  openIssuesCount: number;
-  revalidateIssueCount: () => void;
   revalidateRequestsCount: () => void;
 }
 
@@ -51,8 +43,6 @@ interface MenuLink {
 
 const MobileMenu = ({
   pendingRequestsCount,
-  openIssuesCount,
-  revalidateIssueCount,
   revalidateRequestsCount,
 }: MobileMenuProps) => {
   const ref = useRef<HTMLDivElement>(null);
@@ -79,20 +69,6 @@ const MobileMenu = ({
       activeRegExp: /^\/(discover\/?)?$/,
     },
     {
-      href: '/discover/movies',
-      content: intl.formatMessage(menuMessages.browsemovies),
-      svgIcon: <FilmIcon className="h-6 w-6" />,
-      svgIconSelected: <FilledFilmIcon className="h-6 w-6" />,
-      activeRegExp: /^\/discover\/movies$/,
-    },
-    {
-      href: '/discover/tv',
-      content: intl.formatMessage(menuMessages.browsetv),
-      svgIcon: <TvIcon className="h-6 w-6" />,
-      svgIconSelected: <FilledTvIcon className="h-6 w-6" />,
-      activeRegExp: /^\/discover\/tv$/,
-    },
-    {
       href: '/requests',
       content: intl.formatMessage(menuMessages.requests),
       svgIcon: <ClockIcon className="h-6 w-6" />,
@@ -108,19 +84,6 @@ const MobileMenu = ({
       requiredPermission: [
         Permission.MANAGE_BLOCKLIST,
         Permission.VIEW_BLOCKLIST,
-      ],
-      permissionType: 'or',
-    },
-    {
-      href: '/issues',
-      content: intl.formatMessage(menuMessages.issues),
-      svgIcon: <ExclamationTriangleIcon className="h-6 w-6" />,
-      svgIconSelected: <FilledExclamationTriangleIcon className="h-6 w-6" />,
-      activeRegExp: /^\/issues/,
-      requiredPermission: [
-        Permission.MANAGE_ISSUES,
-        Permission.CREATE_ISSUES,
-        Permission.VIEW_ISSUES,
       ],
       permissionType: 'or',
     },
@@ -153,19 +116,10 @@ const MobileMenu = ({
   );
 
   useEffect(() => {
-    if (openIssuesCount) {
-      revalidateIssueCount();
-    }
-
     if (pendingRequestsCount) {
       revalidateRequestsCount();
     }
-  }, [
-    revalidateIssueCount,
-    revalidateRequestsCount,
-    pendingRequestsCount,
-    openIssuesCount,
-  ]);
+  }, [revalidateRequestsCount, pendingRequestsCount]);
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50">
@@ -209,15 +163,6 @@ const MobileMenu = ({
                   <div className="ml-auto flex">
                     <Badge className="rounded-md border-indigo-500 bg-gradient-to-br from-indigo-600 to-purple-600">
                       {pendingRequestsCount}
-                    </Badge>
-                  </div>
-                )}
-              {link.href === '/issues' &&
-                openIssuesCount > 0 &&
-                hasPermission(Permission.MANAGE_ISSUES) && (
-                  <div className="ml-auto flex">
-                    <Badge className="rounded-md border-indigo-500 bg-gradient-to-br from-indigo-600 to-purple-600">
-                      {openIssuesCount}
                     </Badge>
                   </div>
                 )}

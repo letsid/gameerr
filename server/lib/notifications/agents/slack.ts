@@ -1,4 +1,3 @@
-import { IssueStatus, IssueTypeName } from '@server/constants/issue';
 import { getIntl } from '@server/i18n';
 import globalMessages from '@server/i18n/globalMessages';
 import type { NotificationAgentSlack } from '@server/lib/settings';
@@ -104,30 +103,6 @@ class SlackAgent
           text: `*${intl.formatMessage(globalMessages.requestStatus)}*\n${status}`,
         });
       }
-    } else if (payload.comment) {
-      fields.push({
-        type: 'mrkdwn',
-        text: `*${intl.formatMessage(globalMessages.commentFrom, { userName: payload.comment.user.displayName })}*\n${payload.comment.message}`,
-      });
-    } else if (payload.issue) {
-      fields.push(
-        {
-          type: 'mrkdwn',
-          text: `*${intl.formatMessage(globalMessages.reportedBy)}*\n${payload.issue.createdBy.displayName}`,
-        },
-        {
-          type: 'mrkdwn',
-          text: `*${intl.formatMessage(globalMessages.issueType)}*\n${IssueTypeName[payload.issue.issueType]}`,
-        },
-        {
-          type: 'mrkdwn',
-          text: `*${intl.formatMessage(globalMessages.issueStatus)}*\n${
-            payload.issue.status === IssueStatus.OPEN
-              ? intl.formatMessage(globalMessages.open)
-              : intl.formatMessage(globalMessages.resolved)
-          }`,
-        }
-      );
     }
 
     for (const extra of payload.extra ?? []) {
@@ -184,13 +159,10 @@ class SlackAgent
       });
     }
 
-    const url = applicationUrl
-      ? payload.issue
-        ? `${applicationUrl}/issues/${payload.issue.id}`
-        : payload.media
-          ? `${applicationUrl}/${payload.media.mediaType}/${payload.media.tmdbId}`
-          : undefined
-      : undefined;
+    const url =
+      applicationUrl && payload.media
+        ? `${applicationUrl}/game/${payload.media.igdbId}`
+        : undefined;
 
     if (url) {
       blocks.push({
@@ -202,12 +174,9 @@ class SlackAgent
             url,
             text: {
               type: 'plain_text',
-              text: intl.formatMessage(
-                payload.issue
-                  ? globalMessages.viewIssue
-                  : globalMessages.viewMedia,
-                { applicationTitle }
-              ),
+              text: intl.formatMessage(globalMessages.viewMedia, {
+                applicationTitle,
+              }),
             },
           },
         ],

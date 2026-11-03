@@ -1,15 +1,9 @@
-export interface GenreSliderItem {
-  id: number;
-  name: string;
-  backdrops: string[];
-}
-
 export interface WatchlistItem {
   id: number;
-  ratingKey: string;
-  tmdbId: number;
-  mediaType: 'movie' | 'tv';
+  igdbId: number;
+  mediaType: 'game';
   title: string;
+  coverImageId?: string | null;
 }
 
 export interface WatchlistResponse {

@@ -3,18 +3,15 @@ import React, { useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 
 const messages = defineMessages('components.QuotaSelector', {
-  movieRequests:
-    '{quotaLimit} <quotaUnits>{movies} per {quotaDays} {days}</quotaUnits>',
-  tvRequests:
-    '{quotaLimit} <quotaUnits>{seasons} per {quotaDays} {days}</quotaUnits>',
-  movies: '{count, plural, one {movie} other {movies}}',
-  seasons: '{count, plural, one {season} other {seasons}}',
+  gameRequests:
+    '{quotaLimit} <quotaUnits>{games} per {quotaDays} {days}</quotaUnits>',
+  games: '{count, plural, one {game} other {games}}',
   days: '{count, plural, one {day} other {days}}',
   unlimited: 'Unlimited',
 });
 
 interface QuotaSelectorProps {
-  mediaType: 'movie' | 'tv';
+  mediaType: 'game';
   defaultDays?: number;
   defaultLimit?: number;
   dayOverride?: number;
@@ -52,55 +49,47 @@ const QuotaSelector = ({
 
   return (
     <div className={`${isDisabled ? 'opacity-50' : ''}`}>
-      {intl.formatMessage(
-        mediaType === 'movie' ? messages.movieRequests : messages.tvRequests,
-        {
-          quotaLimit: (
-            <select
-              className="short inline"
-              value={limitOverride ?? quotaLimit}
-              onChange={(e) => setQuotaLimit(Number(e.target.value))}
-              disabled={isDisabled}
-            >
-              <option value="0">
-                {intl.formatMessage(messages.unlimited)}
+      {intl.formatMessage(messages.gameRequests, {
+        quotaLimit: (
+          <select
+            className="short inline"
+            value={limitOverride ?? quotaLimit}
+            onChange={(e) => setQuotaLimit(Number(e.target.value))}
+            disabled={isDisabled}
+          >
+            <option value="0">{intl.formatMessage(messages.unlimited)}</option>
+            {[...Array(100)].map((_item, i) => (
+              <option value={i + 1} key={`${mediaType}-limit-${i + 1}`}>
+                {i + 1}
               </option>
-              {[...Array(100)].map((_item, i) => (
-                <option value={i + 1} key={`${mediaType}-limit-${i + 1}`}>
-                  {i + 1}
-                </option>
-              ))}
-            </select>
-          ),
-          quotaDays: (
-            <select
-              className="short inline"
-              value={dayOverride ?? quotaDays}
-              onChange={(e) => setQuotaDays(Number(e.target.value))}
-              disabled={isDisabled}
-            >
-              <option value="0">
-                {intl.formatMessage(messages.unlimited)}
+            ))}
+          </select>
+        ),
+        quotaDays: (
+          <select
+            className="short inline"
+            value={dayOverride ?? quotaDays}
+            onChange={(e) => setQuotaDays(Number(e.target.value))}
+            disabled={isDisabled}
+          >
+            <option value="0">{intl.formatMessage(messages.unlimited)}</option>
+            {[...Array(100)].map((_item, i) => (
+              <option value={i + 1} key={`${mediaType}-days-${i + 1}`}>
+                {i + 1}
               </option>
-              {[...Array(100)].map((_item, i) => (
-                <option value={i + 1} key={`${mediaType}-days-${i + 1}`}>
-                  {i + 1}
-                </option>
-              ))}
-            </select>
-          ),
-          movies: intl.formatMessage(messages.movies, { count: quotaLimit }),
-          seasons: intl.formatMessage(messages.seasons, { count: quotaLimit }),
-          days: intl.formatMessage(messages.days, { count: quotaDays }),
-          quotaUnits: function quotaUnits(msg) {
-            return (
-              <span className={limitOverride || quotaLimit ? '' : 'hidden'}>
-                {msg}
-              </span>
-            );
-          },
-        }
-      )}
+            ))}
+          </select>
+        ),
+        games: intl.formatMessage(messages.games, { count: quotaLimit }),
+        days: intl.formatMessage(messages.days, { count: quotaDays }),
+        quotaUnits: function quotaUnits(msg) {
+          return (
+            <span className={limitOverride || quotaLimit ? '' : 'hidden'}>
+              {msg}
+            </span>
+          );
+        },
+      })}
     </div>
   );
 };

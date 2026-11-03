@@ -1,22 +1,13 @@
 import Button from '@app/components/Common/Button';
 import SlideCheckbox from '@app/components/Common/SlideCheckbox';
-import Tag from '@app/components/Common/Tag';
 import Tooltip from '@app/components/Common/Tooltip';
-import CompanyTag from '@app/components/CompanyTag';
-import CreateSlider from '@app/components/Discover/CreateSlider';
 import { sliderTitles } from '@app/components/Discover/constants';
-import GenreTag from '@app/components/GenreTag';
-import KeywordTag from '@app/components/KeywordTag';
 import useToasts from '@app/hooks/useToasts';
-import globalMessages from '@app/i18n/globalMessages';
 import defineMessages from '@app/utils/defineMessages';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import {
-  ArrowUturnLeftIcon,
   Bars3Icon,
   ChevronDownIcon,
   ChevronUpIcon,
-  PencilIcon,
   XMarkIcon,
 } from '@heroicons/react/24/solid';
 import { DiscoverSliderType } from '@server/constants/discover';
@@ -64,7 +55,6 @@ const DiscoverSliderEdit = ({
 }: DiscoverSliderEditProps) => {
   const intl = useIntl();
   const { addToast } = useToasts();
-  const [isEditing, setIsEditing] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const [hoverPosition, setHoverPosition] = useState<keyof typeof Position>(
     Position.None
@@ -131,46 +121,22 @@ const DiscoverSliderEdit = ({
         return intl.formatMessage(sliderTitles.recentlyAdded);
       case DiscoverSliderType.RECENT_REQUESTS:
         return intl.formatMessage(sliderTitles.recentrequests);
-      case DiscoverSliderType.PLEX_WATCHLIST:
-        return intl.formatMessage(sliderTitles.plexwatchlist);
+      case DiscoverSliderType.WATCHLIST:
+        return intl.formatMessage(sliderTitles.watchlist);
+      case DiscoverSliderType.RECENT_RELEASES:
+        return intl.formatMessage(sliderTitles.recentreleases);
+      case DiscoverSliderType.UPCOMING:
+        return intl.formatMessage(sliderTitles.upcoming);
+      case DiscoverSliderType.ALL_TIME_BEST:
+        return intl.formatMessage(sliderTitles.alltimebest);
+      case DiscoverSliderType.BEST_OF_YEAR:
+        return intl.formatMessage(sliderTitles.bestofyear);
+      case DiscoverSliderType.GENRE:
+        return slider.title ?? intl.formatMessage(sliderTitles.genre);
       case DiscoverSliderType.TRENDING:
         return intl.formatMessage(sliderTitles.trending);
-      case DiscoverSliderType.POPULAR_MOVIES:
-        return intl.formatMessage(sliderTitles.popularmovies);
-      case DiscoverSliderType.MOVIE_GENRES:
-        return intl.formatMessage(sliderTitles.moviegenres);
-      case DiscoverSliderType.UPCOMING_MOVIES:
-        return intl.formatMessage(sliderTitles.upcoming);
-      case DiscoverSliderType.STUDIOS:
-        return intl.formatMessage(sliderTitles.studios);
-      case DiscoverSliderType.POPULAR_TV:
-        return intl.formatMessage(sliderTitles.populartv);
-      case DiscoverSliderType.TV_GENRES:
-        return intl.formatMessage(sliderTitles.tvgenres);
-      case DiscoverSliderType.UPCOMING_TV:
-        return intl.formatMessage(sliderTitles.upcomingtv);
-      case DiscoverSliderType.NETWORKS:
-        return intl.formatMessage(sliderTitles.networks);
-      case DiscoverSliderType.TMDB_MOVIE_KEYWORD:
-        return intl.formatMessage(sliderTitles.tmdbmoviekeyword);
-      case DiscoverSliderType.TMDB_TV_KEYWORD:
-        return intl.formatMessage(sliderTitles.tmdbtvkeyword);
-      case DiscoverSliderType.TMDB_MOVIE_GENRE:
-        return intl.formatMessage(sliderTitles.tmdbmoviegenre);
-      case DiscoverSliderType.TMDB_TV_GENRE:
-        return intl.formatMessage(sliderTitles.tmdbtvgenre);
-      case DiscoverSliderType.TMDB_STUDIO:
-        return intl.formatMessage(sliderTitles.tmdbstudio);
-      case DiscoverSliderType.TMDB_NETWORK:
-        return intl.formatMessage(sliderTitles.tmdbnetwork);
-      case DiscoverSliderType.TMDB_SEARCH:
-        return intl.formatMessage(sliderTitles.tmdbsearch);
-      case DiscoverSliderType.TMDB_MOVIE_STREAMING_SERVICES:
-        return intl.formatMessage(sliderTitles.tmdbmoviestreamingservices);
-      case DiscoverSliderType.TMDB_TV_STREAMING_SERVICES:
-        return intl.formatMessage(sliderTitles.tmdbtvstreamingservices);
       default:
-        return 'Unknown Slider';
+        return slider.title ?? 'Unknown Slider';
     }
   };
 
@@ -196,94 +162,26 @@ const DiscoverSliderEdit = ({
         />
       )}
       <div className="flex w-full flex-col rounded-t-lg border-l border-r border-t border-gray-800 bg-gray-900 p-4 text-gray-400 md:flex-row md:items-center md:space-x-2">
-        <div
-          className={`${slider.data ? 'mb-4' : 'mb-0'} flex space-x-2 md:mb-0`}
-        >
+        <div className="mb-0 flex space-x-2">
           <Bars3Icon className="h-6 w-6" />
           <div className="w-7/12 truncate md:w-full">
             {getSliderTitle(slider)}
           </div>
         </div>
-        <div
-          className={`pointer-events-none ${
-            slider.data ? 'mb-4' : ''
-          } flex-1 md:mb-0`}
-        >
-          {(slider.type === DiscoverSliderType.TMDB_MOVIE_KEYWORD ||
-            slider.type === DiscoverSliderType.TMDB_TV_KEYWORD) && (
-            <div className="flex space-x-2">
-              {slider.data?.split(',').map((keywordId) => (
-                <KeywordTag
-                  key={`slider-keywords-${slider.id}-${keywordId}`}
-                  keywordId={Number(keywordId)}
-                />
-              ))}
-            </div>
-          )}
-          {(slider.type === DiscoverSliderType.TMDB_NETWORK ||
-            slider.type === DiscoverSliderType.TMDB_STUDIO) && (
-            <CompanyTag
-              type={
-                slider.type === DiscoverSliderType.TMDB_STUDIO
-                  ? 'studio'
-                  : 'network'
-              }
-              companyId={Number(slider.data)}
-            />
-          )}
-          {(slider.type === DiscoverSliderType.TMDB_TV_GENRE ||
-            slider.type === DiscoverSliderType.TMDB_MOVIE_GENRE) && (
-            <GenreTag
-              type={
-                slider.type === DiscoverSliderType.TMDB_MOVIE_GENRE
-                  ? 'movie'
-                  : 'tv'
-              }
-              genreId={Number(slider.data)}
-            />
-          )}
-          {slider.type === DiscoverSliderType.TMDB_SEARCH && (
-            <Tag iconSvg={<MagnifyingGlassIcon />}>{slider.data}</Tag>
-          )}
-        </div>
+        <div className="flex-1" />
         <div className="flex items-center space-x-2">
           {!slider.isBuiltIn && (
-            <>
-              {!isEditing ? (
-                <Button
-                  buttonType="warning"
-                  buttonSize="sm"
-                  onClick={() => {
-                    setIsEditing(true);
-                  }}
-                >
-                  <PencilIcon />
-                  <span>{intl.formatMessage(globalMessages.edit)}</span>
-                </Button>
-              ) : (
-                <Button
-                  buttonType="default"
-                  buttonSize="sm"
-                  onClick={() => {
-                    setIsEditing(false);
-                  }}
-                >
-                  <ArrowUturnLeftIcon />
-                  <span>{intl.formatMessage(globalMessages.cancel)}</span>
-                </Button>
-              )}
-              <Button
-                data-testid="discover-slider-remove-button"
-                buttonType="danger"
-                buttonSize="sm"
-                onClick={() => {
-                  deleteSlider();
-                }}
-              >
-                <XMarkIcon />
-                <span>{intl.formatMessage(messages.remove)}</span>
-              </Button>
-            </>
+            <Button
+              data-testid="discover-slider-remove-button"
+              buttonType="danger"
+              buttonSize="sm"
+              onClick={() => {
+                deleteSlider();
+              }}
+            >
+              <XMarkIcon />
+              <span>{intl.formatMessage(messages.remove)}</span>
+            </Button>
           )}
           <div className="absolute right-14 top-4 flex px-2 md:relative md:right-0 md:top-0">
             <button
@@ -319,21 +217,9 @@ const DiscoverSliderEdit = ({
           </div>
         </div>
       </div>
-      {isEditing ? (
-        <div className="p-4">
-          <CreateSlider
-            onCreate={() => {
-              onDelete();
-              setIsEditing(false);
-            }}
-            slider={slider}
-          />
-        </div>
-      ) : (
-        <div className={`-mt-6 p-4 ${!slider.enabled ? 'opacity-50' : ''}`}>
-          {children}
-        </div>
-      )}
+      <div className={`-mt-6 p-4 ${!slider.enabled ? 'opacity-50' : ''}`}>
+        {children}
+      </div>
     </div>
   );
 };

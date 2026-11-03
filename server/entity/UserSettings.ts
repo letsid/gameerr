@@ -1,6 +1,7 @@
 import type { NotificationAgentTypes } from '@server/interfaces/api/userSettingsInterfaces';
 import { hasNotificationType, Notification } from '@server/lib/notifications';
 import { NotificationAgentKey } from '@server/lib/settings';
+import { numberArrayTransformer } from '@server/utils/columnTransformers';
 import {
   Column,
   Entity,
@@ -43,14 +44,16 @@ export class UserSettings {
   @Column({ default: '' })
   public locale?: string;
 
-  @Column({ nullable: true })
-  public discoverRegion?: string;
-
-  @Column({ nullable: true })
-  public streamingRegion?: string;
-
-  @Column({ nullable: true })
-  public originalLanguage?: string;
+  /**
+   * IGDB platform ids the user is interested in. Null falls back to the
+   * global default platforms from the main settings.
+   */
+  @Column({
+    type: 'text',
+    nullable: true,
+    transformer: numberArrayTransformer,
+  })
+  public preferredPlatforms?: number[] | null;
 
   @Column({ nullable: true })
   public pgpKey?: string;
@@ -78,12 +81,6 @@ export class UserSettings {
 
   @Column({ nullable: true })
   public telegramSendSilently?: boolean;
-
-  @Column({ nullable: true })
-  public watchlistSyncMovies?: boolean;
-
-  @Column({ nullable: true })
-  public watchlistSyncTv?: boolean;
 
   @Column({
     type: 'text',

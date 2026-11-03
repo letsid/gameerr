@@ -1,5 +1,4 @@
 import NotificationType from '@app/components/NotificationTypeSelector/NotificationType';
-import useSettings from '@app/hooks/useSettings';
 import type { User } from '@app/hooks/useUser';
 import { Permission, useUser } from '@app/hooks/useUser';
 import defineMessages from '@app/utils/defineMessages';
@@ -11,59 +10,39 @@ const messages = defineMessages('components.NotificationTypeSelector', {
   notificationTypes: 'Notification Types',
   mediarequested: 'Request Pending Approval',
   mediarequestedDescription:
-    'Send notifications when users submit new media requests which require approval.',
+    'Send notifications when users submit new game requests which require approval.',
   usermediarequestedDescription:
-    'Get notified when other users submit new media requests which require approval.',
+    'Get notified when other users submit new game requests which require approval.',
   mediaapproved: 'Request Approved',
   mediaapprovedDescription:
-    'Send notifications when media requests are manually approved.',
+    'Send notifications when game requests are manually approved.',
   usermediaapprovedDescription:
-    'Get notified when your media requests are approved.',
+    'Get notified when your game requests are approved.',
   mediaAutoApproved: 'Request Automatically Approved',
   mediaAutoApprovedDescription:
-    'Send notifications when users submit new media requests which are automatically approved.',
+    'Send notifications when users submit new game requests which are automatically approved.',
   usermediaAutoApprovedDescription:
-    'Get notified when other users submit new media requests which are automatically approved.',
+    'Get notified when other users submit new game requests which are automatically approved.',
   mediaavailable: 'Request Available',
   mediaavailableDescription:
-    'Send notifications when media requests become available.',
+    'Send notifications when game requests become available.',
   usermediaavailableDescription:
-    'Get notified when your media requests become available.',
+    'Get notified when your game requests become available.',
   mediafailed: 'Request Processing Failed',
   mediafailedDescription:
-    'Send notifications when media requests fail to be added to Radarr or Sonarr.',
+    'Send notifications when game requests fail to be processed.',
   usermediafailedDescription:
-    'Get notified when media requests fail to be added to Radarr or Sonarr.',
+    'Get notified when game requests fail to be processed.',
   mediadeclined: 'Request Declined',
   mediadeclinedDescription:
-    'Send notifications when media requests are declined.',
+    'Send notifications when game requests are declined.',
   usermediadeclinedDescription:
-    'Get notified when your media requests are declined.',
-  issuecreated: 'Issue Reported',
-  issuecreatedDescription: 'Send notifications when issues are reported.',
-  userissuecreatedDescription: 'Get notified when other users report issues.',
-  issuecomment: 'Issue Comment',
-  issuecommentDescription:
-    'Send notifications when issues receive new comments.',
-  userissuecommentDescription:
-    'Get notified when issues you reported receive new comments.',
-  adminissuecommentDescription:
-    'Get notified when other users comment on issues.',
-  issueresolved: 'Issue Resolved',
-  issueresolvedDescription: 'Send notifications when issues are resolved.',
-  userissueresolvedDescription:
-    'Get notified when issues you reported are resolved.',
-  adminissueresolvedDescription:
-    'Get notified when issues are resolved by other users.',
-  issuereopened: 'Issue Reopened',
-  issuereopenedDescription: 'Send notifications when issues are reopened.',
-  userissuereopenedDescription:
-    'Get notified when issues you reported are reopened.',
-  adminissuereopenedDescription:
-    'Get notified when issues are reopened by other users.',
-  mediaautorequested: 'Request Automatically Submitted',
-  mediaautorequestedDescription:
-    'Get notified when new media requests are automatically submitted for items on Your Watchlist.',
+    'Get notified when your game requests are declined.',
+  mediafulfillment: 'Fulfillment Required',
+  mediafulfillmentDescription:
+    'Send notifications when an approved game request needs to be fulfilled manually.',
+  usermediafulfillmentDescription:
+    'Get notified when an approved game request needs to be fulfilled manually.',
 });
 
 export const hasNotificationType = (
@@ -101,11 +80,7 @@ export enum Notification {
   TEST_NOTIFICATION = 32,
   MEDIA_DECLINED = 64,
   MEDIA_AUTO_APPROVED = 128,
-  ISSUE_CREATED = 256,
-  ISSUE_COMMENT = 512,
-  ISSUE_RESOLVED = 1024,
-  ISSUE_REOPENED = 2048,
-  MEDIA_AUTO_REQUESTED = 4096,
+  MEDIA_FULFILLMENT = 256,
 }
 
 export const ALL_NOTIFICATIONS = Object.values(Notification)
@@ -138,83 +113,20 @@ const NotificationTypeSelector = ({
   error,
 }: NotificationTypeSelectorProps) => {
   const intl = useIntl();
-  const settings = useSettings();
   const { hasPermission } = useUser({ id: user?.id });
   const [allowedTypes, setAllowedTypes] = useState(enabledTypes);
 
   const availableTypes = useMemo(() => {
     const allRequestsAutoApproved =
       user &&
-      // Has Manage Requests perm, which grants all Auto-Approve perms
+      // Has Manage Requests perm, which grants Auto-Approve
       (hasPermission(Permission.MANAGE_REQUESTS) ||
-        // Cannot submit requests of any type
-        !hasPermission(
-          [
-            Permission.REQUEST,
-            Permission.REQUEST_MOVIE,
-            Permission.REQUEST_TV,
-            Permission.REQUEST_4K,
-            Permission.REQUEST_4K_MOVIE,
-            Permission.REQUEST_4K_TV,
-          ],
-          { type: 'or' }
-        ) ||
-        // Cannot submit non-4K movie requests OR has Auto-Approve perms for non-4K movies
-        ((!hasPermission([Permission.REQUEST, Permission.REQUEST_MOVIE], {
-          type: 'or',
-        }) ||
-          hasPermission(
-            [Permission.AUTO_APPROVE, Permission.AUTO_APPROVE_MOVIE],
-            { type: 'or' }
-          )) &&
-          // Cannot submit non-4K series requests OR has Auto-Approve perms for non-4K series
-          (!hasPermission([Permission.REQUEST, Permission.REQUEST_TV], {
-            type: 'or',
-          }) ||
-            hasPermission(
-              [Permission.AUTO_APPROVE, Permission.AUTO_APPROVE_TV],
-              { type: 'or' }
-            )) &&
-          // Cannot submit 4K movie requests OR has Auto-Approve perms for 4K movies
-          (!settings.currentSettings.movie4kEnabled ||
-            !hasPermission(
-              [Permission.REQUEST_4K, Permission.REQUEST_4K_MOVIE],
-              { type: 'or' }
-            ) ||
-            hasPermission(
-              [Permission.AUTO_APPROVE_4K, Permission.AUTO_APPROVE_4K_MOVIE],
-              { type: 'or' }
-            )) &&
-          // Cannot submit 4K series requests OR has Auto-Approve perms for 4K series
-          (!settings.currentSettings.series4kEnabled ||
-            !hasPermission([Permission.REQUEST_4K, Permission.REQUEST_4K_TV], {
-              type: 'or',
-            }) ||
-            hasPermission(
-              [Permission.AUTO_APPROVE_4K, Permission.AUTO_APPROVE_4K_TV],
-              { type: 'or' }
-            ))));
+        // Cannot submit requests
+        !hasPermission(Permission.REQUEST) ||
+        // Requests are automatically approved
+        hasPermission(Permission.AUTO_APPROVE));
 
     const types: NotificationItem[] = [
-      {
-        id: 'media-auto-requested',
-        name: intl.formatMessage(messages.mediaautorequested),
-        description: intl.formatMessage(messages.mediaautorequestedDescription),
-        value: Notification.MEDIA_AUTO_REQUESTED,
-        hidden:
-          !user ||
-          (!user.settings?.watchlistSyncMovies &&
-            !user.settings?.watchlistSyncTv) ||
-          !hasPermission(
-            [
-              Permission.AUTO_REQUEST,
-              Permission.AUTO_REQUEST_MOVIE,
-              Permission.AUTO_REQUEST_TV,
-            ],
-            { type: 'or' }
-          ),
-        hasNotifyUser: true,
-      },
       {
         id: 'media-requested',
         name: intl.formatMessage(messages.mediarequested),
@@ -287,73 +199,16 @@ const NotificationTypeSelector = ({
         hasNotifyUser: false,
       },
       {
-        id: 'issue-created',
-        name: intl.formatMessage(messages.issuecreated),
+        id: 'media-fulfillment',
+        name: intl.formatMessage(messages.mediafulfillment),
         description: intl.formatMessage(
           user
-            ? messages.userissuecreatedDescription
-            : messages.issuecreatedDescription
+            ? messages.usermediafulfillmentDescription
+            : messages.mediafulfillmentDescription
         ),
-        value: Notification.ISSUE_CREATED,
-        hidden: user && !hasPermission(Permission.MANAGE_ISSUES),
+        value: Notification.MEDIA_FULFILLMENT,
+        hidden: user && !hasPermission(Permission.MANAGE_REQUESTS),
         hasNotifyUser: false,
-      },
-      {
-        id: 'issue-comment',
-        name: intl.formatMessage(messages.issuecomment),
-        description: intl.formatMessage(
-          user
-            ? hasPermission(Permission.MANAGE_ISSUES)
-              ? messages.adminissuecommentDescription
-              : messages.userissuecommentDescription
-            : messages.issuecommentDescription
-        ),
-        value: Notification.ISSUE_COMMENT,
-        hidden:
-          user &&
-          !hasPermission([Permission.MANAGE_ISSUES, Permission.CREATE_ISSUES], {
-            type: 'or',
-          }),
-        hasNotifyUser:
-          !user || hasPermission(Permission.MANAGE_ISSUES) ? false : true,
-      },
-      {
-        id: 'issue-resolved',
-        name: intl.formatMessage(messages.issueresolved),
-        description: intl.formatMessage(
-          user
-            ? hasPermission(Permission.MANAGE_ISSUES)
-              ? messages.adminissueresolvedDescription
-              : messages.userissueresolvedDescription
-            : messages.issueresolvedDescription
-        ),
-        value: Notification.ISSUE_RESOLVED,
-        hidden:
-          user &&
-          !hasPermission([Permission.MANAGE_ISSUES, Permission.CREATE_ISSUES], {
-            type: 'or',
-          }),
-        hasNotifyUser:
-          !user || hasPermission(Permission.MANAGE_ISSUES) ? false : true,
-      },
-      {
-        id: 'issue-reopened',
-        name: intl.formatMessage(messages.issuereopened),
-        description: intl.formatMessage(
-          user
-            ? hasPermission(Permission.MANAGE_ISSUES)
-              ? messages.adminissuereopenedDescription
-              : messages.userissuereopenedDescription
-            : messages.issuereopenedDescription
-        ),
-        value: Notification.ISSUE_REOPENED,
-        hidden:
-          user &&
-          !hasPermission([Permission.MANAGE_ISSUES, Permission.CREATE_ISSUES], {
-            type: 'or',
-          }),
-        hasNotifyUser:
-          !user || hasPermission(Permission.MANAGE_ISSUES) ? false : true,
       },
     ];
 
@@ -369,7 +224,7 @@ const NotificationTypeSelector = ({
     return user
       ? sortBy(filteredTypes, 'hasNotifyUser', 'DESC')
       : filteredTypes;
-  }, [user, hasPermission, settings, intl, allowedTypes, enabledTypes]);
+  }, [user, hasPermission, intl, allowedTypes, enabledTypes]);
 
   if (!availableTypes.length) {
     return null;

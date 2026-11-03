@@ -8,19 +8,8 @@ const globalMessages = defineMessages('notifications.common', {
   available: 'Available',
   declined: 'Declined',
   failed: 'Failed',
-  commentFrom: 'Comment from {userName}',
-  reportedBy: 'Reported By',
-  issueType: 'Issue Type',
-  issueStatus: 'Issue Status',
-  open: 'Open',
-  resolved: 'Resolved',
-  viewIssue: 'View Issue in {applicationTitle}',
-  viewMedia: 'View Media in {applicationTitle}',
+  viewMedia: 'View Game in {applicationTitle}',
   openIn: 'Open in {applicationTitle}',
-  movie: 'movie',
-  series: 'series',
-  issue: 'issue',
-  issueTypeName: '{type} issue',
 });
 
 export default globalMessages;

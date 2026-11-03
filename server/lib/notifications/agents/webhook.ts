@@ -1,4 +1,3 @@
-import { IssueStatus, IssueType } from '@server/constants/issue';
 import { MediaStatus } from '@server/constants/media';
 import type { NotificationAgentWebhook } from '@server/lib/settings';
 import { getSettings } from '@server/lib/settings';
@@ -25,19 +24,16 @@ const KeyMap: Record<string, string | KeyMapFunction> = {
   notifyuser_avatar: 'notifyUser.avatar',
   notifyuser_settings_discordIds: 'notifyUser.settings.discordIds',
   notifyuser_settings_telegramChatId: 'notifyUser.settings.telegramChatId',
-  media_imdbid: 'media.imdbId',
-  media_tmdbid: 'media.tmdbId',
-  media_tvdbid: 'media.tvdbId',
+  media_igdbid: 'media.igdbId',
+  media_steamappid: 'media.steamAppId',
   media_type: 'media.mediaType',
-  media_jellyfinMediaId: (payload) =>
-    payload.media?.jellyfinMediaId ?? payload.media?.jellyfinMediaId4k ?? '',
   media_status: (payload) =>
     payload.media ? MediaStatus[payload.media.status] : '',
-  media_status4k: (payload) =>
-    payload.media ? MediaStatus[payload.media.status4k] : '',
-  media_plexRatingKey: (payload) => payload.media?.ratingKey ?? '',
-  media_plexRatingKey4k: (payload) => payload.media?.ratingKey4k ?? '',
   request_id: 'request.id',
+  request_platform: (payload) =>
+    payload.request
+      ? (payload.request.platformName ?? `${payload.request.platform}`)
+      : '',
   requestedBy_jellyfinUserId: 'request.requestedBy.jellyfinUserId',
   requestedBy_username: 'request.requestedBy.displayName',
   requestedBy_email: 'request.requestedBy.email',
@@ -45,22 +41,6 @@ const KeyMap: Record<string, string | KeyMapFunction> = {
   requestedBy_settings_discordIds: 'request.requestedBy.settings.discordIds',
   requestedBy_settings_telegramChatId:
     'request.requestedBy.settings.telegramChatId',
-  issue_id: 'issue.id',
-  issue_type: (payload) =>
-    payload.issue ? IssueType[payload.issue.issueType] : '',
-  issue_status: (payload) =>
-    payload.issue ? IssueStatus[payload.issue.status] : '',
-  reportedBy_username: 'issue.createdBy.displayName',
-  reportedBy_email: 'issue.createdBy.email',
-  reportedBy_avatar: 'issue.createdBy.avatar',
-  reportedBy_settings_discordIds: 'issue.createdBy.settings.discordIds',
-  reportedBy_settings_telegramChatId: 'issue.createdBy.settings.telegramChatId',
-  comment_message: 'comment.message',
-  commentedBy_username: 'comment.user.displayName',
-  commentedBy_email: 'comment.user.email',
-  commentedBy_avatar: 'comment.user.avatar',
-  commentedBy_settings_discordIds: 'comment.user.settings.discordIds',
-  commentedBy_settings_telegramChatId: 'comment.user.settings.telegramChatId',
 };
 
 class WebhookAgent
@@ -103,22 +83,6 @@ class WebhookAgent
         }
         delete finalPayload[key];
         key = 'request';
-      } else if (key === '{{issue}}') {
-        if (payload.issue) {
-          finalPayload.issue = finalPayload[key];
-        } else {
-          finalPayload.issue = null;
-        }
-        delete finalPayload[key];
-        key = 'issue';
-      } else if (key === '{{comment}}') {
-        if (payload.comment) {
-          finalPayload.comment = finalPayload[key];
-        } else {
-          finalPayload.comment = null;
-        }
-        delete finalPayload[key];
-        key = 'comment';
       }
 
       if (typeof finalPayload[key] === 'string') {

@@ -50,19 +50,11 @@ userSettingsRoutes.get<{ id: string }, UserSettingsGeneralResponse>(
         username: user.username,
         email: user.email,
         locale: user.settings?.locale,
-        discoverRegion: user.settings?.discoverRegion,
-        streamingRegion: user.settings?.streamingRegion,
-        originalLanguage: user.settings?.originalLanguage,
-        movieQuotaLimit: user.movieQuotaLimit,
-        movieQuotaDays: user.movieQuotaDays,
-        tvQuotaLimit: user.tvQuotaLimit,
-        tvQuotaDays: user.tvQuotaDays,
-        globalMovieQuotaDays: defaultQuotas.movie.quotaDays,
-        globalMovieQuotaLimit: defaultQuotas.movie.quotaLimit,
-        globalTvQuotaDays: defaultQuotas.tv.quotaDays,
-        globalTvQuotaLimit: defaultQuotas.tv.quotaLimit,
-        watchlistSyncMovies: user.settings?.watchlistSyncMovies,
-        watchlistSyncTv: user.settings?.watchlistSyncTv,
+        preferredPlatforms: user.settings?.preferredPlatforms ?? null,
+        gameQuotaLimit: user.gameQuotaLimit,
+        gameQuotaDays: user.gameQuotaDays,
+        globalGameQuotaDays: defaultQuotas.game.quotaDays,
+        globalGameQuotaLimit: defaultQuotas.game.quotaLimit,
       });
     } catch (e) {
       next({ status: 500, message: e.message });
@@ -113,29 +105,29 @@ userSettingsRoutes.post<
       !user.hasPermission(Permission.MANAGE_USERS) &&
       req.user?.id !== user.id
     ) {
-      user.movieQuotaDays = req.body.movieQuotaDays;
-      user.movieQuotaLimit = req.body.movieQuotaLimit;
-      user.tvQuotaDays = req.body.tvQuotaDays;
-      user.tvQuotaLimit = req.body.tvQuotaLimit;
+      user.gameQuotaDays = req.body.gameQuotaDays;
+      user.gameQuotaLimit = req.body.gameQuotaLimit;
     }
+
+    // Keep the stored platforms when an older client does not send them
+    const preferredPlatforms =
+      req.body.preferredPlatforms === undefined
+        ? user.settings?.preferredPlatforms
+        : Array.isArray(req.body.preferredPlatforms)
+          ? req.body.preferredPlatforms
+              .map((platform) => Number(platform))
+              .filter((platform) => Number.isInteger(platform) && platform > 0)
+          : null;
 
     if (!user.settings) {
       user.settings = new UserSettings({
         user: req.user,
         locale: req.body.locale,
-        discoverRegion: req.body.discoverRegion,
-        streamingRegion: req.body.streamingRegion,
-        originalLanguage: req.body.originalLanguage,
-        watchlistSyncMovies: req.body.watchlistSyncMovies,
-        watchlistSyncTv: req.body.watchlistSyncTv,
+        preferredPlatforms,
       });
     } else {
       user.settings.locale = req.body.locale;
-      user.settings.discoverRegion = req.body.discoverRegion;
-      user.settings.streamingRegion = req.body.streamingRegion;
-      user.settings.originalLanguage = req.body.originalLanguage;
-      user.settings.watchlistSyncMovies = req.body.watchlistSyncMovies;
-      user.settings.watchlistSyncTv = req.body.watchlistSyncTv;
+      user.settings.preferredPlatforms = preferredPlatforms;
     }
 
     const savedUser = await userRepository.save(user);
@@ -143,11 +135,7 @@ userSettingsRoutes.post<
     return res.status(200).json({
       username: savedUser.username,
       locale: savedUser.settings?.locale,
-      discoverRegion: savedUser.settings?.discoverRegion,
-      streamingRegion: savedUser.settings?.streamingRegion,
-      originalLanguage: savedUser.settings?.originalLanguage,
-      watchlistSyncMovies: savedUser.settings?.watchlistSyncMovies,
-      watchlistSyncTv: savedUser.settings?.watchlistSyncTv,
+      preferredPlatforms: savedUser.settings?.preferredPlatforms ?? null,
       email: savedUser.email,
     });
   } catch (e) {

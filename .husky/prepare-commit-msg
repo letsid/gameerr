@@ -1,2 +1,4 @@
-
-exec < /dev/tty && npx cz --hook || true
+# Open the commitizen prompt only when a terminal is attached
+if (: < /dev/tty) 2>/dev/null; then
+  exec < /dev/tty && npx cz --hook || true
+fi

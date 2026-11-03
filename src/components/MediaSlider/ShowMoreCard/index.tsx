@@ -2,6 +2,7 @@ import CachedImage from '@app/components/Common/CachedImage';
 import TitleCard from '@app/components/TitleCard';
 import defineMessages from '@app/utils/defineMessages';
 import { ArrowRightCircleIcon } from '@heroicons/react/24/solid';
+import { igdbImageUrl } from '@server/api/igdb/images';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useInView } from 'react-intersection-observer';
@@ -13,10 +14,10 @@ const messages = defineMessages('components.MediaSlider.ShowMoreCard', {
 
 interface ShowMoreCardProps {
   url: string;
-  posters: (string | undefined)[];
+  covers: (string | null | undefined)[];
 }
 
-const ShowMoreCard = ({ url, posters }: ShowMoreCardProps) => {
+const ShowMoreCard = ({ url, covers }: ShowMoreCardProps) => {
   const intl = useIntl();
   const [isHovered, setHovered] = useState(false);
   const { ref, inView } = useInView({
@@ -54,56 +55,23 @@ const ShowMoreCard = ({ url, posters }: ShowMoreCardProps) => {
             : 'scale-100 bg-gray-800 ring-gray-700'
         }`}
       >
-        <div style={{ paddingBottom: '150%' }}>
+        <div style={{ paddingBottom: '133.33%' }}>
           <div className="absolute inset-0 flex h-full w-full flex-col items-center p-2">
             <div className="relative z-10 grid h-full w-full grid-cols-2 items-center justify-center gap-2 opacity-30">
-              {posters[0] && (
-                <div className="">
-                  <CachedImage
-                    type="tmdb"
-                    src={`https://image.tmdb.org/t/p/w300_and_h450_face${posters[0]}`}
-                    alt=""
-                    className="rounded-md"
-                    width={300}
-                    height={450}
-                  />
-                </div>
-              )}
-              {posters[1] && (
-                <div className="">
-                  <CachedImage
-                    type="tmdb"
-                    src={`https://image.tmdb.org/t/p/w300_and_h450_face${posters[1]}`}
-                    alt=""
-                    className="rounded-md"
-                    width={300}
-                    height={450}
-                  />
-                </div>
-              )}
-              {posters[2] && (
-                <div className="">
-                  <CachedImage
-                    type="tmdb"
-                    src={`https://image.tmdb.org/t/p/w300_and_h450_face${posters[2]}`}
-                    alt=""
-                    className="rounded-md"
-                    width={300}
-                    height={450}
-                  />
-                </div>
-              )}
-              {posters[3] && (
-                <div className="">
-                  <CachedImage
-                    type="tmdb"
-                    src={`https://image.tmdb.org/t/p/w300_and_h450_face${posters[3]}`}
-                    alt=""
-                    className="rounded-md"
-                    width={300}
-                    height={450}
-                  />
-                </div>
+              {covers.slice(0, 4).map(
+                (coverImageId, index) =>
+                  coverImageId && (
+                    <div key={`show-more-cover-${index}`}>
+                      <CachedImage
+                        type="igdb"
+                        src={igdbImageUrl(coverImageId, 'cover_big')}
+                        alt=""
+                        className="rounded-md"
+                        width={264}
+                        height={352}
+                      />
+                    </div>
+                  )
               )}
             </div>
             <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-white">

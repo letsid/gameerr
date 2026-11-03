@@ -78,19 +78,17 @@ describe('GET /user/:id/watchlist', () => {
 
     const media = await getRepository(Media).save(
       new Media({
-        mediaType: MediaType.MOVIE,
-        tmdbId: 12345,
+        mediaType: MediaType.GAME,
+        igdbId: 12345,
         status: MediaStatus.UNKNOWN,
-        status4k: MediaStatus.UNKNOWN,
       })
     );
 
     await getRepository(Watchlist).save(
       new Watchlist({
-        mediaType: MediaType.MOVIE,
-        tmdbId: 12345,
-        title: 'Watchlisted Movie',
-        ratingKey: 'rk-12345',
+        mediaType: MediaType.GAME,
+        igdbId: 12345,
+        title: 'Watchlisted Game',
         requestedBy: owner,
         media,
       })
@@ -101,7 +99,8 @@ describe('GET /user/:id/watchlist', () => {
 
     assert.strictEqual(res.status, 200);
     assert.strictEqual(res.body.results.length, 1);
-    assert.ok(!('settings' in res.body.results[0].requestedBy));
+    assert.strictEqual(res.body.results[0].igdbId, 12345);
+    assert.ok(!('requestedBy' in res.body.results[0]));
     assertNoCredentials(res.body);
   });
 });

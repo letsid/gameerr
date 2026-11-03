@@ -1,14 +1,10 @@
+import { sliderTitles } from '@app/components/Discover/constants';
 import Slider from '@app/components/Slider';
-import TmdbTitleCard from '@app/components/TitleCard/TmdbTitleCard';
+import TitleCard from '@app/components/TitleCard';
 import { Permission, useUser } from '@app/hooks/useUser';
-import defineMessages from '@app/utils/defineMessages';
 import type { MediaResultsResponse } from '@server/interfaces/api/mediaInterfaces';
 import { useIntl } from 'react-intl';
 import useSWR from 'swr';
-
-const messages = defineMessages('components.Discover.RecentlyAddedSlider', {
-  recentlyAdded: 'Recently Added',
-});
 
 const RecentlyAddedSlider = () => {
   const intl = useIntl();
@@ -19,7 +15,8 @@ const RecentlyAddedSlider = () => {
   );
 
   if (
-    (media && !media.results.length && !mediaError) ||
+    (media && !media.results.length) ||
+    mediaError ||
     !hasPermission([Permission.MANAGE_REQUESTS, Permission.RECENT_VIEW], {
       type: 'or',
     })
@@ -31,19 +28,19 @@ const RecentlyAddedSlider = () => {
     <>
       <div className="slider-header">
         <div className="slider-title">
-          <span>{intl.formatMessage(messages.recentlyAdded)}</span>
+          <span>{intl.formatMessage(sliderTitles.recentlyAdded)}</span>
         </div>
       </div>
       <Slider
         sliderKey="media"
         isLoading={!media}
         items={(media?.results ?? []).map((item) => (
-          <TmdbTitleCard
+          <TitleCard
             key={`media-slider-item-${item.id}`}
-            id={item.id}
-            tmdbId={item.tmdbId}
-            tvdbId={item.tvdbId}
-            type={item.mediaType}
+            id={item.igdbId}
+            title={item.title ?? `IGDB #${item.igdbId}`}
+            coverImageId={item.coverImageId}
+            status={item.status}
           />
         ))}
       />

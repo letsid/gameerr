@@ -1,5 +1,3 @@
-import { IssueStatus, IssueTypeName } from '@server/constants/issue';
-import { MediaStatus } from '@server/constants/media';
 import { getRepository } from '@server/datasource';
 import { User } from '@server/entity/User';
 import { getIntl } from '@server/i18n';
@@ -110,11 +108,8 @@ class PushoverAgent
 
       let status = '';
       switch (type) {
-        case Notification.MEDIA_AUTO_REQUESTED:
-          status =
-            payload.media?.status === MediaStatus.PENDING
-              ? intl.formatMessage(globalMessages.pendingApproval)
-              : intl.formatMessage(globalMessages.processing);
+        case Notification.MEDIA_FULFILLMENT:
+          status = intl.formatMessage(globalMessages.processing);
           break;
         case Notification.MEDIA_PENDING:
           status = intl.formatMessage(globalMessages.pendingApproval);
@@ -139,38 +134,18 @@ class PushoverAgent
       if (status) {
         message += `<small>\n<b>${intl.formatMessage(globalMessages.requestStatus)}:</b> ${status}</small>`;
       }
-    } else if (payload.comment) {
-      message += `<small>\n\n<b>${intl.formatMessage(globalMessages.commentFrom, { userName: payload.comment.user.displayName })}:</b> ${payload.comment.message}</small>`;
-    } else if (payload.issue) {
-      message += `<small>\n\n<b>${intl.formatMessage(globalMessages.reportedBy)}:</b> ${payload.issue.createdBy.displayName}</small>`;
-      message += `<small>\n<b>${intl.formatMessage(globalMessages.issueType)}:</b> ${IssueTypeName[payload.issue.issueType]}</small>`;
-      message += `<small>\n<b>${intl.formatMessage(globalMessages.issueStatus)}:</b> ${
-        payload.issue.status === IssueStatus.OPEN
-          ? intl.formatMessage(globalMessages.open)
-          : intl.formatMessage(globalMessages.resolved)
-      }</small>`;
-
-      if (type === Notification.ISSUE_CREATED) {
-        priority = 1;
-      }
     }
 
     for (const extra of payload.extra ?? []) {
       message += `<small>\n<b>${extra.name}:</b> ${extra.value}</small>`;
     }
 
-    const url = applicationUrl
-      ? payload.issue
-        ? `${applicationUrl}/issues/${payload.issue.id}`
-        : payload.media
-          ? `${applicationUrl}/${payload.media.mediaType}/${payload.media.tmdbId}`
-          : undefined
-      : undefined;
+    const url =
+      applicationUrl && payload.media
+        ? `${applicationUrl}/game/${payload.media.igdbId}`
+        : undefined;
     const url_title = url
-      ? intl.formatMessage(
-          payload.issue ? globalMessages.viewIssue : globalMessages.viewMedia,
-          { applicationTitle }
-        )
+      ? intl.formatMessage(globalMessages.viewMedia, { applicationTitle })
       : undefined;
 
     let attachment_base64;

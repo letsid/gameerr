@@ -1,10 +1,7 @@
-import BlocklistedTagsSelector from '@app/components/BlocklistedTagsSelector';
 import Button from '@app/components/Common/Button';
 import LoadingSpinner from '@app/components/Common/LoadingSpinner';
 import PageTitle from '@app/components/Common/PageTitle';
 import SensitiveInput from '@app/components/Common/SensitiveInput';
-import LanguageSelector from '@app/components/LanguageSelector';
-import RegionSelector from '@app/components/RegionSelector';
 import CopyButton from '@app/components/Settings/CopyButton';
 import SettingsBadge from '@app/components/Settings/SettingsBadge';
 import { availableLanguages } from '@app/context/LanguageContext';
@@ -34,24 +31,6 @@ const messages = defineMessages('components.Settings.SettingsMain', {
   apikeyCopied: 'Copied API key to clipboard.',
   applicationTitle: 'Application Title',
   applicationurl: 'Application URL',
-  discoverRegion: 'Discover Region',
-  discoverRegionTip: 'Filter content by regional availability',
-  originallanguage: 'Discover Language',
-  originallanguageTip: 'Filter content by original language',
-  blocklistRegion: 'Blocklist Region',
-  blocklistRegionTip:
-    'Region used for blocklist content scanning (independent of discover settings)',
-  blocklistLanguage: 'Blocklist Language',
-  blocklistLanguageTip:
-    'Language used for blocklist content scanning (independent of discover settings)',
-  blocklistedTags: 'Blocklist Content with Tags',
-  blocklistedTagsTip:
-    'Automatically add content with tags to the blocklist using the "Process Blocklisted Tags" job',
-  blocklistedTagsLimit: 'Limit Content Blocklisted per Tag',
-  blocklistedTagsLimitTip:
-    'The "Process Blocklisted Tags" job will blocklist this many pages into each sort. Larger numbers will create a more accurate blocklist, but use more space.',
-  streamingRegion: 'Streaming Region',
-  streamingRegionTip: 'Show streaming sites by regional availability',
   hideBlocklisted: 'Hide Blocklisted Items',
   hideBlocklistedTip:
     'Hide blocklisted items from discover pages for all users with the "Manage Blocklist" permission',
@@ -71,12 +50,7 @@ const messages = defineMessages('components.Settings.SettingsMain', {
   validationApplicationTitle: 'You must provide an application title',
   validationApplicationUrl: 'You must provide a valid URL',
   validationApplicationUrlTrailingSlash: 'URL must not end in a trailing slash',
-  partialRequestsEnabled: 'Allow Partial Series Requests',
-  enableSpecialEpisodes: 'Allow Special Episodes Requests',
   locale: 'Display Language',
-  youtubeUrl: 'YouTube URL',
-  youtubeUrlTip:
-    'Base URL for YouTube videos if a self-hosted YouTube instance is used.',
   versionCheck: 'Version Check',
   versionCheckTip: 'Automatically check for new versions on GitHub.',
   validationUrl: 'You must provide a valid URL',
@@ -111,18 +85,6 @@ const SettingsMain = () => {
         intl.formatMessage(messages.validationApplicationUrlTrailingSlash),
         (value) => !value || !value.endsWith('/')
       ),
-    blocklistedTagsLimit: Yup.number()
-      .test(
-        'positive',
-        'Number must be greater than 0.',
-        (value) => (value ?? 0) >= 0
-      )
-      .test(
-        'lte-250',
-        'Number must be less than or equal to 250.',
-        (value) => (value ?? 0) <= 250
-      ),
-    youtubeUrl: Yup.string().url(intl.formatMessage(messages.validationUrl)),
   });
 
   const regenerate = async () => {
@@ -171,17 +133,7 @@ const SettingsMain = () => {
             hideBlocklisted: data?.hideBlocklisted,
             hideRequested: data?.hideRequested,
             locale: data?.locale ?? 'en',
-            discoverRegion: data?.discoverRegion,
-            originalLanguage: data?.originalLanguage,
-            streamingRegion: data?.streamingRegion || 'US',
-            blocklistRegion: data?.blocklistRegion || '',
-            blocklistLanguage: data?.blocklistLanguage || '',
-            blocklistedTags: data?.blocklistedTags,
-            blocklistedTagsLimit: data?.blocklistedTagsLimit || 50,
-            partialRequestsEnabled: data?.partialRequestsEnabled,
-            enableSpecialEpisodes: data?.enableSpecialEpisodes,
             cacheImages: data?.cacheImages,
-            youtubeUrl: data?.youtubeUrl,
             versionCheck: data?.versionCheck,
           }}
           enableReinitialize
@@ -195,17 +147,7 @@ const SettingsMain = () => {
                 hideBlocklisted: values.hideBlocklisted,
                 hideRequested: values.hideRequested,
                 locale: values.locale,
-                discoverRegion: values.discoverRegion,
-                streamingRegion: values.streamingRegion,
-                originalLanguage: values.originalLanguage,
-                blocklistRegion: values.blocklistRegion,
-                blocklistLanguage: values.blocklistLanguage,
-                blocklistedTags: values.blocklistedTags,
-                blocklistedTagsLimit: values.blocklistedTagsLimit,
-                partialRequestsEnabled: values.partialRequestsEnabled,
-                enableSpecialEpisodes: values.enableSpecialEpisodes,
                 cacheImages: values.cacheImages,
-                youtubeUrl: values.youtubeUrl,
                 versionCheck: values?.versionCheck,
               });
               mutate('/api/v1/settings/public');
@@ -363,140 +305,6 @@ const SettingsMain = () => {
                   </div>
                 </div>
                 <div className="form-row">
-                  <label htmlFor="discoverRegion" className="text-label">
-                    <span>{intl.formatMessage(messages.discoverRegion)}</span>
-                    <span className="label-tip">
-                      {intl.formatMessage(messages.discoverRegionTip)}
-                    </span>
-                  </label>
-                  <div className="form-input-area">
-                    <div className="form-input-field">
-                      <RegionSelector
-                        value={values.discoverRegion ?? ''}
-                        name="discoverRegion"
-                        onChange={setFieldValue}
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="form-row">
-                  <label htmlFor="originalLanguage" className="text-label">
-                    <span>{intl.formatMessage(messages.originallanguage)}</span>
-                    <span className="label-tip">
-                      {intl.formatMessage(messages.originallanguageTip)}
-                    </span>
-                  </label>
-                  <div className="form-input-area">
-                    <div className="form-input-field relative z-30">
-                      <LanguageSelector
-                        setFieldValue={setFieldValue}
-                        value={values.originalLanguage}
-                        fieldName="originalLanguage"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="form-row">
-                  <label htmlFor="streamingRegion" className="text-label">
-                    <span>{intl.formatMessage(messages.streamingRegion)}</span>
-                    <span className="label-tip">
-                      {intl.formatMessage(messages.streamingRegionTip)}
-                    </span>
-                  </label>
-                  <div className="form-input-area">
-                    <div className="form-input-field relative">
-                      <RegionSelector
-                        value={values.streamingRegion}
-                        name="streamingRegion"
-                        onChange={setFieldValue}
-                        regionType="streaming"
-                        disableAll
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="form-row">
-                  <label htmlFor="blocklistRegion" className="text-label">
-                    <span>{intl.formatMessage(messages.blocklistRegion)}</span>
-                    <span className="label-tip">
-                      {intl.formatMessage(messages.blocklistRegionTip)}
-                    </span>
-                  </label>
-                  <div className="form-input-area">
-                    <div className="form-input-field">
-                      <RegionSelector
-                        value={values.blocklistRegion}
-                        name="blocklistRegion"
-                        onChange={setFieldValue}
-                        regionType="discover"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="form-row">
-                  <label htmlFor="blocklistLanguage" className="text-label">
-                    <span>
-                      {intl.formatMessage(messages.blocklistLanguage)}
-                    </span>
-                    <span className="label-tip">
-                      {intl.formatMessage(messages.blocklistLanguageTip)}
-                    </span>
-                  </label>
-                  <div className="form-input-area">
-                    <div className="form-input-field relative z-20">
-                      <LanguageSelector
-                        setFieldValue={setFieldValue}
-                        serverValue={data?.blocklistLanguage}
-                        value={values.blocklistLanguage}
-                        fieldName="blocklistLanguage"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="form-row">
-                  <label htmlFor="blocklistedTags" className="text-label">
-                    <span>{intl.formatMessage(messages.blocklistedTags)}</span>
-                    <span className="label-tip">
-                      {intl.formatMessage(messages.blocklistedTagsTip)}
-                    </span>
-                  </label>
-                  <div className="form-input-area">
-                    <div className="form-input-field relative z-10">
-                      <BlocklistedTagsSelector
-                        defaultValue={values.blocklistedTags}
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="form-row">
-                  <label htmlFor="blocklistedTagsLimit" className="text-label">
-                    <span className="mr-2">
-                      {intl.formatMessage(messages.blocklistedTagsLimit)}
-                    </span>
-                    <SettingsBadge badgeType="advanced" />
-                    <span className="label-tip">
-                      {intl.formatMessage(messages.blocklistedTagsLimitTip)}
-                    </span>
-                  </label>
-                  <div className="form-input-area">
-                    <Field
-                      id="blocklistedTagsLimit"
-                      name="blocklistedTagsLimit"
-                      type="text"
-                      inputMode="numeric"
-                      className="short"
-                      placeholder={50}
-                    />
-                    {errors.blocklistedTagsLimit &&
-                      touched.blocklistedTagsLimit &&
-                      typeof errors.blocklistedTagsLimit === 'string' && (
-                        <div className="error">
-                          {errors.blocklistedTagsLimit}
-                        </div>
-                      )}
-                  </div>
-                </div>
-                <div className="form-row">
                   <label htmlFor="hideAvailable" className="checkbox-label">
                     <span className="mr-2">
                       {intl.formatMessage(messages.hideAvailable)}
@@ -558,75 +366,6 @@ const SettingsMain = () => {
                         setFieldValue('hideRequested', !values.hideRequested);
                       }}
                     />
-                  </div>
-                </div>
-                <div className="form-row">
-                  <label
-                    htmlFor="partialRequestsEnabled"
-                    className="checkbox-label"
-                  >
-                    <span className="mr-2">
-                      {intl.formatMessage(messages.partialRequestsEnabled)}
-                    </span>
-                  </label>
-                  <div className="form-input-area">
-                    <Field
-                      type="checkbox"
-                      id="partialRequestsEnabled"
-                      name="partialRequestsEnabled"
-                      onChange={() => {
-                        setFieldValue(
-                          'partialRequestsEnabled',
-                          !values.partialRequestsEnabled
-                        );
-                      }}
-                    />
-                  </div>
-                </div>
-                <div className="form-row">
-                  <label
-                    htmlFor="enableSpecialEpisodes"
-                    className="checkbox-label"
-                  >
-                    <span className="mr-2">
-                      {intl.formatMessage(messages.enableSpecialEpisodes)}
-                    </span>
-                  </label>
-                  <div className="form-input-area">
-                    <Field
-                      type="checkbox"
-                      id="enableSpecialEpisodes"
-                      name="enableSpecialEpisodes"
-                      onChange={() => {
-                        setFieldValue(
-                          'enableSpecialEpisodes',
-                          !values.enableSpecialEpisodes
-                        );
-                      }}
-                    />
-                  </div>
-                </div>
-                <div className="form-row">
-                  <label htmlFor="youtubeUrl" className="text-label">
-                    {intl.formatMessage(messages.youtubeUrl)}
-                    <span className="label-tip">
-                      {intl.formatMessage(messages.youtubeUrlTip)}
-                    </span>
-                  </label>
-                  <div className="form-input-area">
-                    <div className="form-input-field">
-                      <Field
-                        id="youtubeUrl"
-                        name="youtubeUrl"
-                        type="text"
-                        inputMode="url"
-                      />
-                    </div>
-                    {errors.youtubeUrl &&
-                      touched.youtubeUrl &&
-                      typeof errors.youtubeUrl === 'string' && (
-                        <div className="error">{errors.youtubeUrl}</div>
-                      )}
                   </div>
                 </div>
                 <div className="form-row">

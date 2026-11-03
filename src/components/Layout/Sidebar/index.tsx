@@ -7,11 +7,8 @@ import { Transition, TransitionChild } from '@headlessui/react';
 import {
   ClockIcon,
   CogIcon,
-  ExclamationTriangleIcon,
   EyeSlashIcon,
-  FilmIcon,
   SparklesIcon,
-  TvIcon,
   UsersIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
@@ -23,11 +20,8 @@ import { useIntl } from 'react-intl';
 
 export const menuMessages = defineMessages('components.Layout.Sidebar', {
   dashboard: 'Discover',
-  browsemovies: 'Movies',
-  browsetv: 'Series',
   requests: 'Requests',
   blocklist: 'Blocklist',
-  issues: 'Issues',
   users: 'Users',
   settings: 'Settings',
 });
@@ -36,8 +30,6 @@ interface SidebarProps {
   open?: boolean;
   setClosed: () => void;
   pendingRequestsCount: number;
-  openIssuesCount: number;
-  revalidateIssueCount: () => void;
   revalidateRequestsCount: () => void;
 }
 
@@ -60,18 +52,6 @@ const SidebarLinks: SidebarLinkProps[] = [
     activeRegExp: /^\/(discover\/?)?$/,
   },
   {
-    href: '/discover/movies',
-    messagesKey: 'browsemovies',
-    svgIcon: <FilmIcon className="mr-3 h-6 w-6" />,
-    activeRegExp: /^\/discover\/movies$/,
-  },
-  {
-    href: '/discover/tv',
-    messagesKey: 'browsetv',
-    svgIcon: <TvIcon className="mr-3 h-6 w-6" />,
-    activeRegExp: /^\/discover\/tv$/,
-  },
-  {
     href: '/requests',
     messagesKey: 'requests',
     svgIcon: <ClockIcon className="mr-3 h-6 w-6" />,
@@ -85,18 +65,6 @@ const SidebarLinks: SidebarLinkProps[] = [
     requiredPermission: [
       Permission.MANAGE_BLOCKLIST,
       Permission.VIEW_BLOCKLIST,
-    ],
-    permissionType: 'or',
-  },
-  {
-    href: '/issues',
-    messagesKey: 'issues',
-    svgIcon: <ExclamationTriangleIcon className="mr-3 h-6 w-6" />,
-    activeRegExp: /^\/issues/,
-    requiredPermission: [
-      Permission.MANAGE_ISSUES,
-      Permission.CREATE_ISSUES,
-      Permission.VIEW_ISSUES,
     ],
     permissionType: 'or',
   },
@@ -122,8 +90,6 @@ const Sidebar = ({
   open,
   setClosed,
   pendingRequestsCount,
-  openIssuesCount,
-  revalidateIssueCount,
   revalidateRequestsCount,
 }: SidebarProps) => {
   const navRef = useRef<HTMLDivElement>(null);
@@ -133,19 +99,10 @@ const Sidebar = ({
   useClickOutside(navRef, () => setClosed());
 
   useEffect(() => {
-    if (openIssuesCount) {
-      revalidateIssueCount();
-    }
-
     if (pendingRequestsCount) {
       revalidateRequestsCount();
     }
-  }, [
-    revalidateIssueCount,
-    revalidateRequestsCount,
-    pendingRequestsCount,
-    openIssuesCount,
-  ]);
+  }, [revalidateRequestsCount, pendingRequestsCount]);
 
   return (
     <>
@@ -300,21 +257,6 @@ const Sidebar = ({
                               }`}
                             >
                               {pendingRequestsCount}
-                            </Badge>
-                          </div>
-                        )}
-                      {sidebarLink.messagesKey === 'issues' &&
-                        openIssuesCount > 0 &&
-                        hasPermission(Permission.MANAGE_ISSUES) && (
-                          <div className="ml-auto flex">
-                            <Badge
-                              className={`rounded-md bg-gradient-to-br ${
-                                router.pathname.match(sidebarLink.activeRegExp)
-                                  ? 'border-indigo-600 from-indigo-700 to-purple-700'
-                                  : 'border-indigo-500 from-indigo-600 to-purple-600'
-                              }`}
-                            >
-                              {openIssuesCount}
                             </Badge>
                           </div>
                         )}

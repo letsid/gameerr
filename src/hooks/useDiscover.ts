@@ -16,7 +16,6 @@ export interface BaseSearchResult<T> {
 
 interface BaseMedia {
   id: number;
-  mediaType: string;
   mediaInfo?: {
     status: MediaStatus;
     hasActiveRequest?: boolean;
@@ -125,9 +124,8 @@ const useDiscover = <
   if (settings.currentSettings.hideAvailable && hideAvailable) {
     titles = titles.filter(
       (i) =>
-        !(i.mediaType === 'movie' || i.mediaType === 'tv') ||
-        (i.mediaInfo?.status !== MediaStatus.AVAILABLE &&
-          i.mediaInfo?.status !== MediaStatus.PARTIALLY_AVAILABLE)
+        i.mediaInfo?.status !== MediaStatus.AVAILABLE &&
+        i.mediaInfo?.status !== MediaStatus.PARTIALLY_AVAILABLE
     );
   }
 
@@ -137,20 +135,12 @@ const useDiscover = <
     hasPermission(Permission.MANAGE_BLOCKLIST)
   ) {
     titles = titles.filter(
-      (i) =>
-        !(i.mediaType === 'movie' || i.mediaType === 'tv') ||
-        i.mediaInfo?.status !== MediaStatus.BLOCKLISTED
+      (i) => i.mediaInfo?.status !== MediaStatus.BLOCKLISTED
     );
   }
 
   if (settings.currentSettings.hideRequested && hideRequested) {
-    titles = titles.filter((i) => {
-      if (i.mediaType !== 'movie' && i.mediaType !== 'tv') {
-        return true;
-      }
-
-      return !i.mediaInfo?.hasActiveRequest;
-    });
+    titles = titles.filter((i) => !i.mediaInfo?.hasActiveRequest);
   }
 
   const isEmpty = !isLoadingInitialData && titles?.length === 0;

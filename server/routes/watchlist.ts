@@ -7,7 +7,6 @@ import logger from '@server/logger';
 import { Router } from 'express';
 import { QueryFailedError } from 'typeorm';
 
-import { MediaType } from '@server/constants/media';
 import { watchlistCreate } from '@server/interfaces/api/watchlistCreate';
 
 const watchlistRoutes = Router();
@@ -36,8 +35,7 @@ watchlistRoutes.post<never, Watchlist, Watchlist>(
       switch (error.constructor) {
         case QueryFailedError:
           logger.warn('Something wrong with data watchlist', {
-            tmdbId: req.body.tmdbId,
-            mediaType: req.body.mediaType,
+            igdbId: req.body.igdbId,
             label: 'Watchlist',
           });
           return next({ status: 409, message: 'Something wrong' });
@@ -50,7 +48,7 @@ watchlistRoutes.post<never, Watchlist, Watchlist>(
   }
 );
 
-watchlistRoutes.delete('/:tmdbId', async (req, res, next) => {
+watchlistRoutes.delete('/:igdbId', async (req, res, next) => {
   if (!req.user) {
     return next({
       status: 401,
@@ -58,19 +56,7 @@ watchlistRoutes.delete('/:tmdbId', async (req, res, next) => {
     });
   }
   try {
-    const mediaType = req.query.mediaType;
-    if (mediaType !== MediaType.MOVIE && mediaType !== MediaType.TV) {
-      return next({
-        status: 400,
-        message: 'Invalid mediaType query parameter.',
-      });
-    }
-
-    await Watchlist.deleteWatchlist(
-      Number(req.params.tmdbId),
-      mediaType,
-      req.user
-    );
+    await Watchlist.deleteWatchlist(Number(req.params.igdbId), req.user);
     return res.status(204).send();
   } catch (e) {
     if (e instanceof NotFoundError) {

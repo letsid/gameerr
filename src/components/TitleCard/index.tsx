@@ -4,8 +4,6 @@ import Button from '@app/components/Common/Button';
 import CachedImage from '@app/components/Common/CachedImage';
 import StatusBadgeMini from '@app/components/Common/StatusBadgeMini';
 import Tooltip from '@app/components/Common/Tooltip';
-import RequestModal from '@app/components/RequestModal';
-import ErrorCard from '@app/components/TitleCard/ErrorCard';
 import Placeholder from '@app/components/TitleCard/Placeholder';
 import { useIsTouch } from '@app/hooks/useIsTouch';
 import useToasts from '@app/hooks/useToasts';
@@ -15,15 +13,14 @@ import defineMessages from '@app/utils/defineMessages';
 import { withProperties } from '@app/utils/typeHelpers';
 import { Transition } from '@headlessui/react';
 import {
-  ArrowDownTrayIcon,
   EyeIcon,
   EyeSlashIcon,
   MinusCircleIcon,
   StarIcon,
 } from '@heroicons/react/24/outline';
+import { igdbImageUrl } from '@server/api/igdb/images';
 import { MediaStatus } from '@server/constants/media';
 import type { Watchlist } from '@server/entity/Watchlist';
-import type { MediaType } from '@server/models/Search';
 import axios from 'axios';
 import Link from 'next/link';
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
@@ -31,13 +28,14 @@ import { useIntl } from 'react-intl';
 import { mutate } from 'swr';
 
 interface TitleCardProps {
+  /**
+   * IGDB game id
+   */
   id: number;
-  image?: string;
+  title: string;
+  coverImageId?: string | null;
   summary?: string;
   year?: string;
-  title: string;
-  userScore?: number;
-  mediaType: MediaType;
   status?: MediaStatus;
   canExpand?: boolean;
   inProgress?: boolean;
@@ -57,12 +55,11 @@ const messages = defineMessages('components.TitleCard', {
 
 const TitleCard = ({
   id,
-  image,
+  title,
+  coverImageId,
   summary,
   year,
-  title,
   status,
-  mediaType,
   isAddedToWatchlist = false,
   inProgress = false,
   canExpand = false,
@@ -74,7 +71,6 @@ const TitleCard = ({
   const [isUpdating, setIsUpdating] = useState(false);
   const [currentStatus, setCurrentStatus] = useState(status);
   const [showDetail, setShowDetail] = useState(false);
-  const [showRequestModal, setShowRequestModal] = useState(false);
   const { addToast } = useToasts();
   const [toggleWatchlist, setToggleWatchlist] =
     useState<boolean>(!isAddedToWatchlist);
@@ -90,16 +86,6 @@ const TitleCard = ({
     setCurrentStatus(status);
   }, [status]);
 
-  const requestComplete = useCallback((newStatus: MediaStatus) => {
-    setCurrentStatus(newStatus);
-    setShowRequestModal(false);
-  }, []);
-
-  const requestUpdating = useCallback(
-    (status: boolean) => setIsUpdating(status),
-    []
-  );
-
   const closeBlocklistModal = useCallback(
     () => setShowBlocklistModal(false),
     []
@@ -109,8 +95,7 @@ const TitleCard = ({
     setIsUpdating(true);
     try {
       const response = await axios.post<Watchlist>('/api/v1/watchlist', {
-        tmdbId: id,
-        mediaType,
+        igdbId: id,
         title,
       });
       mutate('/api/v1/discover/watchlist');
@@ -139,9 +124,7 @@ const TitleCard = ({
   const onClickDeleteWatchlistBtn = async (): Promise<void> => {
     setIsUpdating(true);
     try {
-      const response = await axios.delete<Watchlist>(
-        `/api/v1/watchlist/${id}?mediaType=${mediaType}`
-      );
+      const response = await axios.delete<Watchlist>(`/api/v1/watchlist/${id}`);
 
       if (response.status === 204) {
         addToast(
@@ -175,16 +158,10 @@ const TitleCard = ({
 
     if (topNode) {
       try {
-        if (mediaType === 'collection') {
-          await axios.post(`/api/v1/blocklist/collection/${id}`);
-        } else {
-          await axios.post('/api/v1/blocklist', {
-            tmdbId: id,
-            mediaType,
-            title,
-            user: user?.id,
-          });
-        }
+        await axios.post('/api/v1/blocklist', {
+          igdbId: id,
+          title,
+        });
         addToast(
           <span>
             {intl.formatMessage(globalMessages.blocklistSuccess, {
@@ -233,54 +210,27 @@ const TitleCard = ({
 
     if (topNode) {
       try {
-        if (mediaType === 'collection') {
-          const res = await axios.delete(`/api/v1/blocklist/collection/${id}`);
+        const res = await axios.delete(`/api/v1/blocklist/${id}`);
 
-          if (res.status === 204) {
-            addToast(
-              <span>
-                {intl.formatMessage(globalMessages.removeFromBlocklistSuccess, {
-                  title,
-                  strong: (msg: React.ReactNode) => <strong>{msg}</strong>,
-                })}
-              </span>,
-              { appearance: 'success', autoDismiss: true }
-            );
-            setCurrentStatus(MediaStatus.UNKNOWN);
-            if (mutateParent) {
-              mutateParent();
-            }
-          } else {
-            addToast(intl.formatMessage(globalMessages.blocklistError), {
-              appearance: 'error',
-              autoDismiss: true,
-            });
+        if (res.status === 204) {
+          addToast(
+            <span>
+              {intl.formatMessage(globalMessages.removeFromBlocklistSuccess, {
+                title,
+                strong: (msg: React.ReactNode) => <strong>{msg}</strong>,
+              })}
+            </span>,
+            { appearance: 'success', autoDismiss: true }
+          );
+          setCurrentStatus(MediaStatus.UNKNOWN);
+          if (mutateParent) {
+            mutateParent();
           }
         } else {
-          const res = await axios.delete(
-            `/api/v1/blocklist/${id}?mediaType=${mediaType}`
-          );
-
-          if (res.status === 204) {
-            addToast(
-              <span>
-                {intl.formatMessage(globalMessages.removeFromBlocklistSuccess, {
-                  title,
-                  strong: (msg: React.ReactNode) => <strong>{msg}</strong>,
-                })}
-              </span>,
-              { appearance: 'success', autoDismiss: true }
-            );
-            setCurrentStatus(MediaStatus.UNKNOWN);
-            if (mutateParent) {
-              mutateParent();
-            }
-          } else {
-            addToast(intl.formatMessage(globalMessages.blocklistError), {
-              appearance: 'error',
-              autoDismiss: true,
-            });
-          }
+          addToast(intl.formatMessage(globalMessages.blocklistError), {
+            appearance: 'error',
+            autoDismiss: true,
+          });
         }
       } catch {
         addToast(intl.formatMessage(globalMessages.blocklistError), {
@@ -298,18 +248,6 @@ const TitleCard = ({
     setIsUpdating(false);
   };
 
-  const closeModal = useCallback(() => setShowRequestModal(false), []);
-
-  const showRequestButton = hasPermission(
-    [
-      Permission.REQUEST,
-      mediaType === 'movie' || mediaType === 'collection'
-        ? Permission.REQUEST_MOVIE
-        : Permission.REQUEST_TV,
-    ],
-    { type: 'or' }
-  );
-
   const showHideButton = hasPermission([Permission.MANAGE_BLOCKLIST], {
     type: 'or',
   });
@@ -320,29 +258,8 @@ const TitleCard = ({
       data-testid="title-card"
       ref={cardRef}
     >
-      <RequestModal
-        tmdbId={id}
-        show={showRequestModal}
-        type={
-          mediaType === 'movie'
-            ? 'movie'
-            : mediaType === 'collection'
-              ? 'collection'
-              : 'tv'
-        }
-        onComplete={requestComplete}
-        onUpdating={requestUpdating}
-        onCancel={closeModal}
-      />
       <BlocklistModal
-        tmdbId={id}
-        type={
-          mediaType === 'movie'
-            ? 'movie'
-            : mediaType === 'collection'
-              ? 'collection'
-              : 'tv'
-        }
+        title={title}
         show={showBlocklistModal}
         onCancel={closeBlocklistModal}
         onComplete={onClickHideItemBtn}
@@ -355,7 +272,7 @@ const TitleCard = ({
             : 'scale-100 shadow ring-gray-700'
         }`}
         style={{
-          paddingBottom: '150%',
+          paddingBottom: '133.33%',
         }}
         onMouseEnter={() => {
           if (!isTouch) {
@@ -374,33 +291,18 @@ const TitleCard = ({
       >
         <div className="absolute inset-0 h-full w-full overflow-hidden">
           <CachedImage
-            type="tmdb"
+            type="igdb"
             className="absolute inset-0 h-full w-full"
             alt=""
             src={
-              image
-                ? `https://image.tmdb.org/t/p/w300_and_h450_face${image}`
+              coverImageId
+                ? igdbImageUrl(coverImageId, 'cover_big')
                 : `/images/seerr_poster_not_found_logo_top.png`
             }
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             fill
           />
           <div className="absolute left-0 right-0 flex items-center justify-between p-2">
-            <div
-              className={`pointer-events-none z-40 self-start rounded-full border shadow-md ${
-                mediaType === 'movie' || mediaType === 'collection'
-                  ? 'border-blue-500 bg-blue-600/80'
-                  : 'border-purple-600 bg-purple-600/80'
-              }`}
-            >
-              <div className="flex h-4 items-center px-2 py-2 text-center text-xs font-medium uppercase tracking-wider text-white sm:h-5">
-                {mediaType === 'movie'
-                  ? intl.formatMessage(globalMessages.movie)
-                  : mediaType === 'collection'
-                    ? intl.formatMessage(globalMessages.collection)
-                    : intl.formatMessage(globalMessages.tvshow)}
-              </div>
-            </div>
             {showDetail && currentStatus !== MediaStatus.BLOCKLISTED && (
               <div className="flex flex-col gap-1">
                 {user?.userType !== UserType.PLEX &&
@@ -457,7 +359,7 @@ const TitleCard = ({
                 </Tooltip>
               )}
             {currentStatus && currentStatus !== MediaStatus.UNKNOWN && (
-              <div className="flex flex-col items-center gap-1">
+              <div className="ml-auto flex flex-col items-center gap-1">
                 <div className="pointer-events-none z-40 flex">
                   <StatusBadgeMini
                     status={currentStatus}
@@ -485,7 +387,7 @@ const TitleCard = ({
 
           <Transition
             as={Fragment}
-            show={!image || showDetail || showRequestModal}
+            show={!coverImageId || showDetail}
             enter="transition-opacity"
             enterFrom="opacity-0"
             enterTo="opacity-100"
@@ -495,13 +397,7 @@ const TitleCard = ({
           >
             <div className="absolute inset-0 overflow-hidden rounded-xl">
               <Link
-                href={
-                  mediaType === 'movie'
-                    ? `/movie/${id}`
-                    : mediaType === 'collection'
-                      ? `/collection/${id}`
-                      : `/tv/${id}`
-                }
+                href={`/game/${id}`}
                 className="absolute inset-0 h-full w-full cursor-pointer overflow-hidden text-left"
                 style={{
                   background:
@@ -509,16 +405,7 @@ const TitleCard = ({
                 }}
               >
                 <div className="flex h-full w-full items-end">
-                  <div
-                    className={`px-2 text-white ${
-                      !showRequestButton ||
-                      (currentStatus &&
-                        currentStatus !== MediaStatus.UNKNOWN &&
-                        currentStatus !== MediaStatus.DELETED)
-                        ? 'pb-2'
-                        : 'pb-11'
-                    }`}
-                  >
+                  <div className="px-2 pb-2 text-white">
                     {year && <div className="text-sm font-medium">{year}</div>}
 
                     <h1
@@ -534,47 +421,23 @@ const TitleCard = ({
                     >
                       {title}
                     </h1>
-                    <div
-                      className="whitespace-normal text-xs"
-                      style={{
-                        WebkitLineClamp:
-                          !showRequestButton ||
-                          (currentStatus &&
-                            currentStatus !== MediaStatus.UNKNOWN &&
-                            currentStatus !== MediaStatus.DELETED)
-                            ? 5
-                            : 3,
-                        display: '-webkit-box',
-                        overflow: 'hidden',
-                        WebkitBoxOrient: 'vertical',
-                        wordBreak: 'break-word',
-                      }}
-                    >
-                      {summary}
-                    </div>
+                    {summary && (
+                      <div
+                        className="whitespace-normal text-xs"
+                        style={{
+                          WebkitLineClamp: 5,
+                          display: '-webkit-box',
+                          overflow: 'hidden',
+                          WebkitBoxOrient: 'vertical',
+                          wordBreak: 'break-word',
+                        }}
+                      >
+                        {summary}
+                      </div>
+                    )}
                   </div>
                 </div>
               </Link>
-
-              <div className="absolute bottom-0 left-0 right-0 flex justify-between px-2 py-2">
-                {showRequestButton &&
-                  (!currentStatus ||
-                    currentStatus === MediaStatus.UNKNOWN ||
-                    currentStatus === MediaStatus.DELETED) && (
-                    <Button
-                      buttonType="primary"
-                      buttonSize="sm"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setShowRequestModal(true);
-                      }}
-                      className="h-7 w-full"
-                    >
-                      <ArrowDownTrayIcon />
-                      <span>{intl.formatMessage(globalMessages.request)}</span>
-                    </Button>
-                  )}
-              </div>
             </div>
           </Transition>
         </div>
@@ -583,4 +446,4 @@ const TitleCard = ({
   );
 };
 
-export default withProperties(TitleCard, { Placeholder, ErrorCard });
+export default withProperties(TitleCard, { Placeholder });

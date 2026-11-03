@@ -2,7 +2,6 @@ import {
   DISCORD_SNOWFLAKE_REGEX,
   EmbedColors,
 } from '@server/constants/discord';
-import { IssueStatus, IssueTypeName } from '@server/constants/issue';
 import { getRepository } from '@server/datasource';
 import { User } from '@server/entity/User';
 import { getIntl } from '@server/i18n';
@@ -143,48 +142,6 @@ class DiscordAgent
           inline: true,
         });
       }
-    } else if (payload.comment) {
-      fields.push({
-        name: intl.formatMessage(globalMessages.commentFrom, {
-          userName: payload.comment.user.displayName,
-        }),
-        value: payload.comment.message,
-        inline: false,
-      });
-    } else if (payload.issue) {
-      fields.push(
-        {
-          name: intl.formatMessage(globalMessages.reportedBy),
-          value: payload.issue.createdBy.displayName,
-          inline: true,
-        },
-        {
-          name: intl.formatMessage(globalMessages.issueType),
-          value: IssueTypeName[payload.issue.issueType],
-          inline: true,
-        },
-        {
-          name: intl.formatMessage(globalMessages.issueStatus),
-          value:
-            payload.issue.status === IssueStatus.OPEN
-              ? intl.formatMessage(globalMessages.open)
-              : intl.formatMessage(globalMessages.resolved),
-          inline: true,
-        }
-      );
-
-      switch (type) {
-        case Notification.ISSUE_CREATED:
-        case Notification.ISSUE_REOPENED:
-          color = EmbedColors.RED;
-          break;
-        case Notification.ISSUE_COMMENT:
-          color = EmbedColors.ORANGE;
-          break;
-        case Notification.ISSUE_RESOLVED:
-          color = EmbedColors.GREEN;
-          break;
-      }
     }
 
     for (const extra of payload.extra ?? []) {
@@ -195,13 +152,10 @@ class DiscordAgent
       });
     }
 
-    const url = applicationUrl
-      ? payload.issue
-        ? `${applicationUrl}/issues/${payload.issue.id}`
-        : payload.media
-          ? `${applicationUrl}/${payload.media.mediaType}/${payload.media.tmdbId}`
-          : undefined
-      : undefined;
+    const url =
+      applicationUrl && payload.media
+        ? `${applicationUrl}/game/${payload.media.igdbId}`
+        : undefined;
 
     return {
       title: payload.event

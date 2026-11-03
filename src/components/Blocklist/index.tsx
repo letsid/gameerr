@@ -1,4 +1,3 @@
-import BlocklistedTagsBadge from '@app/components/BlocklistedTagsBadge';
 import Badge from '@app/components/Common/Badge';
 import Button from '@app/components/Common/Button';
 import CachedImage from '@app/components/Common/CachedImage';
@@ -16,7 +15,6 @@ import defineMessages from '@app/utils/defineMessages';
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
-  FunnelIcon,
   MagnifyingGlassIcon,
   TrashIcon,
 } from '@heroicons/react/24/solid';
@@ -24,46 +22,22 @@ import type {
   BlocklistItem,
   BlocklistResultsResponse,
 } from '@server/interfaces/api/blocklistInterfaces';
-import type { MovieDetails } from '@server/models/Movie';
-import type { TvDetails } from '@server/models/Tv';
 import axios from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import type { ChangeEvent } from 'react';
 import { useState } from 'react';
-import { useInView } from 'react-intersection-observer';
 import { FormattedRelativeTime, useIntl } from 'react-intl';
 import useSWR from 'swr';
 
 const messages = defineMessages('components.Blocklist', {
-  blocklistsettings: 'Blocklist Settings',
-  blocklistSettingsDescription: 'Manage blocklisted media.',
-  mediaName: 'Name',
-  mediaType: 'Type',
-  mediaTmdbId: 'tmdb Id',
-  blocklistdate: 'date',
   blocklistedby: '{date} by {user}',
-  blocklistNotFoundError: '<strong>{title}</strong> is not blocklisted.',
-  filterManual: 'Manual',
-  filterBlocklistedTags: 'Blocklisted Tags',
-  showAllBlocklisted: 'Show All Blocklisted Media',
 });
-
-enum Filter {
-  ALL = 'all',
-  MANUAL = 'manual',
-  BLOCKLISTEDTAGS = 'blocklistedTags',
-}
-
-const isMovie = (movie: MovieDetails | TvDetails): movie is MovieDetails => {
-  return (movie as MovieDetails).title !== undefined;
-};
 
 const Blocklist = () => {
   const [currentPageSize, setCurrentPageSize] = useState<number>(10);
   const [searchFilter, debouncedSearchFilter, setSearchFilter] =
     useDebouncedState('');
-  const [currentFilter, setCurrentFilter] = useState<Filter>(Filter.MANUAL);
   const router = useRouter();
   const intl = useIntl();
 
@@ -78,9 +52,7 @@ const Blocklist = () => {
   } = useSWR<BlocklistResultsResponse>(
     `/api/v1/blocklist/?take=${currentPageSize}&skip=${
       pageIndex * currentPageSize
-    }&filter=${currentFilter}${
-      debouncedSearchFilter ? `&search=${debouncedSearchFilter}` : ''
-    }`,
+    }${debouncedSearchFilter ? `&search=${debouncedSearchFilter}` : ''}`,
     {
       refreshInterval: 0,
       revalidateOnFocus: false,
@@ -112,37 +84,6 @@ const Blocklist = () => {
         <Header>{intl.formatMessage(globalMessages.blocklist)}</Header>
 
         <div className="mt-2 flex flex-grow flex-col sm:flex-row lg:flex-grow-0">
-          <div className="mb-2 flex flex-grow sm:mb-0 sm:mr-2 lg:flex-grow-0">
-            <span className="inline-flex cursor-default items-center rounded-l-md border border-r-0 border-gray-500 bg-gray-800 px-3 text-sm text-gray-100">
-              <FunnelIcon className="h-6 w-6" />
-            </span>
-            <select
-              id="filter"
-              name="filter"
-              onChange={(e) => {
-                setCurrentFilter(e.target.value as Filter);
-                router.push({
-                  pathname: router.pathname,
-                  query: router.query.userId
-                    ? { userId: router.query.userId }
-                    : {},
-                });
-              }}
-              value={currentFilter}
-              className="rounded-r-only"
-            >
-              <option value="all">
-                {intl.formatMessage(globalMessages.all)}
-              </option>
-              <option value="manual">
-                {intl.formatMessage(messages.filterManual)}
-              </option>
-              <option value="blocklistedTags">
-                {intl.formatMessage(messages.filterBlocklistedTags)}
-              </option>
-            </select>
-          </div>
-
           <div className="mb-2 flex flex-grow sm:mb-0 sm:mr-2 md:flex-grow-0">
             <span className="inline-flex cursor-default items-center rounded-l-md border border-r-0 border-gray-500 bg-gray-800 px-3 text-sm text-gray-100">
               <MagnifyingGlassIcon className="h-6 w-6" />
@@ -164,24 +105,11 @@ const Blocklist = () => {
           <span className="text-2xl text-gray-400">
             {intl.formatMessage(globalMessages.noresults)}
           </span>
-          {currentFilter !== Filter.ALL && (
-            <div className="mt-4">
-              <Button
-                buttonType="primary"
-                onClick={() => setCurrentFilter(Filter.ALL)}
-              >
-                {intl.formatMessage(messages.showAllBlocklisted)}
-              </Button>
-            </div>
-          )}
         </div>
       ) : (
         data.results.map((item: BlocklistItem) => {
           return (
-            <div
-              className="py-2"
-              key={`request-list-${item.mediaType}-${item.tmdbId}`}
-            >
+            <div className="py-2" key={`blocklist-item-${item.igdbId}`}>
               <BlocklistedItem item={item} revalidateList={revalidate} />
             </div>
           );
@@ -273,36 +201,16 @@ interface BlocklistedItemProps {
 const BlocklistedItem = ({ item, revalidateList }: BlocklistedItemProps) => {
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const { addToast } = useToasts();
-  const { ref, inView } = useInView({
-    triggerOnce: true,
-  });
   const intl = useIntl();
   const { hasPermission } = useUser();
 
-  const url =
-    item.mediaType === 'movie'
-      ? `/api/v1/movie/${item.tmdbId}`
-      : `/api/v1/tv/${item.tmdbId}`;
-  const { data: title, error } = useSWR<MovieDetails | TvDetails>(
-    inView ? url : null
-  );
+  const title = item.title ?? `IGDB #${item.igdbId}`;
 
-  if (!title && !error) {
-    return (
-      <div
-        className="h-64 w-full animate-pulse rounded-xl bg-gray-800 xl:h-28"
-        ref={ref}
-      />
-    );
-  }
-
-  const removeFromBlocklist = async (tmdbId: number, title?: string) => {
+  const removeFromBlocklist = async () => {
     setIsUpdating(true);
 
     try {
-      await axios.delete(
-        `/api/v1/blocklist/${tmdbId}?mediaType=${item.mediaType}`
-      );
+      await axios.delete(`/api/v1/blocklist/${item.igdbId}`);
 
       addToast(
         <span>
@@ -326,65 +234,26 @@ const BlocklistedItem = ({ item, revalidateList }: BlocklistedItemProps) => {
 
   return (
     <div className="relative flex w-full flex-col justify-between overflow-hidden rounded-xl bg-gray-800 py-4 text-gray-400 shadow-md ring-1 ring-gray-700 xl:h-28 xl:flex-row">
-      {title && title.backdropPath && (
-        <div className="absolute inset-0 z-0 w-full bg-cover bg-center xl:w-2/3">
-          <CachedImage
-            type="tmdb"
-            src={`https://image.tmdb.org/t/p/w1920_and_h800_multi_faces/${title.backdropPath}`}
-            alt=""
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            fill
-          />
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage:
-                'linear-gradient(90deg, rgba(31, 41, 55, 0.47) 0%, rgba(31, 41, 55, 1) 100%)',
-            }}
-          />
-        </div>
-      )}
       <div className="relative flex w-full flex-col justify-between overflow-hidden sm:flex-row">
         <div className="relative z-10 flex w-full items-center overflow-hidden pl-4 pr-4 sm:pr-0 xl:w-7/12 2xl:w-2/3">
           <Link
-            href={
-              item.mediaType === 'movie'
-                ? `/movie/${item.tmdbId}`
-                : `/tv/${item.tmdbId}`
-            }
+            href={`/game/${item.igdbId}`}
             className="relative h-auto w-12 flex-shrink-0 scale-100 transform-gpu overflow-hidden rounded-md transition duration-300 hover:scale-105"
           >
             <CachedImage
-              type="tmdb"
-              src={
-                title?.posterPath
-                  ? `https://image.tmdb.org/t/p/w600_and_h900_bestv2${title.posterPath}`
-                  : '/images/seerr_poster_not_found.png'
-              }
+              type="igdb"
+              src="/images/seerr_poster_not_found.png"
               alt=""
               sizes="100vw"
               style={{ width: '100%', height: 'auto', objectFit: 'cover' }}
               width={600}
-              height={900}
+              height={800}
             />
           </Link>
           <div className="flex flex-col justify-center overflow-hidden pl-2 xl:pl-4">
-            <div className="pt-0.5 text-xs font-medium text-white sm:pt-1">
-              {title &&
-                (isMovie(title)
-                  ? title.releaseDate
-                  : title.firstAirDate
-                )?.slice(0, 4)}
-            </div>
-            <Link
-              href={
-                item.mediaType === 'movie'
-                  ? `/movie/${item.tmdbId}`
-                  : `/tv/${item.tmdbId}`
-              }
-            >
+            <Link href={`/game/${item.igdbId}`}>
               <span className="mr-2 min-w-0 truncate text-lg font-bold text-white hover:underline xl:text-xl">
-                {title && (isMovie(title) ? title.title : title.name)}
+                {title}
               </span>
             </Link>
           </div>
@@ -392,7 +261,9 @@ const BlocklistedItem = ({ item, revalidateList }: BlocklistedItemProps) => {
 
         <div className="z-10 ml-4 mt-4 flex w-full flex-col justify-center overflow-hidden pr-4 text-sm sm:ml-2 sm:mt-0 xl:flex-1 xl:pr-0">
           <div className="card-field">
-            <span className="card-field-name">Status</span>
+            <span className="card-field-name">
+              {intl.formatMessage(globalMessages.status)}
+            </span>
             <Badge badgeType="danger">
               {intl.formatMessage(globalMessages.blocklisted)}
             </Badge>
@@ -431,10 +302,6 @@ const BlocklistedItem = ({ item, revalidateList }: BlocklistedItemProps) => {
                         </span>
                       </span>
                     </Link>
-                  ) : item.blocklistedTags ? (
-                    <span className="ml-1">
-                      <BlocklistedTagsBadge data={item} />
-                    </span>
                   ) : (
                     <span className="ml-1 truncate text-sm font-semibold">
                       ???
@@ -444,32 +311,12 @@ const BlocklistedItem = ({ item, revalidateList }: BlocklistedItemProps) => {
               </span>
             </div>
           )}
-          <div className="card-field">
-            {item.mediaType === 'movie' ? (
-              <div className="pointer-events-none z-40 self-start rounded-full border border-blue-500 bg-blue-600/80 shadow-md">
-                <div className="flex h-4 items-center px-2 py-2 text-center text-xs font-medium uppercase tracking-wider text-white sm:h-5">
-                  {intl.formatMessage(globalMessages.movie)}
-                </div>
-              </div>
-            ) : (
-              <div className="pointer-events-none z-40 self-start rounded-full border border-purple-600 bg-purple-600/80 shadow-md">
-                <div className="flex h-4 items-center px-2 py-2 text-center text-xs font-medium uppercase tracking-wider text-white sm:h-5">
-                  {intl.formatMessage(globalMessages.tvshow)}
-                </div>
-              </div>
-            )}
-          </div>
         </div>
       </div>
       <div className="z-10 mt-4 flex w-full flex-col justify-center space-y-2 pl-4 pr-4 xl:mt-0 xl:w-96 xl:items-end xl:pl-0">
         {hasPermission(Permission.MANAGE_BLOCKLIST) && (
           <ConfirmButton
-            onClick={() =>
-              removeFromBlocklist(
-                item.tmdbId,
-                title && (isMovie(title) ? title.title : title.name)
-              )
-            }
+            onClick={() => removeFromBlocklist()}
             confirmText={intl.formatMessage(
               isUpdating ? globalMessages.deleting : globalMessages.areyousure
             )}

@@ -1,4 +1,4 @@
-import TheMovieDb from '@server/api/themoviedb';
+import { igdbImageUrl } from '@server/api/igdb/images';
 import {
   MediaRequestStatus,
   MediaStatus,
@@ -7,9 +7,7 @@ import {
 import { getRepository } from '@server/datasource';
 import type { MediaRequestBody } from '@server/interfaces/api/requestInterfaces';
 import notificationManager, { Notification } from '@server/lib/notifications';
-import overrideRules from '@server/lib/overrideRules';
 import { Permission } from '@server/lib/permissions';
-import { getSettings } from '@server/lib/settings';
 import logger from '@server/logger';
 import { DbAwareColumn, resolveDbType } from '@server/utils/DbColumnHelper';
 import requestLock, {
@@ -20,53 +18,54 @@ import requestLock, {
 import { truncate } from 'lodash';
 import {
   AfterInsert,
-  AfterLoad,
   AfterUpdate,
   Column,
   Entity,
   Index,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
-  RelationCount,
   UpdateDateColumn,
 } from 'typeorm';
 import Media from './Media';
-import SeasonRequest from './SeasonRequest';
 import { User } from './User';
 
 export class RequestPermissionError extends Error {}
 export class QuotaRestrictedError extends Error {}
 export class DuplicateMediaRequestError extends Error {}
-export class NoSeasonsAvailableError extends Error {}
 export class BlocklistedMediaError extends Error {}
+export class InvalidPlatformError extends Error {}
 
-type MediaRequestOptions = {
-  isAutoRequest?: boolean;
-};
+/**
+ * Game data resolved by the caller (from the metadata layer) before a
+ * request is created. Used to validate the platform and to keep the
+ * denormalized fields on the media row fresh.
+ */
+export interface RequestGameInfo {
+  title: string;
+  summary?: string;
+  coverImageId?: string;
+  platforms: number[];
+  steamAppId?: number;
+  releaseYear?: number;
+}
 
 @Entity()
 export class MediaRequest {
   public static async request(
     requestBody: MediaRequestBody,
     user: User,
-    options: MediaRequestOptions = {}
+    game?: RequestGameInfo
   ): Promise<MediaRequest> {
-    // is4k is optional, and an undefined one binds as null in the duplicate query
-    const body = { ...requestBody, is4k: !!requestBody.is4k };
-
     // Only a caller allowed to set the request user may queue on their lock
     const lockUserId =
-      body.userId &&
+      requestBody.userId &&
       user.hasPermission([Permission.MANAGE_USERS, Permission.MANAGE_REQUESTS])
-        ? body.userId
+        ? requestBody.userId
         : user.id;
 
-    // No is4k in the key: one media row holds both statuses, so a 4k and a
-    // non-4k request for the same title race to create it
     return requestLock.dispatch(userKey(lockUserId), () =>
-      mediaLock.dispatch(mediaKey(body.mediaType, body.mediaId), () =>
-        MediaRequest.createRequest(body, user, options)
+      mediaLock.dispatch(mediaKey(MediaType.GAME, requestBody.igdbId), () =>
+        MediaRequest.createRequest(requestBody, user, game)
       )
     );
   }
@@ -74,13 +73,11 @@ export class MediaRequest {
   private static async createRequest(
     requestBody: MediaRequestBody,
     user: User,
-    options: MediaRequestOptions
+    game?: RequestGameInfo
   ): Promise<MediaRequest> {
-    const tmdb = new TheMovieDb();
     const mediaRepository = getRepository(Media);
     const requestRepository = getRepository(MediaRequest);
     const userRepository = getRepository(User);
-    const settings = getSettings();
 
     let requestUser = user;
 
@@ -104,37 +101,15 @@ export class MediaRequest {
       throw new Error('User missing from request context.');
     }
 
-    if (
-      requestBody.mediaType === MediaType.MOVIE &&
-      !requestUser.hasPermission(
-        requestBody.is4k
-          ? [Permission.REQUEST_4K, Permission.REQUEST_4K_MOVIE]
-          : [Permission.REQUEST, Permission.REQUEST_MOVIE],
-        {
-          type: 'or',
-        }
-      )
-    ) {
+    if (!requestUser.hasPermission(Permission.REQUEST)) {
       throw new RequestPermissionError(
-        `You do not have permission to make ${
-          requestBody.is4k ? '4K ' : ''
-        }movie requests.`
+        'You do not have permission to make game requests.'
       );
-    } else if (
-      requestBody.mediaType === MediaType.TV &&
-      !requestUser.hasPermission(
-        requestBody.is4k
-          ? [Permission.REQUEST_4K, Permission.REQUEST_4K_TV]
-          : [Permission.REQUEST, Permission.REQUEST_TV],
-        {
-          type: 'or',
-        }
-      )
-    ) {
-      throw new RequestPermissionError(
-        `You do not have permission to make ${
-          requestBody.is4k ? '4K ' : ''
-        }series requests.`
+    }
+
+    if (game && !game.platforms.includes(requestBody.platform)) {
+      throw new InvalidPlatformError(
+        'The game is not available for the requested platform.'
       );
     }
 
@@ -144,364 +119,99 @@ export class MediaRequest {
     const ignoreQuota =
       requestBody.ignoreQuota === true &&
       canBypassQuota &&
-      ((requestBody.mediaType === MediaType.MOVIE
-        ? quotas.movie.limit
-        : quotas.tv.limit) ?? 0) > 0;
+      (quotas.game.limit ?? 0) > 0;
 
     if (!ignoreQuota) {
       if (requestBody.ignoreQuota && !canBypassQuota) {
         throw new RequestPermissionError(
           'You do not have permission to bypass user quota limits.'
         );
-      } else if (
-        requestBody.mediaType === MediaType.MOVIE &&
-        quotas.movie.restricted
-      ) {
-        throw new QuotaRestrictedError('Movie Quota exceeded.');
-      } else if (
-        requestBody.mediaType === MediaType.TV &&
-        quotas.tv.restricted
-      ) {
-        throw new QuotaRestrictedError('Series Quota exceeded.');
+      } else if (quotas.game.restricted) {
+        throw new QuotaRestrictedError('Game quota exceeded.');
       }
     }
 
-    const tmdbMedia =
-      requestBody.mediaType === MediaType.MOVIE
-        ? await tmdb.getMovie({ movieId: requestBody.mediaId })
-        : await tmdb.getTvShow({ tvId: requestBody.mediaId });
-
     let media = await mediaRepository.findOne({
-      where: {
-        tmdbId: requestBody.mediaId,
-        mediaType: requestBody.mediaType,
-      },
-      relations: ['requests'],
+      where: { igdbId: requestBody.igdbId },
     });
 
     if (!media) {
       media = new Media({
-        tmdbId: tmdbMedia.id,
-        tvdbId: requestBody.tvdbId ?? tmdbMedia.external_ids.tvdb_id,
-        status: !requestBody.is4k ? MediaStatus.PENDING : MediaStatus.UNKNOWN,
-        status4k: requestBody.is4k ? MediaStatus.PENDING : MediaStatus.UNKNOWN,
-        mediaType: requestBody.mediaType,
+        igdbId: requestBody.igdbId,
+        mediaType: MediaType.GAME,
+        status: MediaStatus.PENDING,
       });
     } else {
       if (media.status === MediaStatus.BLOCKLISTED) {
         logger.warn('Request for media blocked due to being blocklisted', {
-          tmdbId: tmdbMedia.id,
-          mediaType: requestBody.mediaType,
+          igdbId: requestBody.igdbId,
           label: 'Media Request',
         });
 
-        throw new BlocklistedMediaError('This media is blocklisted.');
+        throw new BlocklistedMediaError('This game is blocklisted.');
       }
 
       if (
-        (media.status === MediaStatus.UNKNOWN ||
-          media.status === MediaStatus.DELETED) &&
-        !requestBody.is4k
+        media.status === MediaStatus.UNKNOWN ||
+        media.status === MediaStatus.DELETED
       ) {
         media.status = MediaStatus.PENDING;
       }
+    }
 
-      if (
-        (media.status4k === MediaStatus.UNKNOWN ||
-          media.status4k === MediaStatus.DELETED) &&
-        requestBody.is4k
-      ) {
-        media.status4k = MediaStatus.PENDING;
-      }
+    if (game) {
+      media.title = game.title;
+      media.coverImageId = game.coverImageId ?? null;
+      media.platforms = game.platforms;
+      media.steamAppId = game.steamAppId ?? media.steamAppId ?? null;
     }
 
     const existing = await requestRepository
       .createQueryBuilder('request')
       .leftJoinAndSelect('request.media', 'media')
-      .leftJoinAndSelect('request.requestedBy', 'user')
-      .where('request.is4k = :is4k', { is4k: requestBody.is4k })
-      .andWhere('media.tmdbId = :tmdbId', { tmdbId: tmdbMedia.id })
-      .andWhere('media.mediaType = :mediaType', {
-        mediaType: requestBody.mediaType,
+      .where('media.igdbId = :igdbId', { igdbId: requestBody.igdbId })
+      .andWhere('request.platform = :platform', {
+        platform: requestBody.platform,
       })
-      .getMany();
+      .andWhere('request.status NOT IN (:...statuses)', {
+        statuses: [MediaRequestStatus.DECLINED, MediaRequestStatus.COMPLETED],
+      })
+      .getCount();
 
-    if (existing && existing.length > 0) {
-      // If there is an existing movie request that isn't declined, don't allow a new one.
-      if (
-        requestBody.mediaType === MediaType.MOVIE &&
-        existing[0].status !== MediaRequestStatus.DECLINED &&
-        existing[0].status !== MediaRequestStatus.COMPLETED
-      ) {
-        logger.warn('Duplicate request for media blocked', {
-          tmdbId: tmdbMedia.id,
-          mediaType: requestBody.mediaType,
-          is4k: requestBody.is4k,
-          label: 'Media Request',
-        });
+    if (existing > 0) {
+      logger.warn('Duplicate request for media blocked', {
+        igdbId: requestBody.igdbId,
+        platform: requestBody.platform,
+        label: 'Media Request',
+      });
 
-        throw new DuplicateMediaRequestError(
-          'Request for this media already exists.'
-        );
-      }
-
-      // If an existing auto-request for this media exists from the same user,
-      // don't allow a new one.
-      const statusKey = requestBody.is4k ? 'status4k' : 'status';
-      if (
-        existing.find(
-          (r) =>
-            r.requestedBy.id === requestUser.id &&
-            r.isAutoRequest &&
-            r.media?.[statusKey] !== MediaStatus.DELETED
-        )
-      ) {
-        throw new DuplicateMediaRequestError(
-          'Auto-request for this media and user already exists.'
-        );
-      }
+      throw new DuplicateMediaRequestError(
+        'A request for this game and platform already exists.'
+      );
     }
 
-    let rootFolder = requestBody.rootFolder;
-    let profileId = requestBody.profileId;
-    let tags = requestBody.tags;
+    await mediaRepository.save(media);
 
-    // Match rules against the server the request will be sent to; an
-    // omitted or unknown serverId falls back to the default server
-    const requestedServiceId =
-      requestBody.serverId !== undefined &&
-      requestBody.serverId >= 0 &&
-      (requestBody.mediaType === MediaType.MOVIE
-        ? settings.radarr
-        : settings.sonarr
-      ).some((server) => server.id === requestBody.serverId)
-        ? requestBody.serverId
-        : undefined;
-
-    const ruleResult = await overrideRules({
-      mediaType: requestBody.mediaType,
-      is4k: requestBody.is4k || false,
-      serviceId: requestedServiceId,
-      tmdbMedia,
-      requestUser,
-      tags,
-    });
-    const isAdvanced = user.hasPermission(
-      [Permission.MANAGE_REQUESTS, Permission.REQUEST_ADVANCED],
+    const autoApprove = user.hasPermission(
+      [Permission.AUTO_APPROVE, Permission.MANAGE_REQUESTS],
       { type: 'or' }
     );
-    // Advanced users pick these in the modal, so we don't want to override them if they are set
-    const overrideRulesResult = isAdvanced
-      ? {
-          rootFolder: rootFolder ? null : ruleResult.rootFolder,
-          profileId: profileId ? null : ruleResult.profileId,
-          tags: tags ? null : ruleResult.tags,
-        }
-      : ruleResult;
-    if (overrideRulesResult.rootFolder) {
-      rootFolder = overrideRulesResult.rootFolder;
-    }
-    if (overrideRulesResult.profileId) {
-      profileId = overrideRulesResult.profileId;
-    }
-    if (overrideRulesResult.tags) {
-      tags = overrideRulesResult.tags;
-    }
-    if (
-      overrideRulesResult.rootFolder ||
-      overrideRulesResult.profileId ||
-      overrideRulesResult.tags
-    ) {
-      logger.debug('Override rule applied.', {
-        label: 'Override Rules',
-        overrides: overrideRulesResult,
-      });
-    }
 
-    if (requestBody.mediaType === MediaType.MOVIE) {
-      await mediaRepository.save(media);
+    const request = new MediaRequest({
+      type: MediaType.GAME,
+      media,
+      platform: requestBody.platform,
+      requestedBy: requestUser,
+      // If the user is an admin or has the "auto approve" permission, automatically approve the request
+      status: autoApprove
+        ? MediaRequestStatus.APPROVED
+        : MediaRequestStatus.PENDING,
+      modifiedBy: autoApprove ? user : undefined,
+      ignoreQuota,
+    });
 
-      const request = new MediaRequest({
-        type: MediaType.MOVIE,
-        media,
-        requestedBy: requestUser,
-        // If the user is an admin or has the "auto approve" permission, automatically approve the request
-        status: user.hasPermission(
-          [
-            requestBody.is4k
-              ? Permission.AUTO_APPROVE_4K
-              : Permission.AUTO_APPROVE,
-            requestBody.is4k
-              ? Permission.AUTO_APPROVE_4K_MOVIE
-              : Permission.AUTO_APPROVE_MOVIE,
-            Permission.MANAGE_REQUESTS,
-          ],
-          { type: 'or' }
-        )
-          ? MediaRequestStatus.APPROVED
-          : MediaRequestStatus.PENDING,
-        modifiedBy: user.hasPermission(
-          [
-            requestBody.is4k
-              ? Permission.AUTO_APPROVE_4K
-              : Permission.AUTO_APPROVE,
-            requestBody.is4k
-              ? Permission.AUTO_APPROVE_4K_MOVIE
-              : Permission.AUTO_APPROVE_MOVIE,
-            Permission.MANAGE_REQUESTS,
-          ],
-          { type: 'or' }
-        )
-          ? user
-          : undefined,
-        is4k: requestBody.is4k,
-        serverId: requestBody.serverId,
-        profileId: profileId,
-        rootFolder: rootFolder,
-        tags: tags,
-        isAutoRequest: options.isAutoRequest ?? false,
-        ignoreQuota,
-      });
-
-      await requestRepository.save(request);
-      return request;
-    } else {
-      const tmdbMediaShow = tmdbMedia as Awaited<
-        ReturnType<typeof tmdb.getTvShow>
-      >;
-      let requestedSeasons =
-        requestBody.seasons === 'all'
-          ? tmdbMediaShow.seasons
-              .filter(
-                (season) =>
-                  season.season_number !== 0 && season.episode_count > 0
-              )
-              .map((season) => season.season_number)
-          : (requestBody.seasons as number[]);
-      if (!settings.main.enableSpecialEpisodes) {
-        requestedSeasons = requestedSeasons.filter((sn) => sn > 0);
-      }
-
-      let existingSeasons: number[] = [];
-
-      // We need to check existing requests on this title to make sure we don't double up on seasons that were
-      // already requested. In the case they were, we just throw out any duplicates but still approve the request.
-      // (Unless there are no seasons, in which case we abort)
-      if (media.requests) {
-        existingSeasons = media.requests
-          .filter(
-            (request) =>
-              request.is4k === requestBody.is4k &&
-              request.status !== MediaRequestStatus.DECLINED &&
-              request.status !== MediaRequestStatus.COMPLETED
-          )
-          .reduce((seasons, request) => {
-            const combinedSeasons = request.seasons.map(
-              (season) => season.seasonNumber
-            );
-
-            return [...seasons, ...combinedSeasons];
-          }, [] as number[]);
-      }
-
-      // We should also check seasons that are available/partially available but don't have existing requests
-      if (media.seasons) {
-        existingSeasons = [
-          ...existingSeasons,
-          ...media.seasons
-            .filter(
-              (season) =>
-                season[requestBody.is4k ? 'status4k' : 'status'] !==
-                  MediaStatus.UNKNOWN &&
-                season[requestBody.is4k ? 'status4k' : 'status'] !==
-                  MediaStatus.DELETED
-            )
-            .map((season) => season.seasonNumber),
-        ];
-      }
-
-      const finalSeasons = requestedSeasons.filter(
-        (rs) => !existingSeasons.includes(rs)
-      );
-
-      if (finalSeasons.length === 0) {
-        throw new NoSeasonsAvailableError('No seasons available to request');
-      } else if (
-        !ignoreQuota &&
-        quotas.tv.limit &&
-        finalSeasons.length > (quotas.tv.remaining ?? 0)
-      ) {
-        throw new QuotaRestrictedError('Series Quota exceeded.');
-      }
-
-      await mediaRepository.save(media);
-
-      const request = new MediaRequest({
-        type: MediaType.TV,
-        media,
-        requestedBy: requestUser,
-        // If the user is an admin or has the "auto approve" permission, automatically approve the request
-        status: user.hasPermission(
-          [
-            requestBody.is4k
-              ? Permission.AUTO_APPROVE_4K
-              : Permission.AUTO_APPROVE,
-            requestBody.is4k
-              ? Permission.AUTO_APPROVE_4K_TV
-              : Permission.AUTO_APPROVE_TV,
-            Permission.MANAGE_REQUESTS,
-          ],
-          { type: 'or' }
-        )
-          ? MediaRequestStatus.APPROVED
-          : MediaRequestStatus.PENDING,
-        modifiedBy: user.hasPermission(
-          [
-            requestBody.is4k
-              ? Permission.AUTO_APPROVE_4K
-              : Permission.AUTO_APPROVE,
-            requestBody.is4k
-              ? Permission.AUTO_APPROVE_4K_TV
-              : Permission.AUTO_APPROVE_TV,
-            Permission.MANAGE_REQUESTS,
-          ],
-          { type: 'or' }
-        )
-          ? user
-          : undefined,
-        is4k: requestBody.is4k,
-        serverId: requestBody.serverId,
-        profileId: profileId,
-        rootFolder: rootFolder,
-        languageProfileId: requestBody.languageProfileId,
-        tags: tags,
-        seasons: finalSeasons.map(
-          (sn) =>
-            new SeasonRequest({
-              seasonNumber: sn,
-              status: user.hasPermission(
-                [
-                  requestBody.is4k
-                    ? Permission.AUTO_APPROVE_4K
-                    : Permission.AUTO_APPROVE,
-                  requestBody.is4k
-                    ? Permission.AUTO_APPROVE_4K_TV
-                    : Permission.AUTO_APPROVE_TV,
-                  Permission.MANAGE_REQUESTS,
-                ],
-                { type: 'or' }
-              )
-                ? MediaRequestStatus.APPROVED
-                : MediaRequestStatus.PENDING,
-            })
-        ),
-        isAutoRequest: options.isAutoRequest ?? false,
-        ignoreQuota,
-      });
-
-      await requestRepository.save(request);
-      return request;
-    }
+    await requestRepository.save(request);
+    return request;
   }
 
   @PrimaryGeneratedColumn()
@@ -542,66 +252,15 @@ export class MediaRequest {
   })
   public updatedAt: Date;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', default: MediaType.GAME })
   public type: MediaType;
 
-  @RelationCount((request: MediaRequest) => request.seasons)
-  public seasonCount: number;
-
-  @OneToMany(() => SeasonRequest, (season) => season.request, {
-    eager: true,
-    cascade: true,
-  })
-  public seasons: SeasonRequest[];
-
-  @Column({ default: false })
-  public is4k: boolean;
-
-  @Column({ nullable: true })
-  public serverId: number;
-
-  @Column({ nullable: true })
-  public profileId: number;
-
-  @Column({ nullable: true })
-  public rootFolder: string;
-
-  @Column({ nullable: true })
-  public languageProfileId: number;
-
-  @Column({
-    type: 'text',
-    nullable: true,
-    transformer: {
-      from: (value: string | null): number[] | null => {
-        if (value) {
-          if (value === 'none') {
-            return [];
-          }
-          return value.split(',').map((v) => Number(v));
-        }
-        return null;
-      },
-      to: (value: number[] | null): string | null => {
-        if (value) {
-          const finalValue = value.join(',');
-
-          // We want to keep the actual state of an "empty array" so we use
-          // the keyword "none" to track this.
-          if (!finalValue) {
-            return 'none';
-          }
-
-          return finalValue;
-        }
-        return null;
-      },
-    },
-  })
-  public tags?: number[];
-
-  @Column({ default: false })
-  public isAutoRequest: boolean;
+  /**
+   * IGDB platform id the game was requested for
+   */
+  @Column({ type: 'integer' })
+  @Index()
+  public platform: number;
 
   @Column({ default: false })
   public ignoreQuota: boolean;
@@ -627,14 +286,6 @@ export class MediaRequest {
       }
 
       MediaRequest.sendNotification(this, media, Notification.MEDIA_PENDING);
-
-      if (this.isAutoRequest) {
-        MediaRequest.sendNotification(
-          this,
-          media,
-          Notification.MEDIA_AUTO_REQUESTED
-        );
-      }
     }
   }
 
@@ -665,7 +316,7 @@ export class MediaRequest {
 
       if (
         this.status === MediaRequestStatus.APPROVED &&
-        media[this.is4k ? 'status4k' : 'status'] === MediaStatus.AVAILABLE
+        media.status === MediaStatus.AVAILABLE
       ) {
         logger.info(
           'Media is already available. Sending availability notification instead of approval.',
@@ -688,18 +339,6 @@ export class MediaRequest {
             : Notification.MEDIA_APPROVED
           : Notification.MEDIA_DECLINED
       );
-
-      if (
-        this.status === MediaRequestStatus.APPROVED &&
-        autoApproved &&
-        this.isAutoRequest
-      ) {
-        MediaRequest.sendNotification(
-          this,
-          media,
-          Notification.MEDIA_AUTO_REQUESTED
-        );
-      }
     }
   }
 
@@ -710,106 +349,71 @@ export class MediaRequest {
     }
   }
 
-  @AfterLoad()
-  private sortSeasons() {
-    if (Array.isArray(this.seasons)) {
-      this.seasons.sort((a, b) => a.id - b.id);
-    }
-  }
-
   static async sendNotification(
     entity: MediaRequest,
     media: Media,
-    type: Notification
+    type: Notification,
+    extra: { name: string; value: string }[] = []
   ) {
-    const tmdb = new TheMovieDb();
-
     try {
-      const mediaType = entity.type === MediaType.MOVIE ? 'Movie' : 'Series';
       let event: string | undefined;
       let notifyAdmin = true;
       let notifySystem = true;
 
       switch (type) {
         case Notification.MEDIA_AVAILABLE:
-          event = `${entity.is4k ? '4K ' : ''}${mediaType} Now Available`;
+          event = 'Game Now Available';
           notifyAdmin = false;
           break;
         case Notification.MEDIA_APPROVED:
-          event = `${entity.is4k ? '4K ' : ''}${mediaType} Request Approved`;
+          event = 'Game Request Approved';
           notifyAdmin = false;
           break;
         case Notification.MEDIA_DECLINED:
-          event = `${entity.is4k ? '4K ' : ''}${mediaType} Request Declined`;
+          event = 'Game Request Declined';
           notifyAdmin = false;
           break;
         case Notification.MEDIA_PENDING:
-          event = `New ${entity.is4k ? '4K ' : ''}${mediaType} Request`;
-          break;
-        case Notification.MEDIA_AUTO_REQUESTED:
-          event = `${
-            entity.is4k ? '4K ' : ''
-          }${mediaType} Request Automatically Submitted`;
-          notifyAdmin = false;
-          notifySystem = false;
+          event = 'New Game Request';
           break;
         case Notification.MEDIA_AUTO_APPROVED:
-          event = `${
-            entity.is4k ? '4K ' : ''
-          }${mediaType} Request Automatically Approved`;
+          event = 'Game Request Automatically Approved';
           break;
         case Notification.MEDIA_FAILED:
-          event = `${entity.is4k ? '4K ' : ''}${mediaType} Request Failed`;
+          event = 'Game Request Failed';
+          break;
+        case Notification.MEDIA_FULFILLMENT:
+          event = 'Game Request Needs Fulfillment';
+          notifySystem = true;
           break;
       }
 
-      if (entity.type === MediaType.MOVIE) {
-        const movie = await tmdb.getMovie({ movieId: media.tmdbId });
-        notificationManager.sendNotification(type, {
-          media,
-          request: entity,
-          notifyAdmin,
-          notifySystem,
-          notifyUser: notifyAdmin ? undefined : entity.requestedBy,
-          event,
-          subject: `${movie.title}${
-            movie.release_date ? ` (${movie.release_date.slice(0, 4)})` : ''
-          }`,
-          message: truncate(movie.overview, {
-            length: 500,
-            separator: /\s/,
-            omission: '…',
-          }),
-          image: `https://image.tmdb.org/t/p/w600_and_h900_bestv2${movie.poster_path}`,
-        });
-      } else if (entity.type === MediaType.TV) {
-        const tv = await tmdb.getTvShow({ tvId: media.tmdbId });
-        notificationManager.sendNotification(type, {
-          media,
-          request: entity,
-          notifyAdmin,
-          notifySystem,
-          notifyUser: notifyAdmin ? undefined : entity.requestedBy,
-          event,
-          subject: `${tv.name}${
-            tv.first_air_date ? ` (${tv.first_air_date.slice(0, 4)})` : ''
-          }`,
-          message: truncate(tv.overview, {
-            length: 500,
-            separator: /\s/,
-            omission: '…',
-          }),
-          image: `https://image.tmdb.org/t/p/w600_and_h900_bestv2${tv.poster_path}`,
-          extra: [
-            {
-              name: 'Requested Seasons',
-              value: entity.seasons
-                .map((season) => season.seasonNumber)
-                .join(', '),
-            },
-          ],
-        });
-      }
+      notificationManager.sendNotification(type, {
+        media,
+        request: entity,
+        notifyAdmin,
+        notifySystem,
+        notifyUser: notifyAdmin ? undefined : entity.requestedBy,
+        event,
+        subject: media.title ?? `IGDB #${media.igdbId}`,
+        message: entity.summary
+          ? truncate(entity.summary, {
+              length: 500,
+              separator: /\s/,
+              omission: '…',
+            })
+          : undefined,
+        image: media.coverImageId
+          ? igdbImageUrl(media.coverImageId, 'cover_big')
+          : undefined,
+        extra: [
+          {
+            name: 'Platform',
+            value: entity.platformName ?? `${entity.platform}`,
+          },
+          ...extra,
+        ],
+      });
     } catch (e) {
       logger.error('Something went wrong sending media notification(s)', {
         label: 'Notifications',
@@ -819,6 +423,12 @@ export class MediaRequest {
       });
     }
   }
+
+  /**
+   * Transient display fields, filled in by the metadata layer when known
+   */
+  public platformName?: string;
+  public summary?: string;
 }
 
 export default MediaRequest;

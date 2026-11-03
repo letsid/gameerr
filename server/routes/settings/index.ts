@@ -1,8 +1,6 @@
-import type { JellyfinLibrary } from '@server/api/jellyfin';
 import JellyfinAPI from '@server/api/jellyfin';
 import PlexAPI from '@server/api/plexapi';
 import PlexTvAPI from '@server/api/plextv';
-import TautulliAPI from '@server/api/tautulli';
 import { ApiErrorCode } from '@server/constants/error';
 import { getRepository } from '@server/datasource';
 import Media from '@server/entity/Media';
@@ -19,9 +17,7 @@ import type { AvailableCacheIds } from '@server/lib/cache';
 import cacheManager from '@server/lib/cache';
 import ImageProxy from '@server/lib/imageproxy';
 import { Permission } from '@server/lib/permissions';
-import { jellyfinFullScanner } from '@server/lib/scanners/jellyfin';
-import { plexFullScanner } from '@server/lib/scanners/plex';
-import type { JobId, Library, MainSettings } from '@server/lib/settings';
+import type { JobId, MainSettings } from '@server/lib/settings';
 import { getSettings } from '@server/lib/settings';
 import logger from '@server/logger';
 import { isAuthenticated } from '@server/middleware/auth';
@@ -38,25 +34,13 @@ import fs from 'fs';
 import { escapeRegExp, merge, omit, set, sortBy } from 'lodash';
 import { rescheduleJob } from 'node-schedule';
 import path from 'path';
-import semver from 'semver';
 import { URL } from 'url';
-import { z } from 'zod';
-import metadataRoutes from './metadata';
 import notificationRoutes from './notifications';
-import radarrRoutes from './radarr';
-import sonarrRoutes from './sonarr';
 
 const settingsRoutes = Router();
 
 settingsRoutes.use('/notifications', notificationRoutes);
-settingsRoutes.use('/radarr', radarrRoutes);
-settingsRoutes.use('/sonarr', sonarrRoutes);
 settingsRoutes.use('/discover', discoverSettingRoutes);
-settingsRoutes.use('/metadatas', metadataRoutes);
-
-const libraryUpdateSchema = z.object({
-  enabled: z.boolean(),
-});
 
 const filteredMainSettings = (
   user: User,
@@ -235,70 +219,6 @@ settingsRoutes.get('/plex/devices/servers', async (req, res, next) => {
   }
 });
 
-settingsRoutes.get('/plex/library', (_req, res) => {
-  const settings = getSettings();
-
-  return res.status(200).json(settings.plex.libraries);
-});
-
-settingsRoutes.put('/plex/library/:libraryId', async (req, res, next) => {
-  const settings = getSettings();
-
-  const bodyResult = libraryUpdateSchema.safeParse(req.body);
-
-  if (!bodyResult.success) {
-    return next({ status: 400, message: 'Invalid request body.' });
-  }
-
-  const library = settings.plex.libraries.find(
-    (l) => l.id === req.params.libraryId
-  );
-
-  if (!library) {
-    return next({ status: 404, message: 'Library does not exist.' });
-  }
-
-  library.enabled = bodyResult.data.enabled;
-  await settings.save();
-
-  return res.status(200).json(library);
-});
-
-settingsRoutes.post('/plex/library/sync', async (_req, res, next) => {
-  const settings = getSettings();
-
-  const userRepository = getRepository(User);
-  const admin = await userRepository.findOneOrFail({
-    select: { id: true, plexToken: true },
-    where: { id: 1 },
-  });
-  const plexapi = new PlexAPI({ plexToken: admin.plexToken });
-
-  try {
-    await plexapi.syncLibraries();
-  } catch (e) {
-    return next({
-      status: e.statusCode ?? 500,
-      message: e.errorCode ?? ApiErrorCode.Unknown,
-    });
-  }
-
-  return res.status(200).json(settings.plex.libraries);
-});
-
-settingsRoutes.get('/plex/sync', (_req, res) => {
-  return res.status(200).json(plexFullScanner.status());
-});
-
-settingsRoutes.post('/plex/sync', (req, res) => {
-  if (req.body.cancel) {
-    plexFullScanner.cancel();
-  } else if (req.body.start) {
-    plexFullScanner.run();
-  }
-  return res.status(200).json(plexFullScanner.status());
-});
-
 settingsRoutes.get('/jellyfin', (_req, res) => {
   const settings = getSettings();
 
@@ -362,99 +282,6 @@ settingsRoutes.post('/jellyfin', async (req, res, next) => {
   return res.status(200).json(settings.jellyfin);
 });
 
-settingsRoutes.get('/jellyfin/library', (_req, res) => {
-  const settings = getSettings();
-
-  return res.status(200).json(settings.jellyfin.libraries);
-});
-
-settingsRoutes.put('/jellyfin/library/:libraryId', async (req, res, next) => {
-  const settings = getSettings();
-
-  const bodyResult = libraryUpdateSchema.safeParse(req.body);
-
-  if (!bodyResult.success) {
-    return next({ status: 400, message: 'Invalid request body.' });
-  }
-
-  const library = settings.jellyfin.libraries.find(
-    (l) => l.id === req.params.libraryId
-  );
-
-  if (!library) {
-    return next({ status: 404, message: 'Library does not exist.' });
-  }
-
-  library.enabled = bodyResult.data.enabled;
-  await settings.save();
-
-  return res.status(200).json(library);
-});
-
-settingsRoutes.post('/jellyfin/library/sync', async (_req, res, next) => {
-  const settings = getSettings();
-
-  const userRepository = getRepository(User);
-  const admin = await userRepository.findOneOrFail({
-    select: ['id', 'jellyfinDeviceId', 'jellyfinUserId'],
-    where: { id: 1 },
-    order: { id: 'ASC' },
-  });
-  const jellyfinClient = new JellyfinAPI(
-    getHostname(),
-    settings.jellyfin.apiKey,
-    admin.jellyfinDeviceId ?? ''
-  );
-
-  jellyfinClient.setUserId(admin.jellyfinUserId ?? '');
-
-  let libraries: JellyfinLibrary[];
-
-  try {
-    libraries = await jellyfinClient.getLibraries();
-
-    if (libraries.length === 0) {
-      // Check if no libraries are found due to the fallback to user views
-      // This only affects LDAP users
-      const account = await jellyfinClient.getUser();
-
-      // Automatic Library grouping is not supported when user views are used to get library
-      if (account.Configuration.GroupedFolders?.length > 0) {
-        return next({
-          status: 501,
-          message: ApiErrorCode.SyncErrorGroupedFolders,
-        });
-      }
-
-      return next({ status: 404, message: ApiErrorCode.SyncErrorNoLibraries });
-    }
-  } catch (e) {
-    return next({
-      status: e.statusCode ?? 500,
-      message: e.errorCode ?? ApiErrorCode.Unknown,
-    });
-  }
-
-  const newLibraries: Library[] = libraries.map((library) => {
-    const existing = settings.jellyfin.libraries.find(
-      (l) => l.id === library.key
-    );
-
-    return {
-      id: library.key,
-      name: library.title,
-      enabled: existing?.enabled ?? false,
-      type: library.type,
-      lastScan: existing?.lastScan,
-    };
-  });
-
-  settings.jellyfin.libraries = newLibraries;
-  await settings.save();
-
-  return res.status(200).json(settings.jellyfin.libraries);
-});
-
 settingsRoutes.get('/jellyfin/users', async (req, res) => {
   const settings = getSettings();
 
@@ -480,55 +307,6 @@ settingsRoutes.get('/jellyfin/users', async (req, res) => {
   }));
 
   return res.status(200).json(users);
-});
-
-settingsRoutes.get('/jellyfin/sync', (_req, res) => {
-  return res.status(200).json(jellyfinFullScanner.status());
-});
-
-settingsRoutes.post('/jellyfin/sync', (req, res) => {
-  if (req.body.cancel) {
-    jellyfinFullScanner.cancel();
-  } else if (req.body.start) {
-    jellyfinFullScanner.run();
-  }
-  return res.status(200).json(jellyfinFullScanner.status());
-});
-settingsRoutes.get('/tautulli', (_req, res) => {
-  const settings = getSettings();
-
-  res.status(200).json(settings.tautulli);
-});
-
-settingsRoutes.post('/tautulli', async (req, res, next) => {
-  const settings = getSettings();
-
-  Object.assign(settings.tautulli, req.body);
-
-  if (settings.tautulli.hostname) {
-    try {
-      const tautulliClient = new TautulliAPI(settings.tautulli);
-
-      const result = await tautulliClient.getInfo();
-
-      if (!semver.gte(semver.coerce(result?.tautulli_version) ?? '', '2.9.0')) {
-        throw new Error('Tautulli version not supported');
-      }
-
-      await settings.save();
-    } catch (e) {
-      logger.error('Something went wrong testing Tautulli connection', {
-        label: 'API',
-        errorMessage: e.message,
-      });
-      return next({
-        status: 500,
-        message: 'Unable to connect to Tautulli.',
-      });
-    }
-  }
-
-  return res.status(200).json(settings.tautulli);
 });
 
 settingsRoutes.get(
@@ -821,7 +599,7 @@ settingsRoutes.get('/cache', async (_req, res) => {
     stats: cache.getStats(),
   }));
 
-  const tmdbImageCache = await ImageProxy.getImageStats('tmdb');
+  const igdbImageCache = await ImageProxy.getImageStats('igdb');
   const avatarImageCache = await ImageProxy.getImageStats('avatar');
 
   const stats: DnsStats | undefined = dnsCache?.getStats();
@@ -830,7 +608,7 @@ settingsRoutes.get('/cache', async (_req, res) => {
   return res.status(200).json({
     apiCaches,
     imageCache: {
-      tmdb: tmdbImageCache,
+      igdb: igdbImageCache,
       avatar: avatarImageCache,
     },
     dnsCache: {

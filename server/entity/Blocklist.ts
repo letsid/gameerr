@@ -1,4 +1,4 @@
-import { MediaStatus, type MediaType } from '@server/constants/media';
+import { MediaStatus, MediaType } from '@server/constants/media';
 import dataSource from '@server/datasource';
 import Media from '@server/entity/Media';
 import { User } from '@server/entity/User';
@@ -18,20 +18,20 @@ import {
 import type { ZodNumber, ZodOptional, ZodString } from 'zod';
 
 @Entity()
-@Unique(['tmdbId', 'mediaType'])
+@Unique(['igdbId'])
 export class Blocklist implements BlocklistItem {
   @PrimaryGeneratedColumn()
   public id: number;
 
-  @Column({ type: 'varchar' })
-  public mediaType: MediaType;
+  @Column({ type: 'varchar', default: MediaType.GAME })
+  public mediaType: MediaType.GAME;
 
   @Column({ nullable: true, type: 'varchar' })
   title?: string;
 
   @Column()
   @Index()
-  public tmdbId: number;
+  public igdbId: number;
 
   @ManyToOne(() => User, (user) => user.id, {
     eager: true,
@@ -45,9 +45,6 @@ export class Blocklist implements BlocklistItem {
   @JoinColumn()
   public media: Media;
 
-  @Column({ nullable: true, type: 'varchar' })
-  public blocklistedTags?: string;
-
   @DbAwareColumn({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   public createdAt: Date;
 
@@ -60,10 +57,9 @@ export class Blocklist implements BlocklistItem {
       blocklistRequest,
     }: {
       blocklistRequest: {
-        mediaType: MediaType;
         title?: ZodOptional<ZodString>['_output'];
-        tmdbId: ZodNumber['_output'];
-        blocklistedTags?: string;
+        igdbId: ZodNumber['_output'];
+        user?: User;
       };
     },
     entityManager?: EntityManager
@@ -71,14 +67,12 @@ export class Blocklist implements BlocklistItem {
     const em = entityManager ?? dataSource;
     const blocklist = new this({
       ...blocklistRequest,
+      mediaType: MediaType.GAME,
     });
 
     const mediaRepository = em.getRepository(Media);
     let media = await mediaRepository.findOne({
-      where: {
-        tmdbId: blocklistRequest.tmdbId,
-        mediaType: blocklistRequest.mediaType,
-      },
+      where: { igdbId: blocklistRequest.igdbId },
     });
 
     const blocklistRepository = em.getRepository(this);
@@ -87,10 +81,10 @@ export class Blocklist implements BlocklistItem {
 
     if (!media) {
       media = new Media({
-        tmdbId: blocklistRequest.tmdbId,
+        igdbId: blocklistRequest.igdbId,
+        title: blocklistRequest.title,
         status: MediaStatus.BLOCKLISTED,
-        status4k: MediaStatus.BLOCKLISTED,
-        mediaType: blocklistRequest.mediaType,
+        mediaType: MediaType.GAME,
         blocklist: Promise.resolve(blocklist),
       });
 
@@ -98,7 +92,6 @@ export class Blocklist implements BlocklistItem {
     } else {
       media.blocklist = Promise.resolve(blocklist);
       media.status = MediaStatus.BLOCKLISTED;
-      media.status4k = MediaStatus.BLOCKLISTED;
 
       await mediaRepository.save(media);
     }

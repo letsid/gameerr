@@ -1,39 +1,39 @@
-import RadarrAPI from '@server/api/servarr/radarr';
-import SonarrAPI from '@server/api/servarr/sonarr';
-import {
-  MediaRequestStatus,
-  MediaStatus,
-  MediaType,
-} from '@server/constants/media';
+import { MediaRequestStatus, MediaStatus } from '@server/constants/media';
 import { getRepository } from '@server/datasource';
-import Media from '@server/entity/Media';
 import {
   BlocklistedMediaError,
   DuplicateMediaRequestError,
+  InvalidPlatformError,
   MediaRequest,
-  NoSeasonsAvailableError,
   QuotaRestrictedError,
   RequestPermissionError,
 } from '@server/entity/MediaRequest';
-import SeasonRequest from '@server/entity/SeasonRequest';
 import { User } from '@server/entity/User';
 import type {
   MediaRequestBody,
+  RequestCountResponse,
   RequestResultsResponse,
 } from '@server/interfaces/api/requestInterfaces';
 import { Permission } from '@server/lib/permissions';
-import { getSettings } from '@server/lib/settings';
 import logger from '@server/logger';
 import { isAuthenticated } from '@server/middleware/auth';
-import requestLock, {
-  mediaKey,
-  mediaLock,
-  requestKey,
-  userKey,
-} from '@server/utils/requestLock';
+import requestLock, { requestKey, userKey } from '@server/utils/requestLock';
 import { Router } from 'express';
+import { z } from 'zod';
 
 const requestRoutes = Router();
+
+const requestCreate = z.object({
+  igdbId: z.coerce.number().int().positive(),
+  platform: z.coerce.number().int().positive(),
+  userId: z.coerce.number().int().positive().optional(),
+  ignoreQuota: z.boolean().optional(),
+});
+
+const requestUpdate = z.object({
+  platform: z.coerce.number().int().positive().optional(),
+  userId: z.coerce.number().int().positive().optional(),
+});
 
 requestRoutes.get<Record<string, unknown>, RequestResultsResponse>(
   '/',
@@ -44,7 +44,6 @@ requestRoutes.get<Record<string, unknown>, RequestResultsResponse>(
       const requestedBy = req.query.requestedBy
         ? Number(req.query.requestedBy)
         : null;
-      const mediaType = (req.query.mediaType as MediaType | 'all') || 'all';
 
       let statusFilter: MediaRequestStatus[];
 
@@ -134,18 +133,14 @@ requestRoutes.get<Record<string, unknown>, RequestResultsResponse>(
       let query = getRepository(MediaRequest)
         .createQueryBuilder('request')
         .leftJoinAndSelect('request.media', 'media')
-        .leftJoinAndSelect('request.seasons', 'seasons')
         .leftJoinAndSelect('request.modifiedBy', 'modifiedBy')
         .leftJoinAndSelect('request.requestedBy', 'requestedBy')
         .where('request.status IN (:...requestStatus)', {
           requestStatus: statusFilter,
         })
-        .andWhere(
-          '((request.is4k = false AND media.status IN (:...mediaStatus)) OR (request.is4k = true AND media.status4k IN (:...mediaStatus)))',
-          {
-            mediaStatus: mediaStatusFilter,
-          }
-        );
+        .andWhere('media.status IN (:...mediaStatus)', {
+          mediaStatus: mediaStatusFilter,
+        });
 
       if (
         !req.user?.hasPermission(
@@ -169,21 +164,6 @@ requestRoutes.get<Record<string, unknown>, RequestResultsResponse>(
         });
       }
 
-      switch (mediaType) {
-        case 'all':
-          break;
-        case 'movie':
-          query = query.andWhere('request.type = :type', {
-            type: MediaType.MOVIE,
-          });
-          break;
-        case 'tv':
-          query = query.andWhere('request.type = :type', {
-            type: MediaType.TV,
-          });
-          break;
-      }
-
       const [requests, requestCount] = await query
         .orderBy(sortFilter, sortDirection)
         .addOrderBy('request.id', sortDirection)
@@ -191,91 +171,7 @@ requestRoutes.get<Record<string, unknown>, RequestResultsResponse>(
         .skip(skip)
         .getManyAndCount();
 
-      const settings = getSettings();
-
-      // get all quality profiles for every configured sonarr server
-      const sonarrServers = await Promise.all(
-        settings.sonarr.map(async (sonarrSetting) => {
-          const sonarr = new SonarrAPI({
-            apiKey: sonarrSetting.apiKey,
-            url: SonarrAPI.buildUrl(sonarrSetting, '/api/v3'),
-          });
-
-          return {
-            id: sonarrSetting.id,
-            profiles: await sonarr.getProfiles().catch(() => undefined),
-          };
-        })
-      );
-
-      // get all quality profiles for every configured radarr server
-      const radarrServers = await Promise.all(
-        settings.radarr.map(async (radarrSetting) => {
-          const radarr = new RadarrAPI({
-            apiKey: radarrSetting.apiKey,
-            url: RadarrAPI.buildUrl(radarrSetting, '/api/v3'),
-          });
-
-          return {
-            id: radarrSetting.id,
-            profiles: await radarr.getProfiles().catch(() => undefined),
-          };
-        })
-      );
-
-      // add profile names to the media requests, with undefined if not found
-      let mappedRequests = requests.map((r) => {
-        switch (r.type) {
-          case MediaType.MOVIE: {
-            const profileName = radarrServers
-              .find((serverr) => serverr.id === r.serverId)
-              ?.profiles?.find((profile) => profile.id === r.profileId)?.name;
-
-            return {
-              ...r,
-              profileName,
-            };
-          }
-          case MediaType.TV: {
-            return {
-              ...r,
-              profileName: sonarrServers
-                .find((serverr) => serverr.id === r.serverId)
-                ?.profiles?.find((profile) => profile.id === r.profileId)?.name,
-            };
-          }
-        }
-      });
-
-      // add canRemove prop if user has permission
-      if (req.user?.hasPermission(Permission.MANAGE_REQUESTS)) {
-        mappedRequests = mappedRequests.map((r) => {
-          switch (r.type) {
-            case MediaType.MOVIE: {
-              return {
-                ...r,
-                // check if the radarr server for this request is configured
-                canRemove: radarrServers.some(
-                  (server) =>
-                    server.id ===
-                    (r.is4k ? r.media.serviceId4k : r.media.serviceId)
-                ),
-              };
-            }
-            case MediaType.TV: {
-              return {
-                ...r,
-                // check if the sonarr server for this request is configured
-                canRemove: sonarrServers.some(
-                  (server) =>
-                    server.id ===
-                    (r.is4k ? r.media.serviceId4k : r.media.serviceId)
-                ),
-              };
-            }
-          }
-        });
-      }
+      const canRemove = !!req.user?.hasPermission(Permission.MANAGE_REQUESTS);
 
       return res.status(200).json({
         pageInfo: {
@@ -284,25 +180,7 @@ requestRoutes.get<Record<string, unknown>, RequestResultsResponse>(
           results: requestCount,
           page: Math.ceil(skip / pageSize) + 1,
         },
-        results: mappedRequests,
-        serviceErrors: {
-          radarr: radarrServers
-            .filter((s) => !s.profiles)
-            .map((s) => ({
-              id: s.id,
-              name:
-                settings.radarr.find((r) => r.id === s.id)?.name ||
-                `Radarr ${s.id}`,
-            })),
-          sonarr: sonarrServers
-            .filter((s) => !s.profiles)
-            .map((s) => ({
-              id: s.id,
-              name:
-                settings.sonarr.find((r) => r.id === s.id)?.name ||
-                `Sonarr ${s.id}`,
-            })),
-        },
+        results: requests.map((r) => ({ ...r, canRemove })),
       });
     } catch (e) {
       next({ status: 500, message: e.message });
@@ -320,7 +198,14 @@ requestRoutes.post<never, MediaRequest, MediaRequestBody>(
           message: 'You must be logged in to request media.',
         });
       }
-      const request = await MediaRequest.request(req.body, req.user);
+
+      const body = requestCreate.safeParse(req.body);
+
+      if (!body.success) {
+        return next({ status: 400, message: 'Invalid request body.' });
+      }
+
+      const request = await MediaRequest.request(body.data, req.user);
 
       return res.status(201).json(request);
     } catch (error) {
@@ -334,8 +219,8 @@ requestRoutes.post<never, MediaRequest, MediaRequestBody>(
           return next({ status: 403, message: error.message });
         case DuplicateMediaRequestError:
           return next({ status: 409, message: error.message });
-        case NoSeasonsAvailableError:
-          return next({ status: 202, message: error.message });
+        case InvalidPlatformError:
+          return next({ status: 400, message: error.message });
         case BlocklistedMediaError:
           return next({ status: 403, message: error.message });
         default:
@@ -353,79 +238,46 @@ requestRoutes.get('/count', async (_req, res, next) => {
       .createQueryBuilder('request')
       .innerJoinAndSelect('request.media', 'media');
 
+    const countByStatus = (status: MediaRequestStatus) =>
+      query
+        .where('request.status = :requestStatus', { requestStatus: status })
+        .getCount();
+
     const totalCount = await query.getCount();
-
-    const movieCount = await query
-      .where('request.type = :requestType', {
-        requestType: MediaType.MOVIE,
-      })
-      .getCount();
-
-    const tvCount = await query
-      .where('request.type = :requestType', {
-        requestType: MediaType.TV,
-      })
-      .getCount();
-
-    const pendingCount = await query
-      .where('request.status = :requestStatus', {
-        requestStatus: MediaRequestStatus.PENDING,
-      })
-      .getCount();
-
-    const approvedCount = await query
-      .where('request.status = :requestStatus', {
-        requestStatus: MediaRequestStatus.APPROVED,
-      })
-      .getCount();
-
-    const declinedCount = await query
-      .where('request.status = :requestStatus', {
-        requestStatus: MediaRequestStatus.DECLINED,
-      })
-      .getCount();
+    const pendingCount = await countByStatus(MediaRequestStatus.PENDING);
+    const approvedCount = await countByStatus(MediaRequestStatus.APPROVED);
+    const declinedCount = await countByStatus(MediaRequestStatus.DECLINED);
+    const completedCount = await countByStatus(MediaRequestStatus.COMPLETED);
+    const failedCount = await countByStatus(MediaRequestStatus.FAILED);
 
     const processingCount = await query
       .where('request.status = :requestStatus', {
         requestStatus: MediaRequestStatus.APPROVED,
       })
-      .andWhere(
-        '((request.is4k = false AND media.status != :availableStatus) OR (request.is4k = true AND media.status4k != :availableStatus))',
-        {
-          availableStatus: MediaStatus.AVAILABLE,
-        }
-      )
+      .andWhere('media.status != :availableStatus', {
+        availableStatus: MediaStatus.AVAILABLE,
+      })
       .getCount();
 
     const availableCount = await query
       .where('request.status = :requestStatus', {
         requestStatus: MediaRequestStatus.APPROVED,
       })
-      .andWhere(
-        '((request.is4k = false AND media.status = :availableStatus) OR (request.is4k = true AND media.status4k = :availableStatus))',
-        {
-          availableStatus: MediaStatus.AVAILABLE,
-        }
-      )
-      .getCount();
-
-    const completedCount = await query
-      .where('request.status = :requestStatus', {
-        requestStatus: MediaRequestStatus.COMPLETED,
+      .andWhere('media.status = :availableStatus', {
+        availableStatus: MediaStatus.AVAILABLE,
       })
       .getCount();
 
     return res.status(200).json({
       total: totalCount,
-      movie: movieCount,
-      tv: tvCount,
       pending: pendingCount,
       approved: approvedCount,
       declined: declinedCount,
       processing: processingCount,
       available: availableCount,
       completed: completedCount,
-    });
+      failed: failedCount,
+    } as RequestCountResponse);
   } catch (e) {
     logger.error('Something went wrong retrieving request counts', {
       label: 'API',
@@ -473,6 +325,13 @@ requestRoutes.put<{ requestId: string }>(
     const requestRepository = getRepository(MediaRequest);
     const userRepository = getRepository(User);
     const requestId = Number(req.params.requestId);
+
+    const body = requestUpdate.safeParse(req.body);
+
+    if (!body.success) {
+      return next({ status: 400, message: 'Invalid request body.' });
+    }
+
     try {
       // Ordering is request then owner here, user then media on create, so no cycle
       return await requestLock.dispatch(requestKey(requestId), async () => {
@@ -487,9 +346,7 @@ requestRoutes.put<{ requestId: string }>(
         }
 
         if (
-          (request.requestedBy.id !== req.user?.id ||
-            (req.body.mediaType !== 'tv' &&
-              !req.user?.hasPermission(Permission.REQUEST_ADVANCED))) &&
+          request.requestedBy.id !== req.user?.id &&
           !req.user?.hasPermission(Permission.MANAGE_REQUESTS)
         ) {
           return next({
@@ -505,12 +362,11 @@ requestRoutes.put<{ requestId: string }>(
           });
         }
 
-        const previousOwnerId = request.requestedBy.id;
         let requestUser = request.requestedBy;
 
         if (
-          req.body.userId &&
-          req.body.userId !== request.requestedBy.id &&
+          body.data.userId &&
+          body.data.userId !== request.requestedBy.id &&
           !req.user?.hasPermission([
             Permission.MANAGE_USERS,
             Permission.MANAGE_REQUESTS,
@@ -520,183 +376,68 @@ requestRoutes.put<{ requestId: string }>(
             status: 403,
             message: 'You do not have permission to modify the request user.',
           });
-        } else if (req.body.userId) {
+        } else if (body.data.userId) {
           requestUser = await userRepository.findOneOrFail({
-            where: { id: req.body.userId },
+            where: { id: body.data.userId },
           });
         }
 
-        // Reassignment moves every season on the request onto the new owner's
-        // quota, so it is charged in full rather than as a delta
-        const ownerChanging = requestUser.id !== previousOwnerId;
+        // Reassignment moves the request onto the new owner's quota
+        const ownerChanging = requestUser.id !== request.requestedBy.id;
 
         return requestLock.dispatch(userKey(requestUser.id), async () => {
-          if (req.body.mediaType === MediaType.MOVIE) {
-            if (ownerChanging && !request.ignoreQuota) {
-              const quotas = await requestUser.getQuota();
+          if (ownerChanging && !request.ignoreQuota) {
+            const quotas = await requestUser.getQuota();
 
-              if (quotas.movie.restricted) {
-                return next({
-                  status: 403,
-                  message: 'Movie Quota exceeded.',
-                });
-              }
+            if (quotas.game.restricted) {
+              return next({
+                status: 403,
+                message: 'Game quota exceeded.',
+              });
             }
-
-            request.serverId = req.body.serverId;
-            request.profileId = req.body.profileId;
-            request.rootFolder = req.body.rootFolder;
-            request.tags = req.body.tags;
-            request.requestedBy = requestUser as User;
-
-            await requestRepository.save(request);
-          } else if (req.body.mediaType === MediaType.TV) {
-            const mediaRepository = getRepository(Media);
-            request.serverId = req.body.serverId;
-            request.profileId = req.body.profileId;
-            request.rootFolder = req.body.rootFolder;
-            request.languageProfileId = req.body.languageProfileId;
-            request.tags = req.body.tags;
-            request.requestedBy = requestUser as User;
-
-            const requestedSeasons = req.body.seasons as number[] | undefined;
-
-            if (!requestedSeasons || requestedSeasons.length === 0) {
-              throw new Error(
-                'Missing seasons. If you want to cancel a series request, use the DELETE method.'
-              );
-            }
-
-            // Same key as create, so an edit cannot claim a season that a new
-            // request is taking at the same moment
-            return mediaLock.dispatch(
-              mediaKey(MediaType.TV, request.media.tmdbId),
-              async () => {
-                // Get existing media so we can work with all the requests
-                const media = await mediaRepository.findOneOrFail({
-                  where: {
-                    tmdbId: request.media.tmdbId,
-                    mediaType: MediaType.TV,
-                  },
-                  relations: { requests: true },
-                });
-
-                // Get all requested seasons that are not part of this request we are editing
-                const existingSeasons = media.requests
-                  .filter(
-                    (r) =>
-                      r.is4k === request.is4k &&
-                      r.id !== request.id &&
-                      r.status !== MediaRequestStatus.DECLINED &&
-                      r.status !== MediaRequestStatus.COMPLETED
-                  )
-                  .reduce((seasons, r) => {
-                    const combinedSeasons = r.seasons.map(
-                      (season) => season.seasonNumber
-                    );
-
-                    return [...seasons, ...combinedSeasons];
-                  }, [] as number[]);
-
-                const currentSeasons = request.seasons.map(
-                  (s) => s.seasonNumber
-                );
-
-                // Seasons the media already covers cannot be requested again, while
-                // the ones this request holds stay on it
-                const coveredSeasons = (media.seasons ?? [])
-                  .filter(
-                    (season) =>
-                      season[request.is4k ? 'status4k' : 'status'] !==
-                        MediaStatus.UNKNOWN &&
-                      season[request.is4k ? 'status4k' : 'status'] !==
-                        MediaStatus.DELETED
-                  )
-                  .map((season) => season.seasonNumber)
-                  .filter((sn) => !currentSeasons.includes(sn));
-
-                const filteredSeasons = requestedSeasons.filter(
-                  (rs) => !existingSeasons.includes(rs)
-                );
-
-                const keptSeasons = filteredSeasons.filter((sn) =>
-                  currentSeasons.includes(sn)
-                );
-
-                const newSeasons = filteredSeasons.filter(
-                  (sn) =>
-                    !currentSeasons.includes(sn) && !coveredSeasons.includes(sn)
-                );
-
-                const resultingSeasonCount =
-                  keptSeasons.length + newSeasons.length;
-
-                if (resultingSeasonCount === 0) {
-                  return next({
-                    status: 202,
-                    message: 'No seasons available to request',
-                  });
-                }
-
-                if (!request.ignoreQuota) {
-                  const quotas = await requestUser.getQuota();
-
-                  // Only the seasons getQuota already counted for this owner are
-                  // paid for, so the edit is charged for everything it left out
-                  const quotaWindowStart = new Date();
-                  if (quotas.tv.days) {
-                    quotaWindowStart.setDate(
-                      quotaWindowStart.getDate() - quotas.tv.days
-                    );
-                  }
-
-                  const countedAlready =
-                    !ownerChanging &&
-                    (!quotas.tv.days || request.createdAt > quotaWindowStart);
-
-                  const priorSeasonCount = countedAlready
-                    ? request.seasons.length
-                    : 0;
-                  const requiredSeasons =
-                    resultingSeasonCount - priorSeasonCount;
-
-                  if (
-                    quotas.tv.limit &&
-                    requiredSeasons > (quotas.tv.remaining ?? 0)
-                  ) {
-                    return next({
-                      status: 403,
-                      message: 'Series Quota exceeded.',
-                    });
-                  }
-                }
-
-                request.seasons = request.seasons.filter((rs) =>
-                  keptSeasons.includes(rs.seasonNumber)
-                );
-
-                if (newSeasons.length > 0) {
-                  logger.debug('Adding new seasons to request', {
-                    label: 'Media Request',
-                    newSeasons,
-                  });
-                  request.seasons.push(
-                    ...newSeasons.map(
-                      (ns) =>
-                        new SeasonRequest({
-                          seasonNumber: ns,
-                          status: MediaRequestStatus.PENDING,
-                        })
-                    )
-                  );
-                }
-
-                await requestRepository.save(request);
-
-                return res.status(200).json(request);
-              }
-            );
           }
+
+          if (body.data.platform && body.data.platform !== request.platform) {
+            const duplicate = await requestRepository
+              .createQueryBuilder('request')
+              .leftJoin('request.media', 'media')
+              .where('media.id = :mediaId', { mediaId: request.media.id })
+              .andWhere('request.id != :requestId', { requestId: request.id })
+              .andWhere('request.platform = :platform', {
+                platform: body.data.platform,
+              })
+              .andWhere('request.status NOT IN (:...statuses)', {
+                statuses: [
+                  MediaRequestStatus.DECLINED,
+                  MediaRequestStatus.COMPLETED,
+                ],
+              })
+              .getCount();
+
+            if (duplicate > 0) {
+              return next({
+                status: 409,
+                message: 'A request for this game and platform already exists.',
+              });
+            }
+
+            if (
+              request.media.platforms?.length &&
+              !request.media.platforms.includes(body.data.platform)
+            ) {
+              return next({
+                status: 400,
+                message:
+                  'The game is not available for the requested platform.',
+              });
+            }
+
+            request.platform = body.data.platform;
+          }
+
+          request.requestedBy = requestUser as User;
+
+          await requestRepository.save(request);
 
           return res.status(200).json(request);
         });
@@ -765,7 +506,7 @@ requestRoutes.post<{
           });
         }
 
-        // this also triggers updating the parent media's status & sending to *arr
+        // this also triggers updating the parent media's status
         request.status = MediaRequestStatus.APPROVED;
         request.modifiedBy = req.user;
         await requestRepository.save(request);

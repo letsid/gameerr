@@ -1,16 +1,12 @@
 import { LRUCache } from 'lru-cache';
 
 export type AvailableCacheIds =
-  | 'tmdb'
-  | 'tmdbscan'
-  | 'radarr'
-  | 'sonarr'
-  | 'rt'
-  | 'imdb'
+  | 'igdb'
+  | 'rawg'
+  | 'steam'
+  | 'opencritic'
   | 'github'
-  | 'plextv'
-  | 'plexwatchlist'
-  | 'tvdb';
+  | 'plextv';
 
 const DEFAULT_TTL = 300;
 
@@ -18,35 +14,24 @@ const OBJECT_VALUE_SIZE = 80;
 const PROMISE_VALUE_SIZE = 80;
 const ARRAY_VALUE_SIZE = 40;
 
-// Limits key count, not memory, since TMDB never caps the credits rosters.
-const TMDB_MAX_KEYS = 1000;
+// Game detail and list lookups. Lists are additionally persisted in the
+// database, so this tier only absorbs bursts of repeated detail lookups.
+const IGDB_MAX_KEYS = 2000;
 
-// Backstop against unbounded growth as the 15 minute TTL is what bounds this tier.
-const TMDB_SCAN_MAX_KEYS = 2000;
+// One key per looked up game, holding scores and store links.
+const RAWG_MAX_KEYS = 1000;
 
-// Only the rolling quality profile, root folder and language profile lookups reach
-// these tiers, and keys are prefixed by server url, so this is a few keys per server.
-const RADARR_MAX_KEYS = 64;
-const SONARR_MAX_KEYS = 64;
+// One key per Steam app id and endpoint.
+const STEAM_MAX_KEYS = 1000;
 
-// One key per searched title, each holding twenty search hits.
-const RT_MAX_KEYS = 500;
-
-// One key per IMDb id, requested from the same endpoint as the RT ratings.
-const IMDB_MAX_KEYS = 500;
+// OpenCritic has a tight daily quota, so keep every answer for a long time.
+const OPENCRITIC_MAX_KEYS = 1000;
 
 // Releases and commits, varying only by page size and branch.
 const GITHUB_MAX_KEYS = 16;
 
-// Watchlist item metadata, shared between users as the token is not part of the key.
+// Plex account lookups used during sign-in.
 const PLEX_TV_MAX_KEYS = 5000;
-
-// Keyed by auth token, so one key per Plex linked user.
-const PLEX_WATCHLIST_MAX_KEYS = 500;
-
-// Several keys per show, holding the largest payloads of any tier as the extended
-// series lookup carries every episode.
-const TVDB_MAX_KEYS = 500;
 
 export interface CacheStats {
   hits: number;
@@ -217,23 +202,21 @@ class Cache {
 
 class CacheManager {
   private availableCaches: Record<AvailableCacheIds, Cache> = {
-    tmdb: new Cache('tmdb', 'The Movie Database API', {
+    igdb: new Cache('igdb', 'IGDB API', {
       stdTtl: 21600,
-      max: TMDB_MAX_KEYS,
+      max: IGDB_MAX_KEYS,
     }),
-    tmdbscan: new Cache('tmdbscan', 'The Movie Database API (Library Scans)', {
-      stdTtl: 900,
-      max: TMDB_SCAN_MAX_KEYS,
+    rawg: new Cache('rawg', 'RAWG API', {
+      stdTtl: 86400,
+      max: RAWG_MAX_KEYS,
     }),
-    radarr: new Cache('radarr', 'Radarr API', { max: RADARR_MAX_KEYS }),
-    sonarr: new Cache('sonarr', 'Sonarr API', { max: SONARR_MAX_KEYS }),
-    rt: new Cache('rt', 'Rotten Tomatoes API', {
-      stdTtl: 43200,
-      max: RT_MAX_KEYS,
+    steam: new Cache('steam', 'Steam Store API', {
+      stdTtl: 21600,
+      max: STEAM_MAX_KEYS,
     }),
-    imdb: new Cache('imdb', 'IMDB Radarr Proxy', {
-      stdTtl: 43200,
-      max: IMDB_MAX_KEYS,
+    opencritic: new Cache('opencritic', 'OpenCritic API', {
+      stdTtl: 86400 * 7,
+      max: OPENCRITIC_MAX_KEYS,
     }),
     github: new Cache('github', 'GitHub API', {
       stdTtl: 21600,
@@ -242,13 +225,6 @@ class CacheManager {
     plextv: new Cache('plextv', 'Plex TV', {
       stdTtl: 86400 * 7, // 1 week cache
       max: PLEX_TV_MAX_KEYS,
-    }),
-    plexwatchlist: new Cache('plexwatchlist', 'Plex Watchlist', {
-      max: PLEX_WATCHLIST_MAX_KEYS,
-    }),
-    tvdb: new Cache('tvdb', 'The TVDB API', {
-      stdTtl: 21600,
-      max: TVDB_MAX_KEYS,
     }),
   };
 

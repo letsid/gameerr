@@ -1,5 +1,3 @@
-import { IssueStatus, IssueTypeName } from '@server/constants/issue';
-import { MediaStatus } from '@server/constants/media';
 import { getRepository } from '@server/datasource';
 import { User } from '@server/entity/User';
 import { getIntl } from '@server/i18n';
@@ -89,11 +87,8 @@ class TelegramAgent
 
       let status = '';
       switch (type) {
-        case Notification.MEDIA_AUTO_REQUESTED:
-          status =
-            payload.media?.status === MediaStatus.PENDING
-              ? intl.formatMessage(globalMessages.pendingApproval)
-              : intl.formatMessage(globalMessages.processing);
+        case Notification.MEDIA_FULFILLMENT:
+          status = intl.formatMessage(globalMessages.processing);
           break;
         case Notification.MEDIA_PENDING:
           status = intl.formatMessage(globalMessages.pendingApproval);
@@ -118,46 +113,20 @@ class TelegramAgent
           intl.formatMessage(globalMessages.requestStatus)
         )}:\* ${this.escapeText(status)}`;
       }
-    } else if (payload.comment) {
-      message += `\n\n\*${this.escapeText(
-        intl.formatMessage(globalMessages.commentFrom, {
-          userName: payload.comment.user.displayName,
-        })
-      )}:\* ${this.escapeText(payload.comment.message)}`;
-    } else if (payload.issue) {
-      message += `\n\n\*${this.escapeText(
-        intl.formatMessage(globalMessages.reportedBy)
-      )}:\* ${this.escapeText(payload.issue.createdBy.displayName)}`;
-      message += `\n\*${this.escapeText(
-        intl.formatMessage(globalMessages.issueType)
-      )}:\* ${this.escapeText(IssueTypeName[payload.issue.issueType])}`;
-      message += `\n\*${this.escapeText(
-        intl.formatMessage(globalMessages.issueStatus)
-      )}:\* ${this.escapeText(
-        payload.issue.status === IssueStatus.OPEN
-          ? intl.formatMessage(globalMessages.open)
-          : intl.formatMessage(globalMessages.resolved)
-      )}`;
     }
 
     for (const extra of payload.extra ?? []) {
       message += `\n\*${extra.name}:\* ${extra.value}`;
     }
 
-    const url = applicationUrl
-      ? payload.issue
-        ? `${applicationUrl}/issues/${payload.issue.id}`
-        : payload.media
-          ? `${applicationUrl}/${payload.media.mediaType}/${payload.media.tmdbId}`
-          : undefined
-      : undefined;
+    const url =
+      applicationUrl && payload.media
+        ? `${applicationUrl}/game/${payload.media.igdbId}`
+        : undefined;
 
     if (url) {
       message += `\n\n\[${this.escapeText(
-        intl.formatMessage(
-          payload.issue ? globalMessages.viewIssue : globalMessages.viewMedia,
-          { applicationTitle }
-        )
+        intl.formatMessage(globalMessages.viewMedia, { applicationTitle })
       )}\]\(${url}\)`;
     }
     /* eslint-enable */

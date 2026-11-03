@@ -1,4 +1,3 @@
-import type Media from '@server/entity/Media';
 import type { MediaRequest } from '@server/entity/MediaRequest';
 import type { User } from '@server/entity/User';
 import type { PaginatedResponse } from './common';
@@ -20,11 +19,5 @@ export interface QuotaStatus {
 }
 
 export interface QuotaResponse {
-  movie: QuotaStatus;
-  tv: QuotaStatus;
-}
-
-export interface UserWatchDataResponse {
-  recentlyWatched: Media[];
-  playCount: number;
+  game: QuotaStatus;
 }

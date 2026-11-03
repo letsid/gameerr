@@ -1,9 +1,6 @@
-import { IssueType, IssueTypeName } from '@server/constants/issue';
-import { MediaType } from '@server/constants/media';
 import { getRepository } from '@server/datasource';
 import { User } from '@server/entity/User';
 import { defineMessages, getIntl } from '@server/i18n';
-import globalMessages from '@server/i18n/globalMessages';
 import PreparedEmail from '@server/lib/email';
 import type { NotificationAgentEmail } from '@server/lib/settings';
 import { NotificationAgentKey, getSettings } from '@server/lib/settings';
@@ -20,43 +17,16 @@ const PUBLIC_LOGO_URL =
   'https://raw.githubusercontent.com/seerr-team/seerr/refs/heads/develop/public/logo_full.svg';
 
 const messages = defineMessages('notifications.agents.email', {
-  issueType: '{type} issue',
-  issue: 'issue',
-  pendingRequest:
-    'A new request for the following {mediaType} is pending approval:',
-  pendingRequest4k:
-    'A new request for the following {mediaType} in 4K is pending approval:',
-  autoRequested:
-    'A new request for the following {mediaType} was automatically submitted:',
-  autoRequested4k:
-    'A new request for the following {mediaType} in 4K was automatically submitted:',
-  approvedRequest:
-    'Your request for the following {mediaType} has been approved:',
-  approvedRequest4k:
-    'Your request for the following {mediaType} in 4K has been approved:',
+  pendingRequest: 'A new request for the following game is pending approval:',
+  approvedRequest: 'Your request for the following game has been approved:',
   autoApproved:
-    'A new request for the following {mediaType} has been automatically approved:',
-  autoApproved4k:
-    'A new request for the following {mediaType} in 4K has been automatically approved:',
-  availableRequest:
-    'Your request for the following {mediaType} is now available:',
-  availableRequest4k:
-    'Your request for the following {mediaType} in 4K is now available:',
-  declinedRequest: 'Your request for the following {mediaType} was declined:',
-  declinedRequest4k:
-    'Your request for the following {mediaType} in 4K was declined:',
+    'A new request for the following game has been automatically approved:',
+  availableRequest: 'Your request for the following game is now available:',
+  declinedRequest: 'Your request for the following game was declined:',
   failedRequest:
-    'A request for the following {mediaType} failed to be added to {service}:',
-  failedRequest4k:
-    'A request for the following {mediaType} in 4K failed to be added to {service}:',
-  issueCreated:
-    'A new {issueType} has been reported by {userName} for the {mediaType} {subject}:',
-  issueComment:
-    '{userName} commented on the {issueType} for the {mediaType} {subject}:',
-  issueResolved:
-    'The {issueType} for the {mediaType} {subject} was marked as resolved by {userName}!',
-  issueReopened:
-    'The {issueType} for the {mediaType} {subject} was reopened by {userName}.',
+    'A request for the following game could not be handed over to {service}:',
+  fulfillmentRequest:
+    'The following approved game request needs to be fulfilled manually:',
 });
 
 class EmailAgent
@@ -123,64 +93,32 @@ class EmailAgent
       };
     }
 
-    const mediaType = payload.media
-      ? payload.media.mediaType === MediaType.MOVIE
-        ? intl.formatMessage(globalMessages.movie)
-        : intl.formatMessage(globalMessages.series)
-      : undefined;
-    const is4k = payload.request?.is4k;
-
     if (payload.request) {
       let body = '';
 
       switch (type) {
         case Notification.MEDIA_PENDING:
-          body = intl.formatMessage(
-            is4k ? messages.pendingRequest4k : messages.pendingRequest,
-            { mediaType }
-          );
-          break;
-        case Notification.MEDIA_AUTO_REQUESTED:
-          body = intl.formatMessage(
-            is4k ? messages.autoRequested4k : messages.autoRequested,
-            { mediaType }
-          );
+          body = intl.formatMessage(messages.pendingRequest);
           break;
         case Notification.MEDIA_APPROVED:
-          body = intl.formatMessage(
-            is4k ? messages.approvedRequest4k : messages.approvedRequest,
-            { mediaType }
-          );
+          body = intl.formatMessage(messages.approvedRequest);
           break;
         case Notification.MEDIA_AUTO_APPROVED:
-          body = intl.formatMessage(
-            is4k ? messages.autoApproved4k : messages.autoApproved,
-            { mediaType }
-          );
+          body = intl.formatMessage(messages.autoApproved);
           break;
         case Notification.MEDIA_AVAILABLE:
-          body = intl.formatMessage(
-            is4k ? messages.availableRequest4k : messages.availableRequest,
-            { mediaType }
-          );
+          body = intl.formatMessage(messages.availableRequest);
           break;
         case Notification.MEDIA_DECLINED:
-          body = intl.formatMessage(
-            is4k ? messages.declinedRequest4k : messages.declinedRequest,
-            { mediaType }
-          );
+          body = intl.formatMessage(messages.declinedRequest);
           break;
         case Notification.MEDIA_FAILED:
-          body = intl.formatMessage(
-            is4k ? messages.failedRequest4k : messages.failedRequest,
-            {
-              mediaType,
-              service:
-                payload.media?.mediaType === MediaType.MOVIE
-                  ? 'Radarr'
-                  : 'Sonarr',
-            }
-          );
+          body = intl.formatMessage(messages.failedRequest, {
+            service: payload.fulfillmentProvider ?? 'the fulfillment provider',
+          });
+          break;
+        case Notification.MEDIA_FULFILLMENT:
+          body = intl.formatMessage(messages.fulfillmentRequest);
           break;
       }
 
@@ -201,76 +139,7 @@ class EmailAgent
           timestamp: new Date().toTimeString(),
           requestedBy: payload.request.requestedBy.displayName,
           actionUrl: applicationUrl
-            ? `${applicationUrl}/${payload.media?.mediaType}/${payload.media?.tmdbId}`
-            : undefined,
-          applicationUrl,
-          applicationTitle,
-          logoUrl,
-          recipientName,
-          recipientEmail,
-        },
-      };
-    } else if (payload.issue) {
-      const issueType =
-        payload.issue && payload.issue.issueType !== IssueType.OTHER
-          ? intl.formatMessage(messages.issueType, {
-              type: IssueTypeName[payload.issue.issueType].toLowerCase(),
-            })
-          : intl.formatMessage(messages.issue);
-
-      let body = '';
-
-      switch (type) {
-        case Notification.ISSUE_CREATED:
-          body = intl.formatMessage(messages.issueCreated, {
-            issueType,
-            userName: payload.issue.createdBy.displayName,
-            mediaType,
-            subject: payload.subject,
-          });
-          break;
-        case Notification.ISSUE_COMMENT:
-          body = intl.formatMessage(messages.issueComment, {
-            userName: payload.comment?.user.displayName,
-            issueType,
-            mediaType,
-            subject: payload.subject,
-          });
-          break;
-        case Notification.ISSUE_RESOLVED:
-          body = intl.formatMessage(messages.issueResolved, {
-            issueType,
-            userName: payload.issue.modifiedBy?.displayName,
-            mediaType,
-            subject: payload.subject,
-          });
-          break;
-        case Notification.ISSUE_REOPENED:
-          body = intl.formatMessage(messages.issueReopened, {
-            issueType,
-            userName: payload.issue.modifiedBy?.displayName,
-            mediaType,
-            subject: payload.subject,
-          });
-          break;
-      }
-
-      return {
-        template: path.join(__dirname, '../../../templates/email/media-issue'),
-        message: {
-          to: recipientEmail,
-        },
-        locals: {
-          event: payload.event,
-          body,
-          issueDescription: payload.message,
-          issueComment: payload.comment?.message,
-          mediaName: payload.subject,
-          extra: payload.extra ?? [],
-          imageUrl: embedPoster ? payload.image : undefined,
-          timestamp: new Date().toTimeString(),
-          actionUrl: applicationUrl
-            ? `${applicationUrl}/issues/${payload.issue.id}`
+            ? `${applicationUrl}/game/${payload.media?.igdbId}`
             : undefined,
           applicationUrl,
           applicationTitle,

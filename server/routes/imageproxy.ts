@@ -1,3 +1,4 @@
+import { IGDB_IMAGE_HOST } from '@server/api/igdb/images';
 import ImageProxy from '@server/lib/imageproxy';
 import logger from '@server/logger';
 import { Router } from 'express';
@@ -5,29 +6,17 @@ import { Router } from 'express';
 const router = Router();
 
 // Delay the initialization of ImageProxy instances until the proxy (if any) is properly configured
-let _tmdbImageProxy: ImageProxy;
-function initTmdbImageProxy() {
-  if (!_tmdbImageProxy) {
-    _tmdbImageProxy = new ImageProxy('tmdb', 'https://image.tmdb.org', {
+let _igdbImageProxy: ImageProxy;
+function initIgdbImageProxy() {
+  if (!_igdbImageProxy) {
+    _igdbImageProxy = new ImageProxy('igdb', IGDB_IMAGE_HOST, {
       rateLimitOptions: {
         maxRequests: 20,
         maxRPS: 50,
       },
     });
   }
-  return _tmdbImageProxy;
-}
-let _tvdbImageProxy: ImageProxy;
-function initTvdbImageProxy() {
-  if (!_tvdbImageProxy) {
-    _tvdbImageProxy = new ImageProxy('tvdb', 'https://artworks.thetvdb.com', {
-      rateLimitOptions: {
-        maxRequests: 20,
-        maxRPS: 50,
-      },
-    });
-  }
-  return _tvdbImageProxy;
+  return _igdbImageProxy;
 }
 
 router.get<{
@@ -43,10 +32,8 @@ router.get<{
 
   try {
     let imageData;
-    if (req.params.type === 'tmdb') {
-      imageData = await initTmdbImageProxy().getImage(imagePath);
-    } else if (req.params.type === 'tvdb') {
-      imageData = await initTvdbImageProxy().getImage(imagePath);
+    if (req.params.type === 'igdb') {
+      imageData = await initIgdbImageProxy().getImage(imagePath);
     } else {
       logger.error('Unsupported image type', {
         imagePath,

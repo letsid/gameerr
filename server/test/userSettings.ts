@@ -14,11 +14,8 @@ const credentials = {
 
 export const allowlistedSettings = {
   locale: 'de',
-  discoverRegion: 'DE',
-  streamingRegion: 'DE',
-  originalLanguage: 'de',
-  watchlistSyncMovies: true,
-  watchlistSyncTv: false,
+  // IGDB platform ids for PC and PlayStation 5
+  preferredPlatforms: [6, 167],
 };
 
 export async function seedUserSettings(email: string): Promise<User> {

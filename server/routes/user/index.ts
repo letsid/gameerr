@@ -1,11 +1,8 @@
 import JellyfinAPI from '@server/api/jellyfin';
 import PlexTvAPI from '@server/api/plextv';
-import TautulliAPI from '@server/api/tautulli';
-import { MediaType } from '@server/constants/media';
 import { MediaServerType } from '@server/constants/server';
 import { UserType } from '@server/constants/user';
 import dataSource, { getRepository } from '@server/datasource';
-import Media from '@server/entity/Media';
 import { MediaRequest } from '@server/entity/MediaRequest';
 import { User } from '@server/entity/User';
 import { UserPushSubscription } from '@server/entity/UserPushSubscription';
@@ -15,7 +12,6 @@ import type {
   QuotaResponse,
   UserRequestsResponse,
   UserResultsResponse,
-  UserWatchDataResponse,
 } from '@server/interfaces/api/userInterfaces';
 import { Permission, hasPermission } from '@server/lib/permissions';
 import { getSettings } from '@server/lib/settings';
@@ -26,7 +22,6 @@ import { normalizeJellyfinGuid } from '@server/utils/jellyfin';
 import { isOwnProfileOrAdmin } from '@server/utils/profileMiddleware';
 import { Router } from 'express';
 import gravatarUrl from 'gravatar-url';
-import { findIndex, sortBy } from 'lodash';
 import type { EntityManager } from 'typeorm';
 import { In, Not } from 'typeorm';
 import userSettingsRoutes from './usersettings';
@@ -834,104 +829,6 @@ router.get<{ id: string }, QuotaResponse>(
   }
 );
 
-router.get<{ id: string }, UserWatchDataResponse>(
-  '/:id/watch_data',
-  isOwnProfileOrAdmin(),
-  async (req, res, next) => {
-    const settings = getSettings().tautulli;
-
-    if (!settings.hostname || !settings.port || !settings.apiKey) {
-      return next({
-        status: 404,
-        message: 'Tautulli API not configured.',
-      });
-    }
-
-    try {
-      const user = await getRepository(User).findOneOrFail({
-        where: { id: Number(req.params.id) },
-        select: { id: true, plexId: true },
-      });
-
-      const tautulli = new TautulliAPI(settings);
-
-      const watchStats = await tautulli.getUserWatchStats(user);
-      const watchHistory = await tautulli.getUserWatchHistory(user);
-
-      const recentlyWatched = sortBy(
-        await getRepository(Media).find({
-          where: [
-            {
-              mediaType: MediaType.MOVIE,
-              ratingKey: In(
-                watchHistory
-                  .filter((record) => record.media_type === 'movie')
-                  .map((record) => record.rating_key)
-              ),
-            },
-            {
-              mediaType: MediaType.MOVIE,
-              ratingKey4k: In(
-                watchHistory
-                  .filter((record) => record.media_type === 'movie')
-                  .map((record) => record.rating_key)
-              ),
-            },
-            {
-              mediaType: MediaType.TV,
-              ratingKey: In(
-                watchHistory
-                  .filter((record) => record.media_type === 'episode')
-                  .map((record) => record.grandparent_rating_key)
-              ),
-            },
-            {
-              mediaType: MediaType.TV,
-              ratingKey4k: In(
-                watchHistory
-                  .filter((record) => record.media_type === 'episode')
-                  .map((record) => record.grandparent_rating_key)
-              ),
-            },
-          ],
-        }),
-        [
-          (media) =>
-            findIndex(
-              watchHistory,
-              (record) =>
-                (!!media.ratingKey &&
-                  parseInt(media.ratingKey) ===
-                    (record.media_type === 'movie'
-                      ? record.rating_key
-                      : record.grandparent_rating_key)) ||
-                (!!media.ratingKey4k &&
-                  parseInt(media.ratingKey4k) ===
-                    (record.media_type === 'movie'
-                      ? record.rating_key
-                      : record.grandparent_rating_key))
-            ),
-        ]
-      );
-
-      return res.status(200).json({
-        recentlyWatched,
-        playCount: watchStats.total_plays,
-      });
-    } catch (e) {
-      logger.error('Something went wrong fetching user watch data', {
-        label: 'API',
-        errorMessage: e.message,
-        userId: req.params.id,
-      });
-      next({
-        status: 500,
-        message: 'Failed to fetch user watch data.',
-      });
-    }
-  }
-);
-
 router.get<{ id: string }, WatchlistResponse>(
   '/:id/watchlist',
   async (req, res, next) => {
@@ -956,53 +853,26 @@ router.get<{ id: string }, WatchlistResponse>(
 
     const user = await getRepository(User).findOneOrFail({
       where: { id: Number(req.params.id) },
-      select: ['id', 'plexToken'],
+      select: ['id'],
     });
 
-    if (user) {
-      const [result, total] = await getRepository(Watchlist).findAndCount({
-        where: { requestedBy: { id: user?.id } },
-        relations: {
-          /*requestedBy: true,media:true*/
-        },
-        // loadRelationIds: true,
-        take: itemsPerPage,
-        skip: offset,
-      });
-      if (total) {
-        return res.json({
-          page: page,
-          totalPages: Math.ceil(total / itemsPerPage),
-          totalResults: total,
-          results: result,
-        });
-      }
-    }
-
-    // We will just return an empty array if the user has no Plex token
-    if (!user.plexToken) {
-      return res.json({
-        page: 1,
-        totalPages: 1,
-        totalResults: 0,
-        results: [],
-      });
-    }
-
-    const plexTV = new PlexTvAPI(user.plexToken);
-
-    const watchlist = await plexTV.getWatchlist({ offset });
+    const [result, total] = await getRepository(Watchlist).findAndCount({
+      where: { requestedBy: { id: user.id } },
+      order: { createdAt: 'DESC' },
+      take: itemsPerPage,
+      skip: offset,
+    });
 
     return res.json({
       page,
-      totalPages: Math.ceil(watchlist.totalSize / itemsPerPage),
-      totalResults: watchlist.totalSize,
-      results: watchlist.items.map((item) => ({
-        id: item.tmdbId,
-        ratingKey: item.ratingKey,
+      totalPages: Math.max(1, Math.ceil(total / itemsPerPage)),
+      totalResults: total,
+      results: result.map((item) => ({
+        id: item.id,
+        igdbId: item.igdbId,
+        mediaType: item.mediaType,
         title: item.title,
-        mediaType: item.type === 'show' ? 'tv' : 'movie',
-        tmdbId: item.tmdbId,
+        coverImageId: item.media?.coverImageId ?? null,
       })),
     });
   }

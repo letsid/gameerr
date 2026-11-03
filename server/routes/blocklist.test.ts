@@ -78,25 +78,24 @@ describe('GET /blocklist/:id', () => {
 
     const media = await getRepository(Media).save(
       new Media({
-        mediaType: MediaType.MOVIE,
-        tmdbId: 12345,
+        mediaType: MediaType.GAME,
+        igdbId: 12345,
         status: MediaStatus.BLOCKLISTED,
-        status4k: MediaStatus.UNKNOWN,
       })
     );
 
     await getRepository(Blocklist).save(
       new Blocklist({
-        mediaType: MediaType.MOVIE,
-        tmdbId: 12345,
-        title: 'Blocked Movie',
+        mediaType: MediaType.GAME,
+        igdbId: 12345,
+        title: 'Blocked Game',
         user: blocklistUser,
         media,
       })
     );
 
     const admin = await loginAs('admin@seerr.dev', 'test1234');
-    const res = await admin.get('/blocklist/12345?mediaType=movie');
+    const res = await admin.get('/blocklist/12345');
 
     assert.strictEqual(res.status, 200);
     assert.strictEqual(res.body.user.email, 'demo@seerr.dev');

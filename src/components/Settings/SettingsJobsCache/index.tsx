@@ -77,19 +77,8 @@ const messages: { [messageName: string]: MessageDescriptor } = defineMessages(
     ipv4Fallbacks: 'IPv4 Fallbacks',
     hitRate: 'Hit Rate',
     unknownJob: 'Unknown Job',
-    'plex-recently-added-scan': 'Plex Recently Added Scan',
-    'plex-full-scan': 'Plex Full Library Scan',
-    'plex-watchlist-sync': 'Plex Watchlist Sync',
     'plex-refresh-token': 'Plex Refresh Token',
-    'jellyfin-full-scan': 'Jellyfin Full Library Scan',
-    'jellyfin-recently-added-scan': 'Jellyfin Recently Added Scan',
-    'availability-sync': 'Media Availability Sync',
-    'radarr-scan': 'Radarr Scan',
-    'sonarr-scan': 'Sonarr Scan',
-    'download-sync': 'Download Sync',
-    'download-sync-reset': 'Download Sync Reset',
     'image-cache-cleanup': 'Image Cache Cleanup',
-    'process-blocklisted-tags': 'Process Blocklisted Tags',
     editJobSchedule: 'Modify Job',
     jobScheduleEditSaved: 'Job edited successfully!',
     jobScheduleEditFailed: 'Something went wrong while saving the job.',
@@ -750,12 +739,12 @@ const SettingsJobs = () => {
           </thead>
           <Table.TBody>
             <tr>
-              <Table.TD>The Movie Database (tmdb)</Table.TD>
+              <Table.TD>IGDB (igdb)</Table.TD>
               <Table.TD>
-                {intl.formatNumber(cacheData?.imageCache.tmdb.imageCount ?? 0)}
+                {intl.formatNumber(cacheData?.imageCache.igdb.imageCount ?? 0)}
               </Table.TD>
               <Table.TD>
-                {formatBytes(cacheData?.imageCache.tmdb.size ?? 0)}
+                {formatBytes(cacheData?.imageCache.igdb.size ?? 0)}
               </Table.TD>
             </tr>
             <tr>

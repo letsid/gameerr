@@ -4,18 +4,16 @@ import PlexLogo from '@app/assets/services/plex.svg';
 import AppDataWarning from '@app/components/AppDataWarning';
 import Alert from '@app/components/Common/Alert';
 import Button from '@app/components/Common/Button';
-import ImageFader from '@app/components/Common/ImageFader';
 import PageTitle from '@app/components/Common/PageTitle';
 import LanguagePicker from '@app/components/Layout/LanguagePicker';
 import SettingsJellyfin from '@app/components/Settings/SettingsJellyfin';
 import SettingsPlex from '@app/components/Settings/SettingsPlex';
-import SettingsServices from '@app/components/Settings/SettingsServices';
+import SetupLocal from '@app/components/Setup/SetupLocal';
 import SetupSteps from '@app/components/Setup/SetupSteps';
 import useLocale from '@app/hooks/useLocale';
 import useSettings from '@app/hooks/useSettings';
 import defineMessages from '@app/utils/defineMessages';
 import { MediaServerType } from '@server/constants/server';
-import type { Library } from '@server/lib/settings';
 import axios from 'axios';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -25,8 +23,10 @@ import useSWR, { mutate } from 'swr';
 import SetupLogin from './SetupLogin';
 
 const messages = defineMessages('components.Setup', {
-  welcome: 'Welcome to Seerr',
-  subtitle: 'Get started by choosing your media server',
+  welcome: 'Welcome to Gameseerr',
+  subtitle: 'Get started by choosing how users sign in',
+  configlocal: 'Local Accounts',
+  configlocalDescription: 'Email and password, no media server needed',
   configjellyfin: 'Configure Jellyfin',
   configplex: 'Configure Plex',
   configemby: 'Configure Emby',
@@ -34,12 +34,11 @@ const messages = defineMessages('components.Setup', {
   finish: 'Finish Setup',
   finishing: 'Finishing…',
   continue: 'Continue',
-  servertype: 'Choose Server Type',
+  servertype: 'Choose Sign-in Type',
   signin: 'Sign In',
   configuremediaserver: 'Configure Media Server',
-  configureservices: 'Configure Services',
-  librarieserror:
-    'Unable to load libraries from your media server. Check that it is reachable and still configured correctly.',
+  mediaservererror:
+    'Unable to load the media server settings. Check that it is reachable and still configured correctly.',
 });
 
 const Setup = () => {
@@ -73,22 +72,16 @@ const Setup = () => {
     [MediaServerType.EMBY]: '/api/v1/settings/jellyfin',
     [MediaServerType.PLEX]: '/api/v1/settings/plex',
     [MediaServerType.NOT_CONFIGURED]: null,
+    [MediaServerType.LOCAL]: null,
   };
 
   const { data: mediaServerSettings, error: mediaServerSettingsError } =
-    useSWR<{ libraries: Library[] }>(
+    useSWR<{ ip?: string }>(
       currentStep === 3 ? mediaServerSettingsEndpoint[mediaServerType] : null
     );
 
-  const mediaServerSettingsComplete = !!mediaServerSettings?.libraries?.some(
-    (library) => library.enabled
-  );
-
-  const { data: backdrops } = useSWR<string[]>('/api/v1/backdrops', {
-    refreshInterval: 0,
-    refreshWhenHidden: false,
-    revalidateOnFocus: false,
-  });
+  const mediaServerSettingsComplete =
+    mediaServerType === MediaServerType.LOCAL || !!mediaServerSettings?.ip;
 
   useEffect(() => {
     if (settings.currentSettings.initialized) {
@@ -118,13 +111,6 @@ const Setup = () => {
   return (
     <div className="relative flex min-h-screen flex-col justify-center bg-gray-900 py-12">
       <PageTitle title={intl.formatMessage(messages.setup)} />
-      <ImageFader
-        backgroundImages={
-          backdrops?.map(
-            (backdrop) => `https://image.tmdb.org/t/p/original${backdrop}`
-          ) ?? []
-        }
-      />
       <div className="absolute right-4 top-4 z-50">
         <LanguagePicker />
       </div>
@@ -154,12 +140,6 @@ const Setup = () => {
               stepNumber={3}
               description={intl.formatMessage(messages.configuremediaserver)}
               active={currentStep === 3}
-              completed={currentStep > 3}
-            />
-            <SetupSteps
-              stepNumber={4}
-              description={intl.formatMessage(messages.configureservices)}
-              active={currentStep === 4}
               isLastStep
             />
           </ul>
@@ -173,8 +153,25 @@ const Setup = () => {
               <div className="mb-2 flex justify-center pb-6 text-sm">
                 {intl.formatMessage(messages.subtitle)}
               </div>
-              <div className="grid grid-cols-3">
+              <div className="grid grid-cols-2 md:grid-cols-4">
                 <div className="flex flex-col divide-y divide-gray-600 rounded-l border border-gray-600 py-2">
+                  <div className="mb-2 flex flex-1 items-center justify-center px-2 py-2 text-center text-sm text-gray-300">
+                    {intl.formatMessage(messages.configlocalDescription)}
+                  </div>
+                  <div className="px-2 pt-2">
+                    <button
+                      onClick={() => {
+                        setMediaServerType(MediaServerType.LOCAL);
+                        setCurrentStep(2);
+                      }}
+                      data-testid="setup-local"
+                      className="button-md relative z-10 inline-flex h-full w-full items-center justify-center rounded-md border border-gray-600 bg-transparent px-4 py-2 text-sm font-medium leading-5 text-white transition duration-150 ease-in-out hover:z-20 hover:border-gray-200 focus:z-20 focus:border-gray-100 focus:outline-none active:border-gray-100"
+                    >
+                      {intl.formatMessage(messages.configlocal)}
+                    </button>
+                  </div>
+                </div>
+                <div className="flex flex-col divide-y divide-gray-600 border-y border-gray-600 py-2">
                   <div className="mb-2 flex flex-1 items-center justify-center px-2 py-2">
                     <JellyfinLogo className="h-10" />
                   </div>
@@ -225,7 +222,16 @@ const Setup = () => {
               </div>
             </div>
           )}
-          {currentStep === 2 && (
+          {currentStep === 2 && mediaServerType === MediaServerType.LOCAL && (
+            <SetupLocal
+              onCancel={() => {
+                setMediaServerType(MediaServerType.NOT_CONFIGURED);
+                setCurrentStep(1);
+              }}
+              onComplete={() => setCurrentStep(3)}
+            />
+          )}
+          {currentStep === 2 && mediaServerType !== MediaServerType.LOCAL && (
             <SetupLogin
               serverType={mediaServerType}
               onCancel={() => {
@@ -239,13 +245,15 @@ const Setup = () => {
             <div className="p-2">
               {!!mediaServerSettingsError && (
                 <Alert
-                  title={intl.formatMessage(messages.librarieserror)}
+                  title={intl.formatMessage(messages.mediaservererror)}
                   type="error"
                 />
               )}
-              {mediaServerType === MediaServerType.PLEX ? (
+              {mediaServerType === MediaServerType.PLEX && (
                 <SettingsPlex isSetupSettings />
-              ) : (
+              )}
+              {(mediaServerType === MediaServerType.JELLYFIN ||
+                mediaServerType === MediaServerType.EMBY) && (
                 <SettingsJellyfin isSetupSettings />
               )}
               <div className="actions">
@@ -253,26 +261,9 @@ const Setup = () => {
                   <span className="ml-3 inline-flex rounded-md shadow-sm">
                     <Button
                       buttonType="primary"
-                      disabled={!mediaServerSettingsComplete}
-                      onClick={() => setCurrentStep(4)}
-                    >
-                      {intl.formatMessage(messages.continue)}
-                    </Button>
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
-          {currentStep === 4 && (
-            <div>
-              <SettingsServices />
-              <div className="actions">
-                <div className="flex justify-end">
-                  <span className="ml-3 inline-flex rounded-md shadow-sm">
-                    <Button
-                      buttonType="primary"
                       onClick={() => finishSetup()}
-                      disabled={isUpdating}
+                      disabled={isUpdating || !mediaServerSettingsComplete}
+                      data-testid="setup-finish"
                     >
                       {isUpdating
                         ? intl.formatMessage(messages.finishing)

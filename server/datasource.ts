@@ -1,19 +1,12 @@
 import { Blocklist } from '@server/entity/Blocklist';
 import DiscoverSlider from '@server/entity/DiscoverSlider';
-import Issue from '@server/entity/Issue';
-import IssueComment from '@server/entity/IssueComment';
 import Media from '@server/entity/Media';
 import { MediaRequest } from '@server/entity/MediaRequest';
-import OverrideRule from '@server/entity/OverrideRule';
-import Season from '@server/entity/Season';
-import SeasonRequest from '@server/entity/SeasonRequest';
 import { Session } from '@server/entity/Session';
 import { User } from '@server/entity/User';
 import { UserPushSubscription } from '@server/entity/UserPushSubscription';
 import { UserSettings } from '@server/entity/UserSettings';
 import { Watchlist } from '@server/entity/Watchlist';
-import { IssueCommentSubscriber } from '@server/subscriber/IssueCommentSubscriber';
-import { IssueSubscriber } from '@server/subscriber/IssueSubscriber';
 import { MediaRequestSubscriber } from '@server/subscriber/MediaRequestSubscriber';
 import { MediaSubscriber } from '@server/subscriber/MediaSubscriber';
 import { isPgsql } from '@server/utils/dbType';
@@ -27,13 +20,8 @@ const DB_SSL_PREFIX = 'DB_SSL_';
 const entities = [
   Blocklist,
   DiscoverSlider,
-  Issue,
-  IssueComment,
   Media,
   MediaRequest,
-  OverrideRule,
-  Season,
-  SeasonRequest,
   Session,
   User,
   UserPushSubscription,
@@ -41,12 +29,7 @@ const entities = [
   Watchlist,
 ];
 
-const subscribers = [
-  IssueCommentSubscriber,
-  IssueSubscriber,
-  MediaRequestSubscriber,
-  MediaSubscriber,
-];
+const subscribers = [MediaRequestSubscriber, MediaSubscriber];
 
 function boolFromEnv(envVar: string, defaultVal = false) {
   if (process.env[envVar]) {
@@ -137,7 +120,7 @@ const postgresDevConfig: DataSourceOptions = {
     : parseInt(process.env.DB_PORT ?? '5432'),
   username: process.env.DB_USER,
   password: process.env.DB_PASS,
-  database: process.env.DB_NAME ?? 'seerr',
+  database: process.env.DB_NAME ?? 'gameseerr',
   ssl: buildSslConfig(),
   poolSize: intFromEnv('DB_POOL_SIZE'),
   // Bounds pool acquisition waits so exhaustion surfaces as errors instead of a silent hang
@@ -158,7 +141,7 @@ const postgresProdConfig: DataSourceOptions = {
     : parseInt(process.env.DB_PORT ?? '5432'),
   username: process.env.DB_USER,
   password: process.env.DB_PASS,
-  database: process.env.DB_NAME ?? 'seerr',
+  database: process.env.DB_NAME ?? 'gameseerr',
   ssl: buildSslConfig(),
   poolSize: intFromEnv('DB_POOL_SIZE'),
   // Bounds pool acquisition waits so exhaustion surfaces as errors instead of a silent hang

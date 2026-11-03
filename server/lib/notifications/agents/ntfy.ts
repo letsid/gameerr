@@ -1,4 +1,3 @@
-import { IssueStatus, IssueTypeName } from '@server/constants/issue';
 import { getIntl } from '@server/i18n';
 import globalMessages from '@server/i18n/globalMessages';
 import type { NotificationAgentNtfy } from '@server/lib/settings';
@@ -72,20 +71,6 @@ class NtfyAgent
       if (status) {
         message += `\n**${intl.formatMessage(globalMessages.requestStatus)}:** ${status}`;
       }
-    } else if (payload.comment) {
-      message += `\n**${this.escapeMarkdown(
-        intl.formatMessage(globalMessages.commentFrom, {
-          userName: payload.comment.user.displayName,
-        })
-      )}:**\n${payload.comment.message}`;
-    } else if (payload.issue) {
-      message += `\n\n**${intl.formatMessage(globalMessages.reportedBy)}:** ${this.escapeMarkdown(payload.issue.createdBy.displayName)}`;
-      message += `\n**${intl.formatMessage(globalMessages.issueType)}:** ${IssueTypeName[payload.issue.issueType]}`;
-      message += `\n**${intl.formatMessage(globalMessages.issueStatus)}:** ${
-        payload.issue.status === IssueStatus.OPEN
-          ? intl.formatMessage(globalMessages.open)
-          : intl.formatMessage(globalMessages.resolved)
-      }`;
     }
 
     for (const extra of payload.extra ?? []) {
@@ -96,7 +81,7 @@ class NtfyAgent
 
     let click;
     if (applicationUrl && payload.media) {
-      click = `${applicationUrl}/${payload.media.mediaType}/${payload.media.tmdbId}`;
+      click = `${applicationUrl}/game/${payload.media.igdbId}`;
     }
 
     const ntfyPayload: Record<string, unknown> = {

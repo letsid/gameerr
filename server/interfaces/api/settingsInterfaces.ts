@@ -34,21 +34,13 @@ export interface PublicSettingsResponse {
   hideRequested: boolean;
   localLogin: boolean;
   mediaServerLogin: boolean;
-  movie4kEnabled: boolean;
-  series4kEnabled: boolean;
-  discoverRegion: string;
-  streamingRegion: string;
-  originalLanguage: string;
   mediaServerType: number;
-  partialRequestsEnabled: boolean;
-  enableSpecialEpisodes: boolean;
   cacheImages: boolean;
   vapidPublic: string;
   enablePushRegistration: boolean;
   locale: string;
   emailEnabled: boolean;
   newPlexLogin: boolean;
-  youtubeUrl: string;
   versionCheck: boolean;
   plexClientIdentifier: string;
 }
@@ -67,7 +59,7 @@ export interface CacheItem {
 
 export interface CacheResponse {
   apiCaches: CacheItem[];
-  imageCache: Record<'tmdb' | 'avatar', { size: number; imageCount: number }>;
+  imageCache: Record<'igdb' | 'avatar', { size: number; imageCount: number }>;
   dnsCache: {
     stats: DnsStats | undefined;
     entries: DnsEntries | undefined;
