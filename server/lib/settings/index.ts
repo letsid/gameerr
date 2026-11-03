@@ -116,6 +116,12 @@ export interface MetadataSettings {
   minRatingCount: number;
   recentReleaseDays: number;
   upcomingReleaseDays: number;
+  /**
+   * A game only enters a platform's best list when it came to that platform
+   * at most this many years after its first release. Keeps re-releases such
+   * as PS one Classics out of PS3 lists. 0 turns the rule off.
+   */
+  bestReleaseGapYears: number;
 }
 
 interface PublicSettings {
@@ -392,6 +398,7 @@ class Settings {
         minRatingCount: 50,
         recentReleaseDays: 60,
         upcomingReleaseDays: 90,
+        bestReleaseGapYears: 5,
       },
       public: {
         initialized: false,

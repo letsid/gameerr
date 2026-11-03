@@ -82,6 +82,7 @@ const metadataSettingsBody = z
     minRatingCount: z.coerce.number().int().min(0).max(100000),
     recentReleaseDays: z.coerce.number().int().min(1).max(365),
     upcomingReleaseDays: z.coerce.number().int().min(1).max(730),
+    bestReleaseGapYears: z.coerce.number().int().min(0).max(50),
   })
   .partial();
 
@@ -94,6 +95,7 @@ const metadataSettingsResponse = (): MetadataSettingsResponse => {
     minRatingCount: metadata.minRatingCount,
     recentReleaseDays: metadata.recentReleaseDays,
     upcomingReleaseDays: metadata.upcomingReleaseDays,
+    bestReleaseGapYears: metadata.bestReleaseGapYears,
     igdbConfigured:
       !!credentials.igdbClientId && !!credentials.igdbClientSecret,
     rawgConfigured: !!credentials.rawgApiKey,
@@ -120,7 +122,8 @@ settingsRoutes.post<never, MetadataSettingsResponse>(
     const listsChanged =
       body.data.minRatingCount !== undefined ||
       body.data.recentReleaseDays !== undefined ||
-      body.data.upcomingReleaseDays !== undefined;
+      body.data.upcomingReleaseDays !== undefined ||
+      body.data.bestReleaseGapYears !== undefined;
 
     settings.metadata = {
       ...settings.metadata,

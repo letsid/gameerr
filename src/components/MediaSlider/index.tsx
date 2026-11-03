@@ -87,7 +87,8 @@ const MediaSlider = ({
     }
   }, [titles, setSize, size, data, onNewTitles]);
 
-  if (hideWhenEmpty && (data?.[0].results ?? []).length === 0) {
+  // Hide only once loaded, so the slider still shows its loading state
+  if (hideWhenEmpty && data && (data[0]?.results ?? []).length === 0) {
     return null;
   }
 

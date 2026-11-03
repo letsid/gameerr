@@ -23,6 +23,8 @@ export interface DiscoverListResponse extends GameResultsResponse {
   list: DiscoverListId;
   platform: number;
   generatedAt: string;
+  // Vote minimum the best list was built with
+  minRatingCount?: number;
 }
 
 export interface GameDetailsResponse extends GameDetails {

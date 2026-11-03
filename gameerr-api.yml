@@ -969,6 +969,10 @@ components:
         upcomingReleaseDays:
           type: number
           example: 90
+        bestReleaseGapYears:
+          type: number
+          example: 5
+          description: Years a game may take to reach a platform and still enter its best list, 0 turns the rule off
         igdbConfigured:
           type: boolean
           readOnly: true

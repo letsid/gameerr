@@ -86,6 +86,7 @@ discoverRoutes.get<{ list: string }, DiscoverListResponse>(
         list,
         platform,
         generatedAt: discoverList.generatedAt,
+        minRatingCount: discoverList.minRatingCount,
         page,
         totalPages: Math.max(1, Math.ceil(total / DISCOVER_PAGE_SIZE)),
         totalResults: total,

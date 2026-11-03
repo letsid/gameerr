@@ -19,8 +19,15 @@ export const isDiscoverListId = (value: unknown): value is DiscoverListId =>
 
 // Number of games kept per list
 export const DISCOVER_LIST_SIZE = 40;
-// Score based lists fetch more than they keep, the vote filter thins them out
-const TOP_RATED_FETCH_SIZE = 100;
+// Score based lists fetch more than they keep, the vote filter and the
+// re-release rule thin them out
+const TOP_RATED_FETCH_SIZE = 200;
+
+// Platforms with few ratings, mostly retro systems, get a lower vote
+// minimum until the best list has this many games. The minimum never drops
+// below the floor, so a game rated by three people still cannot top it.
+export const BEST_LIST_TARGET = 20;
+export const MIN_RATING_FLOOR = 10;
 
 const DAY = 24 * 60 * 60;
 
@@ -44,6 +51,8 @@ export interface DiscoverList {
   platform: number;
   generatedAt: string;
   results: DiscoverGame[];
+  // Vote minimum the best list was built with
+  minRatingCount?: number;
 }
 
 export const toDiscoverGame = (game: IgdbGame): DiscoverGame => ({
@@ -69,6 +78,45 @@ export const filterByMinRatingCount = <T extends { totalRatingCount?: number }>(
   games: T[],
   minRatingCount: number
 ): T[] => games.filter((game) => (game.totalRatingCount ?? 0) > minRatingCount);
+
+/**
+ * Vote minimums to try, strictest first: the configured one, then 20, then
+ * the floor, never above the configured one
+ */
+export const ratingThresholds = (minRatingCount: number): number[] =>
+  [
+    ...new Set([
+      minRatingCount,
+      Math.min(minRatingCount, BEST_LIST_TARGET),
+      Math.min(minRatingCount, MIN_RATING_FLOOR),
+    ]),
+  ].sort((a, b) => b - a);
+
+const YEAR = 365.25 * 24 * 60 * 60;
+
+/**
+ * Keeps games that reached the platform at most `maxGapYears` after their
+ * first release anywhere. Games without dates are kept, nothing is known
+ * against them.
+ */
+export const filterOriginalReleases = (
+  games: DiscoverGame[],
+  platformRelease: Map<number, number>,
+  maxGapYears: number
+): DiscoverGame[] => {
+  if (maxGapYears <= 0) {
+    return games;
+  }
+
+  return games.filter((game) => {
+    const onPlatform = platformRelease.get(game.id);
+    return (
+      game.firstReleaseDate === undefined ||
+      onPlatform === undefined ||
+      onPlatform - game.firstReleaseDate <= maxGapYears * YEAR
+    );
+  });
+};
 
 const byName = (a: DiscoverGame, b: DiscoverGame) =>
   a.name.localeCompare(b.name);
@@ -146,17 +194,53 @@ export const computeDiscoverList = async (
         now + 1,
         now + upcomingReleaseDays * DAY
       );
-    case 'best': {
-      const games = (
-        await igdb.getTopRatedGames({
-          platform,
-          minRatingCount,
-          limit: TOP_RATED_FETCH_SIZE,
-        })
-      ).map(toDiscoverGame);
-      return rankByRating(games, minRatingCount).slice(0, DISCOVER_LIST_SIZE);
+    case 'best':
+      return (await bestOnPlatform(platform, minRatingCount)).results;
+  }
+};
+
+/**
+ * The best list of a platform, lowering the vote minimum step by step for
+ * platforms with few ratings
+ */
+export const bestOnPlatform = async (
+  platform: number,
+  minRatingCount: number
+): Promise<{ results: DiscoverGame[]; minRatingCount: number }> => {
+  const { bestReleaseGapYears } = getSettings().metadata;
+  const thresholds = ratingThresholds(minRatingCount);
+  let best: { results: DiscoverGame[]; minRatingCount: number } | undefined;
+
+  for (const threshold of thresholds) {
+    const games = (
+      await igdb.getTopRatedGames({
+        platform,
+        minRatingCount: threshold,
+        limit: TOP_RATED_FETCH_SIZE,
+      })
+    ).map(toDiscoverGame);
+
+    const platformRelease =
+      bestReleaseGapYears > 0
+        ? await igdb.getEarliestReleaseDates({
+            platform,
+            ids: games.map((game) => game.id),
+          })
+        : new Map<number, number>();
+
+    const results = rankByRating(
+      filterOriginalReleases(games, platformRelease, bestReleaseGapYears),
+      threshold
+    ).slice(0, DISCOVER_LIST_SIZE);
+
+    best = { results, minRatingCount: threshold };
+
+    if (results.length >= BEST_LIST_TARGET) {
+      break;
     }
   }
+
+  return best ?? { results: [], minRatingCount };
 };
 
 const pending = new Map<string, Promise<DiscoverList>>();
@@ -173,12 +257,22 @@ export const refreshDiscoverList = (
   }
 
   const task = (async () => {
-    const results = await computeDiscoverList(list, platform);
+    const {
+      results,
+      minRatingCount,
+    }: {
+      results: DiscoverGame[];
+      minRatingCount?: number;
+    } =
+      list === 'best'
+        ? await bestOnPlatform(platform, getSettings().metadata.minRatingCount)
+        : { results: await computeDiscoverList(list, platform) };
     const value: DiscoverList = {
       list,
       platform,
       generatedAt: new Date().toISOString(),
       results,
+      ...(minRatingCount !== undefined ? { minRatingCount } : {}),
     };
     await setCachedMetadata(key, 'list', value);
     return value;

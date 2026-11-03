@@ -60,6 +60,10 @@ const messages = defineMessages('components.Settings.SettingsMain', {
   minRatingCountTip:
     'A game needs more IGDB ratings than this to appear in score based lists.',
   validationMinRatingCount: 'Enter a whole number of 0 or more',
+  bestReleaseGapYears: 'Re-releases in Best Lists',
+  bestReleaseGapYearsTip:
+    'Leave out games that came to a platform more than this many years after their first release, such as PS one Classics on PS3. 0 keeps every release.',
+  validationBestReleaseGapYears: 'Enter a whole number of years from 0 to 50',
   versionCheck: 'Version Check',
   versionCheckTip: 'Automatically check for new versions on GitHub.',
   validationUrl: 'You must provide a valid URL',
@@ -88,6 +92,12 @@ const SettingsMain = () => {
       .integer(intl.formatMessage(messages.validationMinRatingCount))
       .min(0, intl.formatMessage(messages.validationMinRatingCount))
       .required(intl.formatMessage(messages.validationMinRatingCount)),
+    bestReleaseGapYears: Yup.number()
+      .typeError(intl.formatMessage(messages.validationBestReleaseGapYears))
+      .integer(intl.formatMessage(messages.validationBestReleaseGapYears))
+      .min(0, intl.formatMessage(messages.validationBestReleaseGapYears))
+      .max(50, intl.formatMessage(messages.validationBestReleaseGapYears))
+      .required(intl.formatMessage(messages.validationBestReleaseGapYears)),
     applicationTitle: Yup.string().required(
       intl.formatMessage(messages.validationApplicationTitle)
     ),
@@ -154,6 +164,7 @@ const SettingsMain = () => {
             versionCheck: data?.versionCheck,
             defaultPlatforms: metadata?.defaultPlatforms ?? [6],
             minRatingCount: metadata?.minRatingCount ?? 50,
+            bestReleaseGapYears: metadata?.bestReleaseGapYears ?? 5,
           }}
           enableReinitialize
           validationSchema={MainSettingsSchema}
@@ -172,6 +183,7 @@ const SettingsMain = () => {
               await axios.post('/api/v1/settings/metadata', {
                 defaultPlatforms: values.defaultPlatforms,
                 minRatingCount: Number(values.minRatingCount),
+                bestReleaseGapYears: Number(values.bestReleaseGapYears),
               });
               mutateMetadata();
               mutate('/api/v1/settings/public');
@@ -368,6 +380,34 @@ const SettingsMain = () => {
                       touched.minRatingCount &&
                       typeof errors.minRatingCount === 'string' && (
                         <div className="error">{errors.minRatingCount}</div>
+                      )}
+                  </div>
+                </div>
+                <div className="form-row">
+                  <label htmlFor="bestReleaseGapYears" className="text-label">
+                    <span>
+                      {intl.formatMessage(messages.bestReleaseGapYears)}
+                    </span>
+                    <span className="label-tip">
+                      {intl.formatMessage(messages.bestReleaseGapYearsTip)}
+                    </span>
+                  </label>
+                  <div className="form-input-area">
+                    <div className="form-input-field">
+                      <Field
+                        type="text"
+                        inputMode="numeric"
+                        id="bestReleaseGapYears"
+                        name="bestReleaseGapYears"
+                        className="short"
+                      />
+                    </div>
+                    {errors.bestReleaseGapYears &&
+                      touched.bestReleaseGapYears &&
+                      typeof errors.bestReleaseGapYears === 'string' && (
+                        <div className="error">
+                          {errors.bestReleaseGapYears}
+                        </div>
                       )}
                   </div>
                 </div>

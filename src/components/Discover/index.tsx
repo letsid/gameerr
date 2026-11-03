@@ -245,6 +245,7 @@ const Discover = () => {
                 sliderKey={`recent-${platform}`}
                 title={intl.formatMessage(sliderTitles.recentreleases)}
                 url="/api/v1/discover/recent"
+                hideWhenEmpty
                 extraParams={`platform=${platform}`}
               />
             );
@@ -255,6 +256,7 @@ const Discover = () => {
                 sliderKey={`upcoming-${platform}`}
                 title={intl.formatMessage(sliderTitles.upcoming)}
                 url="/api/v1/discover/upcoming"
+                hideWhenEmpty
                 extraParams={`platform=${platform}`}
               />
             );
@@ -265,6 +267,7 @@ const Discover = () => {
                 sliderKey={`best-${platform}`}
                 title={intl.formatMessage(sliderTitles.alltimebest)}
                 url="/api/v1/discover/best"
+                hideWhenEmpty
                 extraParams={`platform=${platform}`}
               />
             );

@@ -81,6 +81,7 @@ export interface MetadataSettingsResponse {
   minRatingCount: number;
   recentReleaseDays: number;
   upcomingReleaseDays: number;
+  bestReleaseGapYears: number;
   // Whether a key is set, the keys themselves are never sent
   igdbConfigured: boolean;
   rawgConfigured: boolean;

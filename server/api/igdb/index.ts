@@ -378,6 +378,40 @@ class IgdbAPI extends ExternalAPI {
     return [...released];
   }
 
+  /**
+   * Earliest release date of each given game on the platform
+   */
+  public async getEarliestReleaseDates({
+    platform,
+    ids,
+  }: {
+    platform: number;
+    ids: number[];
+  }): Promise<Map<number, number>> {
+    const earliest = new Map<number, number>();
+    const unique = [...new Set(ids)];
+
+    for (let i = 0; i < unique.length; i += IGDB_MAX_LIMIT) {
+      const chunk = unique.slice(i, i + IGDB_MAX_LIMIT);
+      const releases = await this.query<IgdbReleaseDate[]>(
+        'release_dates',
+        `fields game,date; where platform = ${Math.trunc(platform)} & date != null & game = ${apicalypseList(chunk)}; limit ${IGDB_MAX_LIMIT};`,
+        0
+      );
+
+      releases.forEach((release) => {
+        if (release.game && release.date !== undefined) {
+          const current = earliest.get(release.game);
+          if (current === undefined || release.date < current) {
+            earliest.set(release.game, release.date);
+          }
+        }
+      });
+    }
+
+    return earliest;
+  }
+
   public async getTopRatedGames({
     platform,
     minRatingCount,

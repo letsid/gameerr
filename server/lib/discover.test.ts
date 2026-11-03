@@ -1,15 +1,18 @@
 import assert from 'node:assert/strict';
-import { afterEach, describe, it, mock } from 'node:test';
+import { afterEach, beforeEach, describe, it, mock } from 'node:test';
 
 import igdb from '@server/api/igdb';
 import type { IgdbGame } from '@server/api/igdb/interfaces';
 import {
+  bestOnPlatform,
   computeDiscoverList,
   discoverListKey,
   filterByMinRatingCount,
+  filterOriginalReleases,
   getDiscoverList,
   rankByHype,
   rankByRating,
+  ratingThresholds,
   toDiscoverGame,
 } from '@server/lib/discover';
 import { setCachedMetadata } from '@server/lib/gameMetadataCache';
@@ -32,6 +35,13 @@ const barelyRated: IgdbGame = {
 };
 
 setupTestDb();
+
+beforeEach(() => {
+  getSettings().metadata.minRatingCount = 50;
+  getSettings().metadata.bestReleaseGapYears = 5;
+  // No platform release dates unless a test provides them
+  mock.method(igdb, 'getEarliestReleaseDates', async () => new Map());
+});
 
 afterEach(() => {
   mock.restoreAll();
@@ -235,5 +245,83 @@ describe('getDiscoverList', () => {
     // The result is persisted for the next request
     await getDiscoverList('best', PC);
     assert.strictEqual(topRated.mock.callCount(), 1);
+  });
+});
+
+describe('best list rules', () => {
+  const YEAR = 365.25 * DAY;
+
+  it('steps the vote minimum down to the floor, never above the setting', () => {
+    assert.deepStrictEqual(ratingThresholds(50), [50, 20, 10]);
+    assert.deepStrictEqual(ratingThresholds(15), [15, 10]);
+    assert.deepStrictEqual(ratingThresholds(5), [5]);
+  });
+
+  it('keeps ports and drops late re-releases', () => {
+    const games = [
+      // Suikoden II: PS1 1998, PS one Classic on PS3 in 2008
+      { id: 1454, name: 'Suikoden II', platforms: [], firstReleaseDate: 0 },
+      // GTA V: PS3 2013, PC 2015
+      {
+        id: 1020,
+        name: 'Grand Theft Auto V',
+        platforms: [],
+        firstReleaseDate: 0,
+      },
+      // No date on the platform, nothing speaks against it
+      { id: 7, name: 'Undated', platforms: [], firstReleaseDate: 0 },
+    ];
+    const onPlatform = new Map([
+      [1454, 10 * YEAR],
+      [1020, 2 * YEAR],
+    ]);
+
+    assert.deepStrictEqual(
+      filterOriginalReleases(games, onPlatform, 5).map((game) => game.id),
+      [1020, 7]
+    );
+    assert.strictEqual(filterOriginalReleases(games, onPlatform, 0).length, 3);
+  });
+
+  it('lowers the minimum for a platform with few ratings', async () => {
+    const calls: number[] = [];
+    mock.method(
+      igdb,
+      'getTopRatedGames',
+      async ({ minRatingCount }: { minRatingCount: number }) => {
+        calls.push(minRatingCount);
+        // 5 games clear 50 votes, 25 clear 20 votes
+        const count = minRatingCount >= 50 ? 5 : 25;
+        return Array.from({ length: count }, (_, i) => ({
+          id: i + 1,
+          name: `Game ${i + 1}`,
+          total_rating: 90 - i,
+          total_rating_count: minRatingCount + 1,
+        }));
+      }
+    );
+
+    const best = await bestOnPlatform(33, 50);
+
+    assert.deepStrictEqual(calls, [50, 20]);
+    assert.strictEqual(best.minRatingCount, 20);
+    assert.strictEqual(best.results.length, 25);
+  });
+
+  it('asks for platform release dates only while the rule is on', async () => {
+    mock.method(igdb, 'getTopRatedGames', async () => bestPc as IgdbGame[]);
+    const releases = mock.method(
+      igdb,
+      'getEarliestReleaseDates',
+      async () => new Map<number, number>()
+    );
+
+    getSettings().metadata.bestReleaseGapYears = 0;
+    await bestOnPlatform(PC, 50);
+    assert.strictEqual(releases.mock.callCount(), 0);
+
+    getSettings().metadata.bestReleaseGapYears = 5;
+    await bestOnPlatform(PC, 50);
+    assert.strictEqual(releases.mock.callCount(), 1);
   });
 });
