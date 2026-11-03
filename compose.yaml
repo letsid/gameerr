@@ -1,5 +1,5 @@
 services:
-  seerr:
+  gameerr:
     build:
       context: .
       dockerfile: Dockerfile.local

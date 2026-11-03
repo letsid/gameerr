@@ -10,7 +10,7 @@ export interface SettingsContextProps {
 
 const defaultSettings = {
   initialized: false,
-  applicationTitle: 'Gameseerr',
+  applicationTitle: 'Gameerr',
   applicationUrl: '',
   hideAvailable: false,
   hideBlocklisted: false,

@@ -10,7 +10,7 @@ interface PlexStatusResponse {
 }
 
 /**
- * Minimal Plex Media Server client. Gameseerr only needs it to verify the
+ * Minimal Plex Media Server client. Gameerr only needs it to verify the
  * configured server (used for Plex sign-in), library scanning was removed.
  */
 class PlexAPI extends ExternalAPI {
@@ -36,9 +36,9 @@ class PlexAPI extends ExternalAPI {
         headers: {
           'X-Plex-Token': plexToken ?? '',
           'X-Plex-Client-Identifier': settings.clientId,
-          'X-Plex-Product': 'Gameseerr',
-          'X-Plex-Device-Name': 'Gameseerr',
-          'X-Plex-Platform': 'Gameseerr',
+          'X-Plex-Product': 'Gameerr',
+          'X-Plex-Device-Name': 'Gameerr',
+          'X-Plex-Platform': 'Gameerr',
         },
       }
     );

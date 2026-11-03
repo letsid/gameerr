@@ -14,7 +14,7 @@ import type { NotificationAgent, NotificationPayload } from './agent';
 import { BaseAgent } from './agent';
 
 const PUBLIC_LOGO_URL =
-  'https://raw.githubusercontent.com/seerr-team/seerr/refs/heads/develop/public/logo_full.svg';
+  'https://raw.githubusercontent.com/letsid/gameerr/refs/heads/gameerr/public/logo_full.svg';
 
 const messages = defineMessages('notifications.agents.email', {
   pendingRequest: 'A new request for the following game is pending approval:',

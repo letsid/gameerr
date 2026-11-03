@@ -22,7 +22,7 @@ const messages = defineMessages('components.Settings', {
   plex: 'Plex',
   plexsettings: 'Plex Settings',
   plexsettingsDescription:
-    'Configure the settings for your Plex server. Gameseerr uses it for sign-in only.',
+    'Configure the settings for your Plex server. Gameerr uses it for sign-in only.',
   serverpreset: 'Server',
   serverLocal: 'local',
   serverRemote: 'remote',

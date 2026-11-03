@@ -19,7 +19,7 @@ import * as Yup from 'yup';
 const messages = defineMessages('components.Settings', {
   jellyfinsettings: '{mediaServerName} Settings',
   jellyfinsettingsDescription:
-    'Configure the settings for your {mediaServerName} server. Gameseerr uses it for sign-in only.',
+    'Configure the settings for your {mediaServerName} server. Gameerr uses it for sign-in only.',
   timeout: 'Timeout',
   save: 'Save Changes',
   saving: 'Saving…',

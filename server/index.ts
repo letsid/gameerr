@@ -46,16 +46,16 @@ import next from 'next';
 import path from 'path';
 import swaggerUi from 'swagger-ui-express';
 
-const API_SPEC_PATH = path.join(__dirname, '../seerr-api.yml');
+const API_SPEC_PATH = path.join(__dirname, '../gameerr-api.yml');
 
-logger.info(`Starting Gameseerr version ${getAppVersion()}`);
+logger.info(`Starting Gameerr version ${getAppVersion()}`);
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
 if (!appDataPermissions()) {
   logger.error(
-    'Something went wrong while checking config folder! Please ensure the config folder is set up properly.\nhttps://docs.seerr.dev/getting-started'
+    'Something went wrong while checking config folder! Please ensure the config folder is set up properly.\nhttps://github.com/letsid/gameerr#readme'
   );
 }
 

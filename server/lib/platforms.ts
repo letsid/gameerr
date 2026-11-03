@@ -8,7 +8,7 @@ import { getSettings } from '@server/lib/settings';
 import logger from '@server/logger';
 
 /**
- * Platforms are identified by their IGDB platform id throughout Gameseerr.
+ * Platforms are identified by their IGDB platform id throughout Gameerr.
  * Only PC is pinned, every other id comes from IGDB /platforms at runtime.
  */
 export const PC_PLATFORM_ID = 6;

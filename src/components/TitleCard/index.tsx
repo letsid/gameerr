@@ -297,7 +297,7 @@ const TitleCard = ({
             src={
               coverImageId
                 ? igdbImageUrl(coverImageId, 'cover_big')
-                : `/images/seerr_poster_not_found_logo_top.png`
+                : `/images/gameerr_cover_not_found_logo_top.png`
             }
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             fill

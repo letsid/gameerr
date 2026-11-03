@@ -23,7 +23,7 @@ import useSWR, { mutate } from 'swr';
 import SetupLogin from './SetupLogin';
 
 const messages = defineMessages('components.Setup', {
-  welcome: 'Welcome to Gameseerr',
+  welcome: 'Welcome to Gameerr',
   subtitle: 'Get started by choosing how users sign in',
   configlocal: 'Local Accounts',
   configlocalDescription: 'Email and password, no media server needed',

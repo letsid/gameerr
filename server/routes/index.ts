@@ -148,7 +148,7 @@ router.use('/auth', authRoutes);
 
 router.get('/', (_req, res) => {
   return res.status(200).json({
-    api: 'Gameseerr API',
+    api: 'Gameerr API',
     version: '1.0',
   });
 });

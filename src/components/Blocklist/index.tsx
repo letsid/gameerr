@@ -242,7 +242,7 @@ const BlocklistedItem = ({ item, revalidateList }: BlocklistedItemProps) => {
           >
             <CachedImage
               type="igdb"
-              src="/images/seerr_poster_not_found.png"
+              src="/images/gameerr_cover_not_found.png"
               alt=""
               sizes="100vw"
               style={{ width: '100%', height: 'auto', objectFit: 'cover' }}

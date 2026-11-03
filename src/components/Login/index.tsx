@@ -27,7 +27,7 @@ const messages = defineMessages('components.Login', {
   signinheader: 'Sign in to continue',
   signinwithplex: 'Use your Plex account',
   signinwithjellyfin: 'Use your {mediaServerName} account',
-  signinwithoverseerr: 'Use your {applicationTitle} account',
+  signinwithaccount: 'Use your {applicationTitle} account',
   orsigninwith: 'Or sign in with',
 });
 
@@ -122,8 +122,8 @@ const Login = () => {
         settings.currentSettings.localLogin &&
         (mediaServerLogin ? (
           <Button
-            key="seerr"
-            data-testid="seerr-login-button"
+            key="gameerr"
+            data-testid="gameerr-login-button"
             className="flex-1 bg-transparent"
             onClick={() => setMediaServerLogin(false)}
           >

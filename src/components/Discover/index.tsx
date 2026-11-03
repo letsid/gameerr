@@ -48,7 +48,7 @@ const messages = defineMessages('components.Discover', {
     'IGDB is not configured. Set IGDB_CLIENT_ID and IGDB_CLIENT_SECRET to load game lists.',
 });
 
-const SELECTED_PLATFORM_KEY = 'gameseerr.discover.platform';
+const SELECTED_PLATFORM_KEY = 'gameerr.discover.platform';
 
 const readStoredPlatform = (): number | undefined => {
   try {

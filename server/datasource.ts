@@ -122,7 +122,7 @@ const postgresDevConfig: DataSourceOptions = {
     : parseInt(process.env.DB_PORT ?? '5432'),
   username: process.env.DB_USER,
   password: process.env.DB_PASS,
-  database: process.env.DB_NAME ?? 'gameseerr',
+  database: process.env.DB_NAME ?? 'gameerr',
   ssl: buildSslConfig(),
   poolSize: intFromEnv('DB_POOL_SIZE'),
   // Bounds pool acquisition waits so exhaustion surfaces as errors instead of a silent hang
@@ -143,7 +143,7 @@ const postgresProdConfig: DataSourceOptions = {
     : parseInt(process.env.DB_PORT ?? '5432'),
   username: process.env.DB_USER,
   password: process.env.DB_PASS,
-  database: process.env.DB_NAME ?? 'gameseerr',
+  database: process.env.DB_NAME ?? 'gameerr',
   ssl: buildSslConfig(),
   poolSize: intFromEnv('DB_POOL_SIZE'),
   // Bounds pool acquisition waits so exhaustion surfaces as errors instead of a silent hang

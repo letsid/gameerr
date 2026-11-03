@@ -121,7 +121,7 @@ const RequestItem = ({ request, revalidateList }: RequestItemProps) => {
               src={
                 requestData.media.coverImageId
                   ? igdbImageUrl(requestData.media.coverImageId, 'cover_big')
-                  : '/images/seerr_poster_not_found.png'
+                  : '/images/gameerr_cover_not_found.png'
               }
               alt=""
               sizes="100vw"
