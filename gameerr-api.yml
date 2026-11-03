@@ -3891,6 +3891,28 @@ paths:
       responses:
         '204':
           description: Succesfully removed request
+  /request/{requestId}/complete:
+    post:
+      summary: Mark an approved request as completed
+      description: Marks the game as available and completes the request. Requires the `MANAGE_REQUESTS` permission.
+      tags:
+        - request
+      parameters:
+        - in: path
+          name: requestId
+          required: true
+          schema:
+            type: string
+            example: '1'
+      responses:
+        '200':
+          description: Completed request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaRequest'
+        '409':
+          description: The request is not approved
   /request/{requestId}/retry:
     post:
       summary: Retry failed request

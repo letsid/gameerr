@@ -10,6 +10,8 @@ import { getRepository } from '@server/datasource';
 import Media from '@server/entity/Media';
 import { MediaRequest } from '@server/entity/MediaRequest';
 import { User } from '@server/entity/User';
+import { getFulfillmentProvider } from '@server/lib/fulfillment';
+import { Notification } from '@server/lib/notifications';
 import { getSettings } from '@server/lib/settings';
 import { checkUser } from '@server/middleware/auth';
 import { setupTestDb } from '@server/test/db';
@@ -561,5 +563,201 @@ describe('DELETE /request/:requestId, media status restoration', () => {
     });
     assert.strictEqual(updated.status, before.status);
     assert.notStrictEqual(updated.status, MediaStatus.UNKNOWN);
+  });
+});
+
+const notificationsOf = (type: Notification) =>
+  sendNotificationMock.calls.filter((call) => call.arguments[2] === type);
+
+// Fulfillment starts after the saving transaction, wait until it ran
+async function waitFor(check: () => boolean, timeout = 2000) {
+  const started = Date.now();
+  while (!check()) {
+    if (Date.now() - started > timeout) {
+      throw new Error('Timed out waiting for fulfillment');
+    }
+    await new Promise((resolve) => setTimeout(resolve, 10));
+  }
+}
+
+describe('fulfillment', () => {
+  it('hands an approved request to the manual provider once', async () => {
+    const pending = await seedRequest();
+    const admin = await loginAs('admin@seerr.dev', 'test1234');
+
+    const res = await admin.post(`/request/${pending.id}/approve`);
+
+    assert.strictEqual(res.status, 200);
+    await waitFor(
+      () => notificationsOf(Notification.MEDIA_FULFILLMENT).length > 0
+    );
+    const [call] = notificationsOf(Notification.MEDIA_FULFILLMENT);
+    assert.strictEqual(call?.arguments[0]?.id, pending.id);
+    assert.strictEqual(
+      notificationsOf(Notification.MEDIA_FULFILLMENT).length,
+      1
+    );
+  });
+
+  it('sends the approval for a game that is available elsewhere', async () => {
+    const pending = await seedRequest();
+    await getRepository(Media).update(pending.media.id, {
+      status: MediaStatus.AVAILABLE,
+    });
+    const admin = await loginAs('admin@seerr.dev', 'test1234');
+
+    await admin.post(`/request/${pending.id}/approve`);
+
+    await waitFor(
+      () => notificationsOf(Notification.MEDIA_FULFILLMENT).length === 1
+    );
+    assert.strictEqual(notificationsOf(Notification.MEDIA_APPROVED).length, 1);
+    assert.strictEqual(notificationsOf(Notification.MEDIA_AVAILABLE).length, 0);
+  });
+
+  it('does not hand over a declined request', async () => {
+    const pending = await seedRequest();
+    const admin = await loginAs('admin@seerr.dev', 'test1234');
+
+    await admin.post(`/request/${pending.id}/decline`);
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    assert.strictEqual(
+      notificationsOf(Notification.MEDIA_FULFILLMENT).length,
+      0
+    );
+  });
+
+  it('hands over an auto-approved request on creation', async () => {
+    const admin = await loginAs('admin@seerr.dev', 'test1234');
+
+    const res = await admin
+      .post('/request')
+      .send({ igdbId: 3000, platform: PC });
+
+    assert.strictEqual(res.status, 201);
+    assert.strictEqual(res.body.status, MediaRequestStatus.APPROVED);
+    await waitFor(
+      () => notificationsOf(Notification.MEDIA_FULFILLMENT).length === 1
+    );
+  });
+
+  it('hands a concurrently retried request over once', async () => {
+    const failed = await seedRequest(MediaRequestStatus.FAILED);
+    const admin = await loginAs('admin@seerr.dev', 'test1234');
+
+    const results = await Promise.all([
+      admin.post(`/request/${failed.id}/retry`),
+      admin.post(`/request/${failed.id}/retry`),
+    ]);
+
+    assert.deepStrictEqual(results.map((r) => r.status).sort(), [200, 409]);
+    await waitFor(
+      () => notificationsOf(Notification.MEDIA_FULFILLMENT).length > 0
+    );
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    assert.strictEqual(
+      notificationsOf(Notification.MEDIA_FULFILLMENT).length,
+      1
+    );
+  });
+
+  it('marks the request failed when the provider throws', async (t) => {
+    const provider = getFulfillmentProvider();
+    t.mock.method(provider, 'submit', async () => {
+      throw new Error('backend down');
+    });
+    const repo = getRepository(MediaRequest);
+    const pending = await seedRequest();
+    const admin = await loginAs('admin@seerr.dev', 'test1234');
+
+    await admin.post(`/request/${pending.id}/approve`);
+
+    await waitFor(() => notificationsOf(Notification.MEDIA_FAILED).length > 0);
+    const persisted = await repo.findOneOrFail({ where: { id: pending.id } });
+    assert.strictEqual(persisted.status, MediaRequestStatus.FAILED);
+  });
+});
+
+describe('POST /request/:requestId/complete', () => {
+  it('completes an approved request and makes the game available', async () => {
+    const approved = await seedRequest(MediaRequestStatus.APPROVED);
+    const admin = await loginAs('admin@seerr.dev', 'test1234');
+
+    const res = await admin.post(`/request/${approved.id}/complete`);
+
+    assert.strictEqual(res.status, 200);
+    assert.strictEqual(res.body.status, MediaRequestStatus.COMPLETED);
+    assert.strictEqual(res.body.modifiedBy.email, 'admin@seerr.dev');
+
+    const media = await getRepository(Media).findOneOrFail({
+      where: { id: approved.media.id },
+    });
+    assert.strictEqual(media.status, MediaStatus.AVAILABLE);
+    assert.ok(media.mediaAddedAt);
+    await waitFor(
+      () => notificationsOf(Notification.MEDIA_AVAILABLE).length === 1
+    );
+  });
+
+  it('leaves the requests for other platforms open', async () => {
+    const pc = await seedRequest(MediaRequestStatus.APPROVED);
+    const ps5 = await seedRequest(MediaRequestStatus.APPROVED, {
+      platform: PS5,
+      media: pc.media,
+    });
+    const admin = await loginAs('admin@seerr.dev', 'test1234');
+
+    const res = await admin.post(`/request/${pc.id}/complete`);
+
+    assert.strictEqual(res.status, 200);
+    const other = await getRepository(MediaRequest).findOneOrFail({
+      where: { id: ps5.id },
+    });
+    assert.strictEqual(other.status, MediaRequestStatus.APPROVED);
+    const media = await getRepository(Media).findOneOrFail({
+      where: { id: pc.media.id },
+    });
+    assert.notStrictEqual(media.status, MediaStatus.AVAILABLE);
+    // The PC requester still hears that their game is there
+    await waitFor(
+      () => notificationsOf(Notification.MEDIA_AVAILABLE).length === 1
+    );
+  });
+
+  it('notifies once when the game was already available', async () => {
+    const mediaRepo = getRepository(Media);
+    const approved = await seedRequest(MediaRequestStatus.APPROVED);
+    await mediaRepo.update(approved.media.id, {
+      status: MediaStatus.AVAILABLE,
+    });
+    const admin = await loginAs('admin@seerr.dev', 'test1234');
+
+    const res = await admin.post(`/request/${approved.id}/complete`);
+
+    assert.strictEqual(res.status, 200);
+    await waitFor(
+      () => notificationsOf(Notification.MEDIA_AVAILABLE).length > 0
+    );
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    assert.strictEqual(notificationsOf(Notification.MEDIA_AVAILABLE).length, 1);
+  });
+
+  it('refuses to complete a request that is not approved', async () => {
+    const pending = await seedRequest();
+    const admin = await loginAs('admin@seerr.dev', 'test1234');
+
+    const res = await admin.post(`/request/${pending.id}/complete`);
+
+    assert.strictEqual(res.status, 409);
+  });
+
+  it('forbids a regular user from completing', async () => {
+    const approved = await seedRequest(MediaRequestStatus.APPROVED);
+    const agent = await loginAs('demo@seerr.dev', 'test1234');
+
+    const res = await agent.post(`/request/${approved.id}/complete`);
+
+    assert.strictEqual(res.status, 403);
   });
 });

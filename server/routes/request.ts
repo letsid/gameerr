@@ -1,6 +1,7 @@
 import igdb from '@server/api/igdb';
 import { MediaRequestStatus, MediaStatus } from '@server/constants/media';
 import { getRepository } from '@server/datasource';
+import Media from '@server/entity/Media';
 import type { RequestGameInfo } from '@server/entity/MediaRequest';
 import {
   BlocklistedMediaError,
@@ -17,11 +18,13 @@ import type {
   RequestResultsResponse,
 } from '@server/interfaces/api/requestInterfaces';
 import { getGameDetails, toRequestGameInfo } from '@server/lib/gameDetails';
+import { Notification } from '@server/lib/notifications';
 import { Permission } from '@server/lib/permissions';
 import logger from '@server/logger';
 import { isAuthenticated } from '@server/middleware/auth';
 import requestLock, { requestKey, userKey } from '@server/utils/requestLock';
 import { Router } from 'express';
+import { In } from 'typeorm';
 import { z } from 'zod';
 
 const requestRoutes = Router();
@@ -531,6 +534,91 @@ requestRoutes.post<{
       });
     } catch (e) {
       logger.error('Error processing request retry', {
+        label: 'Media Request',
+        message: e.message,
+      });
+      next({ status: 404, message: 'Request not found.' });
+    }
+  }
+);
+
+requestRoutes.post<{
+  requestId: string;
+}>(
+  '/:requestId/complete',
+  isAuthenticated(Permission.MANAGE_REQUESTS),
+  async (req, res, next) => {
+    const requestRepository = getRepository(MediaRequest);
+    const mediaRepository = getRepository(Media);
+    const requestId = Number(req.params.requestId);
+
+    try {
+      return await requestLock.dispatch(requestKey(requestId), async () => {
+        const request = await requestRepository.findOneOrFail({
+          where: { id: requestId },
+          relations: { requestedBy: true, modifiedBy: true },
+        });
+
+        if (request.status !== MediaRequestStatus.APPROVED) {
+          return next({
+            status: 409,
+            message: 'Only approved requests can be marked as completed.',
+          });
+        }
+
+        // Completing one platform must not close the requests of others,
+        // which a media save would do through the media subscriber.
+        // When the game is already available the request subscriber sends
+        // the availability notification itself.
+        const wasAvailable =
+          (
+            await mediaRepository.findOneOrFail({
+              where: { id: request.media.id },
+            })
+          ).status === MediaStatus.AVAILABLE;
+
+        request.status = MediaRequestStatus.COMPLETED;
+        request.modifiedBy = req.user;
+        await requestRepository.save(request);
+
+        const media = await mediaRepository.findOneOrFail({
+          where: { id: request.media.id },
+        });
+        const stillOpen = await requestRepository.count({
+          where: {
+            media: { id: media.id },
+            status: In([
+              MediaRequestStatus.PENDING,
+              MediaRequestStatus.APPROVED,
+              MediaRequestStatus.FAILED,
+            ]),
+          },
+        });
+
+        if (stillOpen === 0 && media.status !== MediaStatus.AVAILABLE) {
+          media.status = MediaStatus.AVAILABLE;
+          media.mediaAddedAt = new Date();
+          await mediaRepository
+            .createQueryBuilder()
+            .update()
+            .set({ status: media.status, mediaAddedAt: media.mediaAddedAt })
+            .where('id = :id', { id: media.id })
+            .callListeners(false)
+            .execute();
+        }
+
+        if (!wasAvailable) {
+          MediaRequest.sendNotification(
+            request,
+            media,
+            Notification.MEDIA_AVAILABLE
+          );
+        }
+
+        return res.status(200).json(request);
+      });
+    } catch (e) {
+      logger.error('Error completing request', {
         label: 'Media Request',
         message: e.message,
       });

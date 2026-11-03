@@ -4,12 +4,14 @@ import Button from '@app/components/Common/Button';
 import CachedImage from '@app/components/Common/CachedImage';
 import ConfirmButton from '@app/components/Common/ConfirmButton';
 import StatusBadge from '@app/components/StatusBadge';
+import usePlatforms from '@app/hooks/usePlatforms';
 import useToasts from '@app/hooks/useToasts';
 import { Permission, useUser } from '@app/hooks/useUser';
 import globalMessages from '@app/i18n/globalMessages';
 import defineMessages from '@app/utils/defineMessages';
 import {
   ArrowPathIcon,
+  CheckBadgeIcon,
   CheckIcon,
   TrashIcon,
   XMarkIcon,
@@ -27,6 +29,8 @@ import useSWR, { mutate } from 'swr';
 
 const messages = defineMessages('components.RequestList.RequestItem', {
   failedretry: 'Something went wrong while retrying the request.',
+  markcompleted: 'Mark as Fulfilled',
+  markcompletedTip: 'The game was obtained, mark it as available',
   failedmodify: 'Something went wrong while modifying the request.',
   requested: 'Requested',
   requesteddate: 'Requested',
@@ -45,6 +49,7 @@ const RequestItem = ({ request, revalidateList }: RequestItemProps) => {
   const { addToast } = useToasts();
   const intl = useIntl();
   const { user, hasPermission } = useUser();
+  const { byId: platformsById } = usePlatforms();
   const { data: requestData, mutate: revalidate } = useSWR<
     NonFunctionProperties<MediaRequest>
   >(`/api/v1/request/${request.id}`, {
@@ -53,10 +58,10 @@ const RequestItem = ({ request, revalidateList }: RequestItemProps) => {
 
   const [isRetrying, setRetrying] = useState(false);
   const [updatingType, setUpdatingType] = useState<
-    'approve' | 'decline' | null
+    'approve' | 'decline' | 'complete' | null
   >(null);
 
-  const modifyRequest = async (type: 'approve' | 'decline') => {
+  const modifyRequest = async (type: 'approve' | 'decline' | 'complete') => {
     setUpdatingType(type);
     try {
       await axios.post(`/api/v1/request/${request.id}/${type}`);
@@ -106,6 +111,7 @@ const RequestItem = ({ request, revalidateList }: RequestItemProps) => {
     requestData.media.title ?? `IGDB #${requestData.media.igdbId}`;
   const platformName =
     requestData.platformName ??
+    platformsById.get(requestData.platform)?.name ??
     `${intl.formatMessage(globalMessages.platform)} ${requestData.platform}`;
 
   return (
@@ -292,6 +298,19 @@ const RequestItem = ({ request, revalidateList }: RequestItemProps) => {
                   isRetrying ? globalMessages.retrying : globalMessages.retry
                 )}
               </span>
+            </Button>
+          )}
+        {requestData.status === MediaRequestStatus.APPROVED &&
+          hasPermission(Permission.MANAGE_REQUESTS) && (
+            <Button
+              className="w-full"
+              buttonType="success"
+              onClick={() => modifyRequest('complete')}
+              disabled={updatingType !== null}
+              data-testid="request-complete"
+            >
+              {updatingType === 'complete' ? <Spinner /> : <CheckBadgeIcon />}
+              <span>{intl.formatMessage(messages.markcompleted)}</span>
             </Button>
           )}
         {requestData.status !== MediaRequestStatus.PENDING &&

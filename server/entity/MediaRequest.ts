@@ -29,6 +29,19 @@ import {
 import Media from './Media';
 import { User } from './User';
 
+/**
+ * Display name of an IGDB platform for notifications, from the cached
+ * platform list. Notifications still go out when IGDB is unavailable.
+ */
+const platformName = async (id: number): Promise<string | undefined> => {
+  try {
+    const { getPlatforms } = await import('@server/lib/platforms');
+    return (await getPlatforms()).find((platform) => platform.id === id)?.name;
+  } catch {
+    return undefined;
+  }
+};
+
 export class RequestPermissionError extends Error {}
 export class QuotaRestrictedError extends Error {}
 export class DuplicateMediaRequestError extends Error {}
@@ -314,21 +327,8 @@ export class MediaRequest {
         return;
       }
 
-      if (
-        this.status === MediaRequestStatus.APPROVED &&
-        media.status === MediaStatus.AVAILABLE
-      ) {
-        logger.info(
-          'Media is already available. Sending availability notification instead of approval.',
-          { label: 'Media Request', requestId: this.id, mediaId: this.media.id }
-        );
-        MediaRequest.sendNotification(
-          this,
-          media,
-          Notification.MEDIA_AVAILABLE
-        );
-        return;
-      }
+      // No shortcut to "available" here: availability is tracked per game,
+      // so a game available on one platform still needs the requested one
 
       MediaRequest.sendNotification(
         this,
@@ -409,7 +409,10 @@ export class MediaRequest {
         extra: [
           {
             name: 'Platform',
-            value: entity.platformName ?? `${entity.platform}`,
+            value:
+              entity.platformName ??
+              (await platformName(entity.platform)) ??
+              `${entity.platform}`,
           },
           ...extra,
         ],

@@ -4,12 +4,18 @@ import Button from '@app/components/Common/Button';
 import CachedImage from '@app/components/Common/CachedImage';
 import Tooltip from '@app/components/Common/Tooltip';
 import StatusBadge from '@app/components/StatusBadge';
+import usePlatforms from '@app/hooks/usePlatforms';
 import useToasts from '@app/hooks/useToasts';
 import { Permission, useUser } from '@app/hooks/useUser';
 import globalMessages from '@app/i18n/globalMessages';
 import defineMessages from '@app/utils/defineMessages';
 import { withProperties } from '@app/utils/typeHelpers';
-import { ArrowPathIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/solid';
+import {
+  ArrowPathIcon,
+  CheckBadgeIcon,
+  CheckIcon,
+  XMarkIcon,
+} from '@heroicons/react/24/solid';
 import { igdbImageUrl } from '@server/api/igdb/images';
 import { MediaRequestStatus, MediaStatus } from '@server/constants/media';
 import type { MediaRequest } from '@server/entity/MediaRequest';
@@ -22,6 +28,8 @@ import useSWR, { mutate } from 'swr';
 
 const messages = defineMessages('components.RequestCard', {
   failedretry: 'Something went wrong while retrying the request.',
+  markcompleted: 'Mark as Fulfilled',
+  markcompletedTip: 'The game was obtained, mark it as available',
   failedmodify: 'Something went wrong while modifying the request.',
   approverequest: 'Approve Request',
   declinerequest: 'Decline Request',
@@ -45,10 +53,11 @@ interface RequestCardProps {
 const RequestCard = ({ request }: RequestCardProps) => {
   const intl = useIntl();
   const { user, hasPermission } = useUser();
+  const { byId: platformsById } = usePlatforms();
   const { addToast } = useToasts();
   const [isRetrying, setRetrying] = useState(false);
   const [updatingType, setUpdatingType] = useState<
-    'approve' | 'decline' | null
+    'approve' | 'decline' | 'complete' | null
   >(null);
   const { data: requestData, mutate: revalidate } = useSWR<
     NonFunctionProperties<MediaRequest>
@@ -56,7 +65,7 @@ const RequestCard = ({ request }: RequestCardProps) => {
     fallbackData: request,
   });
 
-  const modifyRequest = async (type: 'approve' | 'decline') => {
+  const modifyRequest = async (type: 'approve' | 'decline' | 'complete') => {
     setUpdatingType(type);
     try {
       await axios.post(`/api/v1/request/${request.id}/${type}`);
@@ -105,6 +114,7 @@ const RequestCard = ({ request }: RequestCardProps) => {
     requestData.media.title ?? `IGDB #${requestData.media.igdbId}`;
   const platformName =
     requestData.platformName ??
+    platformsById.get(requestData.platform)?.name ??
     `${intl.formatMessage(globalMessages.platform)} ${requestData.platform}`;
 
   return (
@@ -192,6 +202,27 @@ const RequestCard = ({ request }: RequestCardProps) => {
                   {intl.formatMessage(globalMessages.retry)}
                 </span>
               </Button>
+            )}
+          {requestData.status === MediaRequestStatus.APPROVED &&
+            hasPermission(Permission.MANAGE_REQUESTS) && (
+              <Tooltip content={intl.formatMessage(messages.markcompletedTip)}>
+                <Button
+                  buttonType="success"
+                  buttonSize="sm"
+                  onClick={() => modifyRequest('complete')}
+                  disabled={updatingType !== null}
+                  data-testid="request-complete"
+                >
+                  {updatingType === 'complete' ? (
+                    <Spinner />
+                  ) : (
+                    <CheckBadgeIcon />
+                  )}
+                  <span className="ml-1.5 hidden sm:block">
+                    {intl.formatMessage(messages.markcompleted)}
+                  </span>
+                </Button>
+              </Tooltip>
             )}
           {requestData.status === MediaRequestStatus.PENDING &&
             hasPermission(Permission.MANAGE_REQUESTS) && (
