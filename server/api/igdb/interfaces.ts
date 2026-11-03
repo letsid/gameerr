@@ -41,11 +41,38 @@ export interface IgdbExternalGame {
   external_game_source?: number;
 }
 
+export interface IgdbVideo {
+  id: number;
+  name?: string;
+  /**
+   * YouTube video id
+   */
+  video_id?: string;
+}
+
+export interface IgdbWebsite {
+  id: number;
+  url?: string;
+  /**
+   * See website_types: 1 = official, 13 = Steam, 16 = Epic, 17 = GOG, ...
+   */
+  type?: number;
+}
+
+export interface IgdbInvolvedCompany {
+  id: number;
+  company?: { id: number; name?: string };
+  developer?: boolean;
+  publisher?: boolean;
+}
+
 export interface IgdbGame {
   id: number;
   name?: string;
   slug?: string;
   summary?: string;
+  storyline?: string;
+  url?: string;
   first_release_date?: number;
   /**
    * See game_types: 0 = main game, 8 = remake, 9 = remaster, ...
@@ -53,7 +80,14 @@ export interface IgdbGame {
   game_type?: number;
   platforms?: number[];
   genres?: IgdbGenre[];
+  themes?: IgdbGenre[];
+  game_modes?: IgdbGenre[];
   cover?: IgdbImage;
+  screenshots?: IgdbImage[];
+  artworks?: IgdbImage[];
+  videos?: IgdbVideo[];
+  websites?: IgdbWebsite[];
+  involved_companies?: IgdbInvolvedCompany[];
   release_dates?: IgdbReleaseDate[];
   external_games?: IgdbExternalGame[];
   total_rating?: number;
@@ -83,6 +117,12 @@ export interface IgdbTokenResponse {
 
 export const IGDB_EXTERNAL_SOURCE_STEAM = 1;
 export const IGDB_EXTERNAL_SOURCE_GOG = 5;
+
+export const IGDB_WEBSITE_STEAM = 13;
+
+// release_date_regions
+export const IGDB_REGION_EUROPE = 1;
+export const IGDB_REGION_WORLDWIDE = 8;
 
 /**
  * Game types that are a game of their own, as opposed to DLC, bundles,

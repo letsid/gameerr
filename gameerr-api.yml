@@ -3513,6 +3513,72 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Platform'
+  /game/{gameId}:
+    get:
+      summary: Get game details
+      description: Returns IGDB details of a game together with its local request state.
+      tags:
+        - search
+      parameters:
+        - in: path
+          name: gameId
+          required: true
+          schema:
+            type: number
+            example: 1942
+          description: IGDB game ID
+      responses:
+        '200':
+          description: Game details
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Game not found
+  /game/{gameId}/scores:
+    get:
+      summary: Get score badges of a game
+      description: Scores as reported by their sources. Sources without a score are left out.
+      tags:
+        - search
+      parameters:
+        - in: path
+          name: gameId
+          required: true
+          schema:
+            type: number
+            example: 1942
+      responses:
+        '200':
+          description: Score badges
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        source:
+                          type: string
+                          enum: [metacritic, opencritic, igdb, steam]
+                        score:
+                          type: number
+                        scale:
+                          type: number
+                        count:
+                          type: number
+                        url:
+                          type: string
+                        platform:
+                          type: number
+                        via:
+                          type: string
+                        match:
+                          type: string
   /discover/watchlist:
     get:
       summary: Get the Plex watchlist.

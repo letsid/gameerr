@@ -1,5 +1,7 @@
 import type Media from '@server/entity/Media';
 import type { DiscoverGame, DiscoverListId } from '@server/lib/discover';
+import type { GameDetails } from '@server/lib/gameDetails';
+import type { ScoreBadge } from '@server/lib/gameScores';
 import type { Platform } from '@server/lib/platforms';
 
 /**
@@ -21,6 +23,14 @@ export interface DiscoverListResponse extends GameResultsResponse {
   list: DiscoverListId;
   platform: number;
   generatedAt: string;
+}
+
+export interface GameDetailsResponse extends GameDetails {
+  mediaInfo?: Media;
+}
+
+export interface GameScoresResponse {
+  results: ScoreBadge[];
 }
 
 export interface PlatformsResponse {

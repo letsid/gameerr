@@ -1,0 +1,3456 @@
+[
+  {
+    "id": 1020,
+    "aggregated_rating": 88.13793103448276,
+    "aggregated_rating_count": 27,
+    "artworks": [
+      {
+        "id": 168666,
+        "image_id": "ar3m56"
+      },
+      {
+        "id": 312450,
+        "image_id": "ar6p36"
+      },
+      {
+        "id": 297117,
+        "image_id": "ar6d99"
+      },
+      {
+        "id": 297127,
+        "image_id": "ar6d9j"
+      },
+      {
+        "id": 297128,
+        "image_id": "ar6d9k"
+      },
+      {
+        "id": 297121,
+        "image_id": "ar6d9d"
+      },
+      {
+        "id": 297122,
+        "image_id": "ar6d9e"
+      },
+      {
+        "id": 297123,
+        "image_id": "ar6d9f"
+      },
+      {
+        "id": 297124,
+        "image_id": "ar6d9g"
+      },
+      {
+        "id": 297125,
+        "image_id": "ar6d9h"
+      },
+      {
+        "id": 297126,
+        "image_id": "ar6d9i"
+      },
+      {
+        "id": 297115,
+        "image_id": "ar6d97"
+      },
+      {
+        "id": 297112,
+        "image_id": "ar6d94"
+      },
+      {
+        "id": 297114,
+        "image_id": "ar6d96"
+      },
+      {
+        "id": 297120,
+        "image_id": "ar6d9c"
+      },
+      {
+        "id": 297119,
+        "image_id": "ar6d9b"
+      },
+      {
+        "id": 297113,
+        "image_id": "ar6d95"
+      },
+      {
+        "id": 297129,
+        "image_id": "ar6d9l"
+      },
+      {
+        "id": 297130,
+        "image_id": "ar6d9m"
+      },
+      {
+        "id": 298675,
+        "image_id": "ar6egj"
+      }
+    ],
+    "cover": {
+      "id": 120937,
+      "image_id": "co2lbd"
+    },
+    "external_games": [
+      {
+        "id": 1935351,
+        "uid": "B00NOP3QF4",
+        "external_game_source": 20
+      },
+      {
+        "id": 1935867,
+        "uid": "B0062KIC2A",
+        "external_game_source": 20
+      },
+      {
+        "id": 1932096,
+        "uid": "B00KL3W626",
+        "external_game_source": 20
+      },
+      {
+        "id": 1936544,
+        "uid": "B00KWBFV7O",
+        "external_game_source": 20
+      },
+      {
+        "id": 1936553,
+        "uid": "B006IS6VKQ",
+        "external_game_source": 20
+      },
+      {
+        "id": 1936631,
+        "uid": "B00KWBFXLI",
+        "external_game_source": 20
+      },
+      {
+        "id": 1936881,
+        "uid": "B007SV41OA",
+        "external_game_source": 20
+      },
+      {
+        "id": 1937182,
+        "uid": "B00KXX4UWI",
+        "external_game_source": 20
+      },
+      {
+        "id": 1937291,
+        "uid": "B00KXX4UYQ",
+        "external_game_source": 20
+      },
+      {
+        "id": 1937403,
+        "uid": "B01G2M29Z8",
+        "external_game_source": 20
+      },
+      {
+        "id": 1937473,
+        "uid": "B0062KICQ6",
+        "external_game_source": 20
+      },
+      {
+        "id": 1937971,
+        "uid": "B00KW2FM5E",
+        "external_game_source": 20
+      },
+      {
+        "id": 1938297,
+        "uid": "B0071L2QD0",
+        "external_game_source": 20
+      },
+      {
+        "id": 1933656,
+        "uid": "B07BH4BLRP",
+        "external_game_source": 20
+      },
+      {
+        "id": 1928851,
+        "uid": "B00KVXB5YQ",
+        "external_game_source": 20
+      },
+      {
+        "id": 1933180,
+        "uid": "B00B6ZBGVK",
+        "external_game_source": 20
+      },
+      {
+        "id": 1932997,
+        "uid": "B0151BRGPO",
+        "external_game_source": 20
+      },
+      {
+        "id": 1932255,
+        "uid": "B00KL3W478",
+        "external_game_source": 20
+      },
+      {
+        "id": 1934115,
+        "uid": "B0071L2QHG",
+        "external_game_source": 20
+      },
+      {
+        "id": 1934605,
+        "uid": "B07K6LZR6G",
+        "external_game_source": 20
+      },
+      {
+        "id": 1865443,
+        "uid": "B00KW2FKAQ",
+        "external_game_source": 20
+      },
+      {
+        "id": 1936407,
+        "uid": "B00KW4UVSU",
+        "external_game_source": 20
+      },
+      {
+        "id": 123664,
+        "uid": "36765",
+        "external_game_source": 3
+      },
+      {
+        "id": 1928484,
+        "uid": "B078918FCH",
+        "external_game_source": 20
+      },
+      {
+        "id": 1930050,
+        "uid": "B01NA6PWAW",
+        "external_game_source": 20
+      },
+      {
+        "id": 1935747,
+        "uid": "B0151BRH0I",
+        "external_game_source": 20
+      },
+      {
+        "id": 1936890,
+        "uid": "B007SV43IO",
+        "external_game_source": 20
+      },
+      {
+        "id": 1865693,
+        "uid": "B00KXX4UV4",
+        "external_game_source": 20
+      },
+      {
+        "id": 1865794,
+        "uid": "B00KW4UW4S",
+        "external_game_source": 20
+      },
+      {
+        "id": 213597,
+        "uid": "xbox36066acd000-77fe-1000-9115-d802545408a7",
+        "external_game_source": 11
+      },
+      {
+        "id": 1936116,
+        "uid": "B00L0WZN8G",
+        "external_game_source": 20
+      },
+      {
+        "id": 2635398,
+        "uid": "B09WZ6F8P5",
+        "external_game_source": 20
+      },
+      {
+        "id": 2635395,
+        "uid": "B09WZ6F8P5",
+        "external_game_source": 20
+      },
+      {
+        "id": 2416118,
+        "uid": "B09X1WRYNG",
+        "external_game_source": 20
+      },
+      {
+        "id": 1929423,
+        "uid": "B00KL4AROO",
+        "external_game_source": 20
+      },
+      {
+        "id": 3222237,
+        "uid": "B073QW8QBG",
+        "external_game_source": 20
+      },
+      {
+        "id": 1937066,
+        "uid": "B0071L2QNA",
+        "external_game_source": 20
+      },
+      {
+        "id": 1929848,
+        "uid": "B018TCAN7U",
+        "external_game_source": 20
+      },
+      {
+        "id": 1928312,
+        "uid": "B00WY2G178",
+        "external_game_source": 20
+      },
+      {
+        "id": 189925,
+        "uid": "UCT1tnevF8bn9Nwr6ZHA9Mag",
+        "external_game_source": 10
+      },
+      {
+        "id": 2631631,
+        "uid": "B09WZLKY2J",
+        "external_game_source": 20
+      },
+      {
+        "id": 1928645,
+        "uid": "B0050SYILE",
+        "external_game_source": 20
+      },
+      {
+        "id": 3219918,
+        "uid": "B00L8XUEBI",
+        "external_game_source": 20
+      },
+      {
+        "id": 2635401,
+        "uid": "B09WZ6F8P5",
+        "external_game_source": 20
+      },
+      {
+        "id": 3229833,
+        "uid": "B00KWUZPNK",
+        "external_game_source": 20
+      },
+      {
+        "id": 210553,
+        "uid": "BPJ686W6S0NH",
+        "external_game_source": 11
+      },
+      {
+        "id": 2631633,
+        "uid": "B09WZLKY2J",
+        "external_game_source": 20
+      },
+      {
+        "id": 2118073,
+        "uid": "bd136eaa-528f-4f54-af01-92124e014a94",
+        "external_game_source": 26
+      },
+      {
+        "id": 2161127,
+        "uid": "66acd000-77fe-1000-9115-d802545408a7",
+        "external_game_source": 31
+      },
+      {
+        "id": 3225774,
+        "uid": "B0GXB4BXDG",
+        "external_game_source": 20
+      },
+      {
+        "id": 1932585,
+        "uid": "B00KWAVLBK",
+        "external_game_source": 20
+      },
+      {
+        "id": 1936690,
+        "uid": "B00LAT8Z70",
+        "external_game_source": 20
+      },
+      {
+        "id": 1936733,
+        "uid": "B00KWBG038",
+        "external_game_source": 20
+      },
+      {
+        "id": 1928369,
+        "uid": "B00KVSQAGO",
+        "external_game_source": 20
+      },
+      {
+        "id": 1929516,
+        "uid": "B00G7LO6OC",
+        "external_game_source": 20
+      },
+      {
+        "id": 1929044,
+        "uid": "B0050SXKU4",
+        "external_game_source": 20
+      },
+      {
+        "id": 1936560,
+        "uid": "B006ISA47W",
+        "external_game_source": 20
+      },
+      {
+        "id": 1936210,
+        "uid": "B00A3OVMSW",
+        "external_game_source": 20
+      },
+      {
+        "id": 189339,
+        "uid": "UChoveWrDASwMxB5_iNot07A",
+        "external_game_source": 10
+      },
+      {
+        "id": 2171945,
+        "uid": "201930",
+        "external_game_source": 36
+      },
+      {
+        "id": 2436454,
+        "uid": "B09X5TQ66G",
+        "external_game_source": 20
+      },
+      {
+        "id": 3218948,
+        "uid": "B08C7Y24KL",
+        "external_game_source": 20
+      },
+      {
+        "id": 2416128,
+        "uid": "B09X1Y8NP6",
+        "external_game_source": 20
+      },
+      {
+        "id": 1928346,
+        "uid": "B00KVSQ848",
+        "external_game_source": 20
+      },
+      {
+        "id": 3223097,
+        "uid": "B075VZBGDZ",
+        "external_game_source": 20
+      },
+      {
+        "id": 3190405,
+        "uid": "B00B200UV6",
+        "external_game_source": 20
+      },
+      {
+        "id": 11827,
+        "uid": "271590",
+        "external_game_source": 1
+      },
+      {
+        "id": 245105,
+        "uid": "32982",
+        "external_game_source": 14
+      }
+    ],
+    "first_release_date": 1379376000,
+    "game_modes": [
+      {
+        "id": 1,
+        "name": "Single player"
+      },
+      {
+        "id": 2,
+        "name": "Multiplayer"
+      },
+      {
+        "id": 3,
+        "name": "Co-operative"
+      }
+    ],
+    "genres": [
+      {
+        "id": 5,
+        "name": "Shooter"
+      },
+      {
+        "id": 10,
+        "name": "Racing"
+      },
+      {
+        "id": 31,
+        "name": "Adventure"
+      }
+    ],
+    "involved_companies": [
+      {
+        "id": 20018,
+        "company": {
+          "id": 139,
+          "name": "Take-Two Interactive"
+        },
+        "developer": false,
+        "publisher": true
+      },
+      {
+        "id": 18071,
+        "company": {
+          "id": 29,
+          "name": "Rockstar Games"
+        },
+        "developer": false,
+        "publisher": true
+      },
+      {
+        "id": 18070,
+        "company": {
+          "id": 365,
+          "name": "Rockstar North"
+        },
+        "developer": true,
+        "publisher": false
+      },
+      {
+        "id": 246057,
+        "company": {
+          "id": 306,
+          "name": "Rockstar Toronto"
+        },
+        "developer": false,
+        "publisher": false
+      }
+    ],
+    "name": "Grand Theft Auto V",
+    "platforms": [169, 9, 48, 6, 167, 12, 49],
+    "release_dates": [
+      {
+        "id": 20291,
+        "date": 1416268800,
+        "platform": 48,
+        "release_region": 8
+      },
+      {
+        "id": 403430,
+        "date": 1428883200,
+        "platform": 6,
+        "release_region": 8
+      },
+      {
+        "id": 20294,
+        "date": 1379376000,
+        "platform": 9,
+        "release_region": 8
+      },
+      {
+        "id": 20293,
+        "date": 1379376000,
+        "platform": 12,
+        "release_region": 8
+      },
+      {
+        "id": 20290,
+        "date": 1416268800,
+        "platform": 49,
+        "release_region": 8
+      },
+      {
+        "id": 934896,
+        "date": 1741996800,
+        "platform": 169,
+        "status": 36,
+        "release_region": 8
+      },
+      {
+        "id": 934897,
+        "date": 1741996800,
+        "platform": 167,
+        "status": 36,
+        "release_region": 8
+      }
+    ],
+    "screenshots": [
+      {
+        "id": 6913,
+        "image_id": "n3t2agwuxlqggp3kryf9"
+      },
+      {
+        "id": 1699381,
+        "image_id": "sc10f91"
+      },
+      {
+        "id": 1699382,
+        "image_id": "sc10f92"
+      },
+      {
+        "id": 1699383,
+        "image_id": "sc10f93"
+      },
+      {
+        "id": 1699384,
+        "image_id": "sc10f94"
+      },
+      {
+        "id": 1699385,
+        "image_id": "sc10f95"
+      },
+      {
+        "id": 1699386,
+        "image_id": "sc10f96"
+      },
+      {
+        "id": 1699387,
+        "image_id": "sc10f97"
+      },
+      {
+        "id": 1699388,
+        "image_id": "sc10f98"
+      },
+      {
+        "id": 1699389,
+        "image_id": "sc10f99"
+      },
+      {
+        "id": 1699392,
+        "image_id": "sc10f9c"
+      },
+      {
+        "id": 5673,
+        "image_id": "hjnzngnrtwr82jzmmkef"
+      },
+      {
+        "id": 5670,
+        "image_id": "o7q3ikzmkjxbftrd64ok"
+      },
+      {
+        "id": 5672,
+        "image_id": "eepecmqsq6uqxiaukar1"
+      },
+      {
+        "id": 5671,
+        "image_id": "vfdeo6kgu0o4cyzd0sng"
+      },
+      {
+        "id": 1699391,
+        "image_id": "sc10f9b"
+      },
+      {
+        "id": 5674,
+        "image_id": "glvmulyejlde31q8b70z"
+      },
+      {
+        "id": 1699390,
+        "image_id": "sc10f9a"
+      }
+    ],
+    "slug": "grand-theft-auto-v",
+    "storyline": "Los Santos: a sprawling sun-soaked metropolis full of self-help gurus, starlets and fading celebrities, once the envy of the Western world, now struggling to stay afloat in an era of economic uncertainty and cheap reality TV.\n\nAmidst the turmoil, three very different criminals plot their own chances of survival and success: Franklin, a street hustler looking for real opportunities and serious money; Michael, a professional ex-con whose retirement is a lot less rosy than he hoped it would be; and Trevor, a violent maniac driven by the chance of a cheap high and the next big score. Running out of options, the crew risks everything in a series of daring",
+    "summary": "Grand Theft Auto V is a vast open world game set in Los Santos, a sprawling sun-soaked metropolis struggling to stay afloat in an era of economic uncertainty and cheap reality TV. The game blends storytelling and gameplay in new ways as players repeatedly jump in and out of the lives of the game’s three lead characters, playing all sides of the game’s interwoven story.",
+    "themes": [
+      {
+        "id": 1,
+        "name": "Action"
+      },
+      {
+        "id": 27,
+        "name": "Comedy"
+      },
+      {
+        "id": 33,
+        "name": "Sandbox"
+      },
+      {
+        "id": 38,
+        "name": "Open world"
+      }
+    ],
+    "total_rating": 88.88821793138644,
+    "total_rating_count": 6038,
+    "url": "https://www.igdb.com/games/grand-theft-auto-v",
+    "videos": [
+      {
+        "id": 3164,
+        "name": "Next-gen Launch Trailer",
+        "video_id": "PIF_fqFZEuk"
+      },
+      {
+        "id": 710,
+        "name": "Trailer",
+        "video_id": "QkkoHAzjnUs"
+      },
+      {
+        "id": 1420,
+        "name": "Gameplay video",
+        "video_id": "N-xHcvug3WI"
+      },
+      {
+        "id": 120376,
+        "name": "Trailer",
+        "video_id": "UWzV0AFXukI"
+      }
+    ],
+    "websites": [
+      {
+        "id": 41200,
+        "url": "https://www.facebook.com/grandtheftautoV",
+        "type": 4
+      },
+      {
+        "id": 799858,
+        "url": "https://www.xbox.com/en-us/games/store/grand-theft-auto-v-xbox-one/BPJ686W6S0NH",
+        "type": 22
+      },
+      {
+        "id": 913405,
+        "url": "https://www.twitch.tv/directory/category/grand-theft-auto-v",
+        "type": 6
+      },
+      {
+        "id": 913406,
+        "url": "https://x.com/RockstarGames",
+        "type": 5
+      },
+      {
+        "id": 913407,
+        "url": "https://www.youtube.com/@RockstarGames",
+        "type": 9
+      },
+      {
+        "id": 935671,
+        "url": "https://www.rockstargames.com/V/",
+        "type": 1
+      },
+      {
+        "id": 799859,
+        "url": "https://store.playstation.com/en-us/concept/201930",
+        "type": 23
+      },
+      {
+        "id": 826901,
+        "url": "https://discord.gg/rockstargames",
+        "type": 18
+      },
+      {
+        "id": 141326,
+        "url": "https://www.epicgames.com/store/en-US/product/grand-theft-auto-v/home",
+        "type": 16
+      },
+      {
+        "id": 41203,
+        "url": "https://www.instagram.com/rockstargames",
+        "type": 8
+      },
+      {
+        "id": 18733,
+        "url": "https://store.steampowered.com/app/271590",
+        "type": 13
+      },
+      {
+        "id": 657288,
+        "url": "https://www.reddit.com/r/GTAV/",
+        "type": 14
+      },
+      {
+        "id": 18732,
+        "url": "https://en.wikipedia.org/wiki/Grand_Theft_Auto_V",
+        "type": 3
+      },
+      {
+        "id": 1068361,
+        "url": "https://gta.wiki/w/Grand_Theft_Auto_V",
+        "type": 2
+      }
+    ],
+    "game_type": 0
+  },
+  {
+    "id": 1942,
+    "aggregated_rating": 91.73076923076923,
+    "aggregated_rating_count": 26,
+    "artworks": [
+      {
+        "id": 303975,
+        "image_id": "ar6ijr"
+      },
+      {
+        "id": 168458,
+        "image_id": "ar3lze"
+      },
+      {
+        "id": 168459,
+        "image_id": "ar3lzf"
+      },
+      {
+        "id": 168463,
+        "image_id": "ar3lzj"
+      },
+      {
+        "id": 168460,
+        "image_id": "ar3lzg"
+      },
+      {
+        "id": 168465,
+        "image_id": "ar3lzl"
+      },
+      {
+        "id": 168461,
+        "image_id": "ar3lzh"
+      },
+      {
+        "id": 168464,
+        "image_id": "ar3lzk"
+      },
+      {
+        "id": 168457,
+        "image_id": "ar3lzd"
+      },
+      {
+        "id": 168455,
+        "image_id": "ar3lzb"
+      },
+      {
+        "id": 168466,
+        "image_id": "ar3lzm"
+      },
+      {
+        "id": 168456,
+        "image_id": "ar3lzc"
+      },
+      {
+        "id": 168467,
+        "image_id": "ar3lzn"
+      },
+      {
+        "id": 168462,
+        "image_id": "ar3lzi"
+      },
+      {
+        "id": 168533,
+        "image_id": "ar3m1h"
+      },
+      {
+        "id": 168532,
+        "image_id": "ar3m1g"
+      }
+    ],
+    "cover": {
+      "id": 480513,
+      "image_id": "coaarl"
+    },
+    "external_games": [
+      {
+        "id": 1935171,
+        "uid": "B00T3SPV36",
+        "external_game_source": 20
+      },
+      {
+        "id": 189745,
+        "uid": "UCprFOIVpCqQLUMsWBNwt0PQ",
+        "external_game_source": 10
+      },
+      {
+        "id": 1934807,
+        "uid": "B00WTI2HV6",
+        "external_game_source": 20
+      },
+      {
+        "id": 1931970,
+        "uid": "B00WTI3SGO",
+        "external_game_source": 20
+      },
+      {
+        "id": 3222322,
+        "uid": "B00R119Y44",
+        "external_game_source": 20
+      },
+      {
+        "id": 11306,
+        "uid": "292030",
+        "external_game_source": 1
+      },
+      {
+        "id": 1937739,
+        "uid": "B00KNZNVLM",
+        "external_game_source": 20
+      },
+      {
+        "id": 119254,
+        "uid": "41484",
+        "external_game_source": 3
+      },
+      {
+        "id": 1928370,
+        "uid": "B07SH3D6HT",
+        "external_game_source": 20
+      },
+      {
+        "id": 211029,
+        "uid": "BR765873CQJD",
+        "external_game_source": 11
+      },
+      {
+        "id": 3223128,
+        "uid": "B078JDW2XH",
+        "external_game_source": 20
+      },
+      {
+        "id": 78478,
+        "uid": "1207664663",
+        "external_game_source": 5
+      },
+      {
+        "id": 2067884,
+        "uid": "1207664643",
+        "external_game_source": 5
+      },
+      {
+        "id": 246257,
+        "uid": "115977",
+        "external_game_source": 14
+      },
+      {
+        "id": 2176359,
+        "uid": "204794",
+        "external_game_source": 36
+      }
+    ],
+    "first_release_date": 1431993600,
+    "game_modes": [
+      {
+        "id": 1,
+        "name": "Single player"
+      }
+    ],
+    "genres": [
+      {
+        "id": 12,
+        "name": "Role-playing (RPG)"
+      },
+      {
+        "id": 31,
+        "name": "Adventure"
+      }
+    ],
+    "hypes": 179,
+    "involved_companies": [
+      {
+        "id": 17436,
+        "company": {
+          "id": 50,
+          "name": "WB Games"
+        },
+        "developer": false,
+        "publisher": true
+      },
+      {
+        "id": 17769,
+        "company": {
+          "id": 3119,
+          "name": "cdp.pl"
+        },
+        "developer": false,
+        "publisher": true
+      },
+      {
+        "id": 17771,
+        "company": {
+          "id": 1217,
+          "name": "Spike Chunsoft"
+        },
+        "developer": false,
+        "publisher": true
+      },
+      {
+        "id": 17768,
+        "company": {
+          "id": 248,
+          "name": "Bandai Namco Entertainment"
+        },
+        "developer": false,
+        "publisher": true
+      },
+      {
+        "id": 64293,
+        "company": {
+          "id": 5696,
+          "name": "D3T Limited"
+        },
+        "developer": false,
+        "publisher": false
+      },
+      {
+        "id": 196544,
+        "company": {
+          "id": 946,
+          "name": "Saber Interactive"
+        },
+        "developer": false,
+        "publisher": false
+      },
+      {
+        "id": 418547,
+        "company": {
+          "id": 908,
+          "name": "CD Projekt RED"
+        },
+        "developer": true,
+        "publisher": false
+      }
+    ],
+    "name": "The Witcher 3: Wild Hunt",
+    "platforms": [169, 48, 508, 6, 167, 49, 130],
+    "release_dates": [
+      {
+        "id": 974208,
+        "date": 1431993600,
+        "platform": 48,
+        "status": 6,
+        "release_region": 8
+      },
+      {
+        "id": 974209,
+        "date": 1670976000,
+        "platform": 167,
+        "status": 6,
+        "release_region": 8
+      },
+      {
+        "id": 974210,
+        "date": 1431993600,
+        "platform": 49,
+        "status": 6,
+        "release_region": 8
+      },
+      {
+        "id": 974211,
+        "date": 1670976000,
+        "platform": 169,
+        "status": 6,
+        "release_region": 8
+      },
+      {
+        "id": 974206,
+        "date": 1611792000,
+        "platform": 130,
+        "status": 6,
+        "release_region": 8
+      },
+      {
+        "id": 974207,
+        "date": 1431993600,
+        "platform": 6,
+        "status": 6,
+        "release_region": 8
+      },
+      {
+        "id": 974212,
+        "date": 1790640000,
+        "platform": 508,
+        "status": 6,
+        "release_region": 8
+      }
+    ],
+    "screenshots": [
+      {
+        "id": 1377966,
+        "image_id": "sctj8u"
+      },
+      {
+        "id": 21107,
+        "image_id": "farvemmmxav0bgt6wx7t"
+      },
+      {
+        "id": 9743,
+        "image_id": "em1y2ugcwy2myuhvb9db"
+      },
+      {
+        "id": 9744,
+        "image_id": "usxccsncekxg0wd1v6ee"
+      },
+      {
+        "id": 853179,
+        "image_id": "sciabf"
+      },
+      {
+        "id": 1377965,
+        "image_id": "sctj8t"
+      },
+      {
+        "id": 853177,
+        "image_id": "sciabd"
+      },
+      {
+        "id": 853181,
+        "image_id": "sciabh"
+      },
+      {
+        "id": 853178,
+        "image_id": "sciabe"
+      },
+      {
+        "id": 9745,
+        "image_id": "z5t0yuhyiiui1ickwhgj"
+      },
+      {
+        "id": 9742,
+        "image_id": "mnljdjtrh44x4snmierh"
+      },
+      {
+        "id": 853180,
+        "image_id": "sciabg"
+      }
+    ],
+    "slug": "the-witcher-3-wild-hunt",
+    "storyline": "The Witcher 3: Wild Hunt concludes the story of the witcher Geralt of Rivia, the series' protagonist, whose story to date has been covered in the previous installments. Geralt's new mission comes in dark times as the mysterious and otherworldly army known as the Wild Hunt invades the Northern Kingdoms, leaving only blood soaked earth and fiery ruin in its wake; and it seems the Witcher is the key to stopping their cataclysmic rampage.",
+    "summary": "The Witcher 3: Wild Hunt is an open-world action role-playing game developed by CD Projekt Red.\n\nSet in a dark fantasy world, the game follows Geralt of Rivia, a monster hunter searching for his adopted daughter, Ciri, while navigating political conflicts and supernatural threats. Gameplay features exploration, combat, character progression, and branching narratives shaped by player choices. Widely acclaimed for its writing, world-building, and depth, it is considered one of the most influential RPGs of its generation.",
+    "themes": [
+      {
+        "id": 1,
+        "name": "Action"
+      },
+      {
+        "id": 17,
+        "name": "Fantasy"
+      },
+      {
+        "id": 38,
+        "name": "Open world"
+      }
+    ],
+    "total_rating": 92.75221155406032,
+    "total_rating_count": 5539,
+    "url": "https://www.igdb.com/games/the-witcher-3-wild-hunt",
+    "videos": [
+      {
+        "id": 9648,
+        "name": "Developer Diary: Creating the Sound",
+        "video_id": "yowv6_rspoM"
+      },
+      {
+        "id": 5993,
+        "name": "TV Spot",
+        "video_id": "xQGam9OHSUo"
+      },
+      {
+        "id": 5990,
+        "name": "Opening Cinematic: The Trail",
+        "video_id": "QrwGXAcE6ZA"
+      },
+      {
+        "id": 5992,
+        "name": "Recap",
+        "video_id": "bcEAsOC_8L0"
+      },
+      {
+        "id": 5987,
+        "name": "The Begining trailer",
+        "video_id": "5nLipy-Z4yo"
+      },
+      {
+        "id": 5995,
+        "name": "A Night to Remember Trailer",
+        "video_id": "8ZLfJjlZKvc"
+      },
+      {
+        "id": 5994,
+        "name": "Rage & Steel Trailer",
+        "video_id": "p14dHAwLOmo"
+      },
+      {
+        "id": 5991,
+        "name": "Elder Blood Trailer",
+        "video_id": "6f8TbvsZ5Mk"
+      },
+      {
+        "id": 5989,
+        "name": "Downwarren Gameplay Video",
+        "video_id": "_IBAovRNCuA"
+      },
+      {
+        "id": 5988,
+        "name": "Killing Monsters Cinematic Trailer",
+        "video_id": "FP7no968jVU"
+      },
+      {
+        "id": 5996,
+        "name": "Debut Gameplay Trailer",
+        "video_id": "sb81f-ejNSI"
+      },
+      {
+        "id": 150458,
+        "name": "Trailer",
+        "video_id": "TWOkT7l0yWQ"
+      },
+      {
+        "id": 15748,
+        "name": "10th Anniversary Video",
+        "video_id": "ZpiczsigQto"
+      },
+      {
+        "id": 120257,
+        "name": "Gameplay Demo",
+        "video_id": "gRmKKjQu9Tw"
+      },
+      {
+        "id": 141704,
+        "name": "VGX 2013 Trailer",
+        "video_id": "MqQ3LeBgGDM"
+      },
+      {
+        "id": 141210,
+        "name": "Cinematic Trailer",
+        "video_id": "c0i88t0Kacs"
+      },
+      {
+        "id": 141211,
+        "name": "Launch Trailer",
+        "video_id": "1-l29HlKkXU"
+      }
+    ],
+    "websites": [
+      {
+        "id": 19103,
+        "url": "https://www.facebook.com/CDPROJEKTRED",
+        "type": 4
+      },
+      {
+        "id": 141346,
+        "url": "https://www.epicgames.com/store/en-US/product/the-witcher-3-wild-hunt/home",
+        "type": 16
+      },
+      {
+        "id": 793706,
+        "url": "https://www.xbox.com/en-us/games/store/the-witcher-3-wild-hunt/BR765873CQJD",
+        "type": 22
+      },
+      {
+        "id": 793707,
+        "url": "https://store.playstation.com/en-us/concept/204794",
+        "type": 23
+      },
+      {
+        "id": 793708,
+        "url": "https://www.nintendo.com/games/detail/the-witcher-3-wild-hunt-switch/",
+        "type": 24
+      },
+      {
+        "id": 19102,
+        "url": "https://en.wikipedia.org/wiki/The_Witcher_3:_Wild_Hunt",
+        "type": 3
+      },
+      {
+        "id": 19107,
+        "url": "https://store.steampowered.com/app/292030",
+        "type": 13
+      },
+      {
+        "id": 66471,
+        "url": "http://www.thewitcher.com",
+        "type": 1
+      },
+      {
+        "id": 119948,
+        "url": "https://www.gog.com/game/the_witcher_3_wild_hunt",
+        "type": 17
+      },
+      {
+        "id": 19101,
+        "url": "http://witcher.wikia.com/wiki/The_Witcher_3:_Wild_Hunt",
+        "type": 2
+      },
+      {
+        "id": 19104,
+        "url": "https://twitter.com/witchergame",
+        "type": 5
+      },
+      {
+        "id": 78076,
+        "url": "https://www.reddit.com/r/witcher",
+        "type": 14
+      },
+      {
+        "id": 19105,
+        "url": "https://www.instagram.com/cdpred",
+        "type": 8
+      },
+      {
+        "id": 19106,
+        "url": "https://www.youtube.com/user/WitcherGame",
+        "type": 9
+      },
+      {
+        "id": 512145,
+        "url": "https://www.twitch.tv/directory/game/The%20Witcher%203:%20Wild%20Hunt",
+        "type": 6
+      },
+      {
+        "id": 670803,
+        "url": "https://discord.gg/thewitcher",
+        "type": 18
+      }
+    ],
+    "game_type": 0
+  },
+  {
+    "id": 25076,
+    "aggregated_rating": 94.05882352941177,
+    "aggregated_rating_count": 17,
+    "artworks": [
+      {
+        "id": 5337,
+        "image_id": "l0kjrldascktx2kzqhbi"
+      },
+      {
+        "id": 5338,
+        "image_id": "m9ra5j7omj0gn554hkkg"
+      },
+      {
+        "id": 287985,
+        "image_id": "ar667l"
+      },
+      {
+        "id": 5336,
+        "image_id": "nqtsfctiapng5xcmozyk"
+      },
+      {
+        "id": 5339,
+        "image_id": "vev3osrana2gzm9bdj3f"
+      },
+      {
+        "id": 5333,
+        "image_id": "asdntchzmz1kf3k0t79l"
+      },
+      {
+        "id": 5340,
+        "image_id": "eutpbosgfblccztjkioz"
+      },
+      {
+        "id": 5341,
+        "image_id": "swg128b5wtptafv5foo9"
+      },
+      {
+        "id": 5335,
+        "image_id": "kmx67l3q1gqugxhg66zv"
+      },
+      {
+        "id": 5334,
+        "image_id": "kiwenuikpml3zbmgkf06"
+      },
+      {
+        "id": 5332,
+        "image_id": "cuzmozb8widfr9aj8trf"
+      },
+      {
+        "id": 174485,
+        "image_id": "ar3qmt"
+      },
+      {
+        "id": 174484,
+        "image_id": "ar3qms"
+      },
+      {
+        "id": 174486,
+        "image_id": "ar3qmu"
+      }
+    ],
+    "cover": {
+      "id": 80403,
+      "image_id": "co1q1f"
+    },
+    "external_games": [
+      {
+        "id": 3190336,
+        "uid": "B07BFGGNT9",
+        "external_game_source": 20
+      },
+      {
+        "id": 3190458,
+        "uid": "B07BFGRBZD",
+        "external_game_source": 20
+      },
+      {
+        "id": 1865710,
+        "uid": "B07L3G9RFH",
+        "external_game_source": 20
+      },
+      {
+        "id": 1936582,
+        "uid": "B01MAYQD6B",
+        "external_game_source": 20
+      },
+      {
+        "id": 1937712,
+        "uid": "B07ZW8WPDJ",
+        "external_game_source": 20
+      },
+      {
+        "id": 1937924,
+        "uid": "B082M1YVP6",
+        "external_game_source": 20
+      },
+      {
+        "id": 1938338,
+        "uid": "B07J4HXLMY",
+        "external_game_source": 20
+      },
+      {
+        "id": 1931464,
+        "uid": "B07ZWB2Q24",
+        "external_game_source": 20
+      },
+      {
+        "id": 1708337,
+        "uid": "UCxlDdW3aW7Sht6pM0TJ4Tag",
+        "external_game_source": 10
+      },
+      {
+        "id": 1865815,
+        "uid": "B01M6YIR2E",
+        "external_game_source": 20
+      },
+      {
+        "id": 1928769,
+        "uid": "B07G9WVK6K",
+        "external_game_source": 20
+      },
+      {
+        "id": 1934385,
+        "uid": "B07F1BTYSQ",
+        "external_game_source": 20
+      },
+      {
+        "id": 1933870,
+        "uid": "B079W8QQC5",
+        "external_game_source": 20
+      },
+      {
+        "id": 1929213,
+        "uid": "B01M5DZ525",
+        "external_game_source": 20
+      },
+      {
+        "id": 1933973,
+        "uid": "B07KBM7J8S",
+        "external_game_source": 20
+      },
+      {
+        "id": 1934005,
+        "uid": "B07KBRVJQW",
+        "external_game_source": 20
+      },
+      {
+        "id": 1865679,
+        "uid": "B01M8MO87K",
+        "external_game_source": 20
+      },
+      {
+        "id": 1865765,
+        "uid": "B01M9COSMD",
+        "external_game_source": 20
+      },
+      {
+        "id": 1865509,
+        "uid": "B01MAYC1CJ",
+        "external_game_source": 20
+      },
+      {
+        "id": 1865598,
+        "uid": "B01M7RRZ8D",
+        "external_game_source": 20
+      },
+      {
+        "id": 1865386,
+        "uid": "B01M6Y1Y4A",
+        "external_game_source": 20
+      },
+      {
+        "id": 105255,
+        "uid": "56725",
+        "external_game_source": 3
+      },
+      {
+        "id": 1928409,
+        "uid": "B0776YMQN1",
+        "external_game_source": 20
+      },
+      {
+        "id": 3219875,
+        "uid": "B0CJ17F2ZL",
+        "external_game_source": 20
+      },
+      {
+        "id": 1929063,
+        "uid": "B01M275W1G",
+        "external_game_source": 20
+      },
+      {
+        "id": 2627365,
+        "uid": "a3c78a5c62824677834c1008e0be9b2d",
+        "external_game_source": 26
+      },
+      {
+        "id": 2083059,
+        "uid": "9N2ZDN7NWQKV",
+        "external_game_source": 11
+      },
+      {
+        "id": 2118708,
+        "uid": "9b9b77d5-6936-4376-b27d-5b1e4f12bd54",
+        "external_game_source": 26
+      },
+      {
+        "id": 1936921,
+        "uid": "B01M8MO8XS",
+        "external_game_source": 20
+      },
+      {
+        "id": 210828,
+        "uid": "BPSWGQBW7R3G",
+        "external_game_source": 11
+      },
+      {
+        "id": 1865453,
+        "uid": "B01MF8TJV5",
+        "external_game_source": 20
+      },
+      {
+        "id": 1942203,
+        "uid": "B08HN4VJJR",
+        "external_game_source": 20
+      },
+      {
+        "id": 1865494,
+        "uid": "B01M65RD19",
+        "external_game_source": 20
+      },
+      {
+        "id": 3225161,
+        "uid": "B0C7RNCKJX",
+        "external_game_source": 20
+      },
+      {
+        "id": 1935859,
+        "uid": "B082LNS6LG",
+        "external_game_source": 20
+      },
+      {
+        "id": 1929976,
+        "uid": "B082JYRDWP",
+        "external_game_source": 20
+      },
+      {
+        "id": 3219920,
+        "uid": "B0H5CJHHPF",
+        "external_game_source": 20
+      },
+      {
+        "id": 2172093,
+        "uid": "209441",
+        "external_game_source": 36
+      },
+      {
+        "id": 1837431,
+        "uid": "1174180",
+        "external_game_source": 1
+      },
+      {
+        "id": 248276,
+        "uid": "493959",
+        "external_game_source": 14
+      }
+    ],
+    "first_release_date": 1540512000,
+    "game_modes": [
+      {
+        "id": 1,
+        "name": "Single player"
+      },
+      {
+        "id": 2,
+        "name": "Multiplayer"
+      },
+      {
+        "id": 3,
+        "name": "Co-operative"
+      }
+    ],
+    "genres": [
+      {
+        "id": 5,
+        "name": "Shooter"
+      },
+      {
+        "id": 12,
+        "name": "Role-playing (RPG)"
+      },
+      {
+        "id": 31,
+        "name": "Adventure"
+      }
+    ],
+    "hypes": 257,
+    "involved_companies": [
+      {
+        "id": 190251,
+        "company": {
+          "id": 139,
+          "name": "Take-Two Interactive"
+        },
+        "developer": false,
+        "publisher": true
+      },
+      {
+        "id": 190252,
+        "company": {
+          "id": 29,
+          "name": "Rockstar Games"
+        },
+        "developer": true,
+        "publisher": true
+      }
+    ],
+    "name": "Red Dead Redemption 2",
+    "platforms": [170, 48, 6, 49],
+    "release_dates": [
+      {
+        "id": 781215,
+        "date": 1540512000,
+        "platform": 48,
+        "status": 6,
+        "release_region": 8
+      },
+      {
+        "id": 781216,
+        "date": 1540512000,
+        "platform": 49,
+        "status": 6,
+        "release_region": 8
+      },
+      {
+        "id": 781213,
+        "date": 1574121600,
+        "platform": 170,
+        "status": 6,
+        "release_region": 8
+      },
+      {
+        "id": 781214,
+        "date": 1572912000,
+        "platform": 6,
+        "status": 6,
+        "release_region": 8
+      }
+    ],
+    "screenshots": [
+      {
+        "id": 43482,
+        "image_id": "xegpfnsvlyeld0zkjnrc"
+      },
+      {
+        "id": 211553,
+        "image_id": "kcfpf8wa8esalk0qkpo5"
+      },
+      {
+        "id": 212063,
+        "image_id": "dorsz0jbcecmkxvzi3t8"
+      },
+      {
+        "id": 212064,
+        "image_id": "mptosgjarjlyqxy7lqsm"
+      },
+      {
+        "id": 1379546,
+        "image_id": "sctkgq"
+      },
+      {
+        "id": 181623,
+        "image_id": "tdxv4zzkqyjnm9pmwxw0"
+      },
+      {
+        "id": 181619,
+        "image_id": "qg7gx276z3hsqlr9xpt6"
+      },
+      {
+        "id": 181622,
+        "image_id": "h8f9uojkzvaau8pxsyxi"
+      },
+      {
+        "id": 43485,
+        "image_id": "c9xalka7stjkx4mes7kp"
+      },
+      {
+        "id": 181621,
+        "image_id": "dhw6ucx9laj5esv6rngn"
+      },
+      {
+        "id": 181620,
+        "image_id": "x8xczj2a0y6g9rnhboko"
+      },
+      {
+        "id": 1379545,
+        "image_id": "sctkgp"
+      },
+      {
+        "id": 212062,
+        "image_id": "banftd8fgfytbsfx6mjz"
+      },
+      {
+        "id": 212061,
+        "image_id": "uyaminfh8sugglvt247u"
+      }
+    ],
+    "slug": "red-dead-redemption-2",
+    "storyline": "America, 1899. The end of the wild west era has begun as lawmen hunt down the last remaining outlaw gangs. Those who will not surrender or succumb are killed.\n\nAfter a robbery goes badly wrong in the western town of Blackwater, Arthur Morgan and the Van der Linde gang are forced to flee. With federal agents and the best bounty hunters in the nation massing on their heels, the gang must rob, steal and fight their way across the rugged heartland of America in order to survive. As deepening internal divisions threaten to tear the gang apart, Arthur must make a choice between his own ideals and loyalty to the gang who raised him.",
+    "summary": "Red Dead Redemption 2 is the epic tale of outlaw Arthur Morgan and the infamous Van der Linde gang, on the run across America at the dawn of the modern age.",
+    "themes": [
+      {
+        "id": 1,
+        "name": "Action"
+      },
+      {
+        "id": 31,
+        "name": "Drama"
+      },
+      {
+        "id": 38,
+        "name": "Open world"
+      }
+    ],
+    "total_rating": 93.6293092571558,
+    "total_rating_count": 3923,
+    "url": "https://www.igdb.com/games/red-dead-redemption-2",
+    "videos": [
+      {
+        "id": 22763,
+        "name": "Announcement Trailer",
+        "video_id": "94B-38sX5fs"
+      },
+      {
+        "id": 22759,
+        "name": "Launch Trailer",
+        "video_id": "HVRzx17WHVk"
+      },
+      {
+        "id": 22760,
+        "name": "Trailer",
+        "video_id": "Dw_oH5oiUSE"
+      },
+      {
+        "id": 28776,
+        "name": "Trailer",
+        "video_id": "iqaipBpnVRE"
+      },
+      {
+        "id": 22761,
+        "name": "Official Trailer 3",
+        "video_id": "9_GsrTCslQ4"
+      },
+      {
+        "id": 22762,
+        "name": "Official Trailer 2: Ledger",
+        "video_id": "t5AdF4uNGus"
+      },
+      {
+        "id": 30539,
+        "name": "PC Trailer",
+        "video_id": "SXvQ1nK4oxk"
+      }
+    ],
+    "websites": [
+      {
+        "id": 816122,
+        "url": "https://www.xbox.com/en-us/games/store/red-dead-redemption-2/9N2ZDN7NWQKV",
+        "type": 22
+      },
+      {
+        "id": 50778,
+        "url": "https://en.wikipedia.org/wiki/Red_Dead_Redemption_2",
+        "type": 3
+      },
+      {
+        "id": 746233,
+        "url": "https://store.steampowered.com/app/1174180",
+        "type": 13
+      },
+      {
+        "id": 50779,
+        "url": "https://www.facebook.com/rockstargames",
+        "type": 4
+      },
+      {
+        "id": 917016,
+        "url": "https://www.twitch.tv/directory/category/red-dead-redemption-2",
+        "type": 6
+      },
+      {
+        "id": 917017,
+        "url": "https://x.com/RockstarGames",
+        "type": 5
+      },
+      {
+        "id": 917018,
+        "url": "https://www.youtube.com/@RockstarGames",
+        "type": 9
+      },
+      {
+        "id": 816123,
+        "url": "https://store.playstation.com/en-us/concept/209441",
+        "type": 23
+      },
+      {
+        "id": 149880,
+        "url": "https://www.reddit.com/r/RDR2",
+        "type": 14
+      },
+      {
+        "id": 917019,
+        "url": "https://discord.gg/rockstargames",
+        "type": 18
+      },
+      {
+        "id": 125570,
+        "url": "https://www.epicgames.com/store/product/red-dead-redemption-2",
+        "type": 16
+      },
+      {
+        "id": 50776,
+        "url": "https://www.rockstargames.com/reddeadredemption2/",
+        "type": 1
+      },
+      {
+        "id": 50777,
+        "url": "http://reddead.wikia.com/wiki/Red_Dead_Redemption_2",
+        "type": 2
+      },
+      {
+        "id": 50782,
+        "url": "https://www.instagram.com/rockstargames",
+        "type": 8
+      }
+    ],
+    "game_type": 0
+  },
+  {
+    "id": 119133,
+    "aggregated_rating": 96.9,
+    "aggregated_rating_count": 10,
+    "artworks": [
+      {
+        "id": 168540,
+        "image_id": "ar3m1o"
+      },
+      {
+        "id": 168541,
+        "image_id": "ar3m1p"
+      },
+      {
+        "id": 52129,
+        "image_id": "ar1481"
+      },
+      {
+        "id": 168539,
+        "image_id": "ar3m1n"
+      }
+    ],
+    "cover": {
+      "id": 212094,
+      "image_id": "co4jni"
+    },
+    "external_games": [
+      {
+        "id": 3190333,
+        "uid": "B09MG5LQ18",
+        "external_game_source": 20
+      },
+      {
+        "id": 2062011,
+        "uid": "B09743F8P6",
+        "external_game_source": 20
+      },
+      {
+        "id": 2063046,
+        "uid": "B0977MY2WM",
+        "external_game_source": 20
+      },
+      {
+        "id": 2062942,
+        "uid": "B0977QP5L6",
+        "external_game_source": 20
+      },
+      {
+        "id": 1930111,
+        "uid": "B07SPYK271",
+        "external_game_source": 20
+      },
+      {
+        "id": 1932061,
+        "uid": "B07SMBNTSJ",
+        "external_game_source": 20
+      },
+      {
+        "id": 1775842,
+        "uid": "73745",
+        "external_game_source": 3
+      },
+      {
+        "id": 1933890,
+        "uid": "B07T8J15JQ",
+        "external_game_source": 20
+      },
+      {
+        "id": 2270864,
+        "uid": "9P3J32CTXLRZ",
+        "external_game_source": 11
+      },
+      {
+        "id": 2271018,
+        "uid": "B09QPYZ6R2",
+        "external_game_source": 20
+      },
+      {
+        "id": 2271058,
+        "uid": "B09QPZHJH9",
+        "external_game_source": 20
+      },
+      {
+        "id": 2225572,
+        "uid": "B09QQYB8D9",
+        "external_game_source": 20
+      },
+      {
+        "id": 2635204,
+        "uid": "B097M66Y91",
+        "external_game_source": 20
+      },
+      {
+        "id": 2088476,
+        "uid": "B09D4KSL1B",
+        "external_game_source": 20
+      },
+      {
+        "id": 2254892,
+        "uid": "B09QPYZ6R2",
+        "external_game_source": 20
+      },
+      {
+        "id": 2254895,
+        "uid": "B09SMC6J15",
+        "external_game_source": 20
+      },
+      {
+        "id": 2254935,
+        "uid": "B09SQ6VGTB",
+        "external_game_source": 20
+      },
+      {
+        "id": 2184011,
+        "uid": "B09P1LTGH5",
+        "external_game_source": 20
+      },
+      {
+        "id": 2233957,
+        "uid": "B09R3BZHXX",
+        "external_game_source": 20
+      },
+      {
+        "id": 2241900,
+        "uid": "B09QPYY5HJ",
+        "external_game_source": 20
+      },
+      {
+        "id": 2682210,
+        "uid": "B0B7RSBXFT",
+        "external_game_source": 20
+      },
+      {
+        "id": 3232857,
+        "uid": "B07T8J27XQ",
+        "external_game_source": 20
+      },
+      {
+        "id": 2254996,
+        "uid": "B09QPYY5HJ",
+        "external_game_source": 20
+      },
+      {
+        "id": 2682054,
+        "uid": "B0B7RSBXFT",
+        "external_game_source": 20
+      },
+      {
+        "id": 2882831,
+        "uid": "B09R3C1QHH",
+        "external_game_source": 20
+      },
+      {
+        "id": 2635202,
+        "uid": "B097M66Y91",
+        "external_game_source": 20
+      },
+      {
+        "id": 2062880,
+        "uid": "B0977PVNYX",
+        "external_game_source": 20
+      },
+      {
+        "id": 2225478,
+        "uid": "B09QQT2NWG",
+        "external_game_source": 20
+      },
+      {
+        "id": 2183928,
+        "uid": "B09P1LBC7K",
+        "external_game_source": 20
+      },
+      {
+        "id": 2254918,
+        "uid": "B09QPZHJH9",
+        "external_game_source": 20
+      },
+      {
+        "id": 2233934,
+        "uid": "B09R3HR7NY",
+        "external_game_source": 20
+      },
+      {
+        "id": 2636625,
+        "uid": "B09SMC6J15",
+        "external_game_source": 20
+      },
+      {
+        "id": 2167564,
+        "uid": "B09L1C64SN",
+        "external_game_source": 20
+      },
+      {
+        "id": 2682308,
+        "uid": "B0B7RSBXFT",
+        "external_game_source": 20
+      },
+      {
+        "id": 2271134,
+        "uid": "B09QPYY5HJ",
+        "external_game_source": 20
+      },
+      {
+        "id": 2233945,
+        "uid": "B09R3DSJMS",
+        "external_game_source": 20
+      },
+      {
+        "id": 2857523,
+        "uid": "B09R3HR7NY",
+        "external_game_source": 20
+      },
+      {
+        "id": 2636627,
+        "uid": "B09SMC6J15",
+        "external_game_source": 20
+      },
+      {
+        "id": 2233921,
+        "uid": "B09R3C1QHH",
+        "external_game_source": 20
+      },
+      {
+        "id": 2184002,
+        "uid": "B09P1MVC4J",
+        "external_game_source": 20
+      },
+      {
+        "id": 2062922,
+        "uid": "B0977LKSQ6",
+        "external_game_source": 20
+      },
+      {
+        "id": 2241788,
+        "uid": "B09QPYZ6R2",
+        "external_game_source": 20
+      },
+      {
+        "id": 3219800,
+        "uid": "B0H7Q922M5",
+        "external_game_source": 20
+      },
+      {
+        "id": 2063058,
+        "uid": "B0979YW1Z9",
+        "external_game_source": 20
+      },
+      {
+        "id": 2084186,
+        "uid": "1245620",
+        "external_game_source": 1
+      },
+      {
+        "id": 2064411,
+        "uid": "B097M66Y91",
+        "external_game_source": 20
+      },
+      {
+        "id": 2636628,
+        "uid": "B09SMC6J15",
+        "external_game_source": 20
+      },
+      {
+        "id": 2241810,
+        "uid": "B09QPZHJH9",
+        "external_game_source": 20
+      },
+      {
+        "id": 2062924,
+        "uid": "B097B15N2T",
+        "external_game_source": 20
+      },
+      {
+        "id": 2167628,
+        "uid": "B09L19LT8Q",
+        "external_game_source": 20
+      },
+      {
+        "id": 3223289,
+        "uid": "B09W9WGSVL",
+        "external_game_source": 20
+      },
+      {
+        "id": 1914490,
+        "uid": "512953",
+        "external_game_source": 14
+      },
+      {
+        "id": 3190344,
+        "uid": "B09MG3FTNC",
+        "external_game_source": 20
+      },
+      {
+        "id": 2172221,
+        "uid": "10000333",
+        "external_game_source": 36
+      }
+    ],
+    "first_release_date": 1645747200,
+    "game_modes": [
+      {
+        "id": 1,
+        "name": "Single player"
+      },
+      {
+        "id": 2,
+        "name": "Multiplayer"
+      },
+      {
+        "id": 3,
+        "name": "Co-operative"
+      }
+    ],
+    "genres": [
+      {
+        "id": 12,
+        "name": "Role-playing (RPG)"
+      },
+      {
+        "id": 31,
+        "name": "Adventure"
+      }
+    ],
+    "hypes": 96,
+    "involved_companies": [
+      {
+        "id": 334813,
+        "company": {
+          "id": 248,
+          "name": "Bandai Namco Entertainment"
+        },
+        "developer": false,
+        "publisher": true
+      },
+      {
+        "id": 334814,
+        "company": {
+          "id": 1012,
+          "name": "FromSoftware"
+        },
+        "developer": true,
+        "publisher": true
+      }
+    ],
+    "name": "Elden Ring",
+    "platforms": [169, 48, 508, 6, 167, 49],
+    "release_dates": [
+      {
+        "id": 831464,
+        "date": 1645747200,
+        "platform": 6,
+        "status": 6,
+        "release_region": 8
+      },
+      {
+        "id": 831465,
+        "date": 1645747200,
+        "platform": 48,
+        "status": 6,
+        "release_region": 8
+      },
+      {
+        "id": 831466,
+        "date": 1645747200,
+        "platform": 167,
+        "status": 6,
+        "release_region": 8
+      },
+      {
+        "id": 831467,
+        "date": 1645747200,
+        "platform": 49,
+        "status": 6,
+        "release_region": 8
+      },
+      {
+        "id": 831468,
+        "date": 1645747200,
+        "platform": 169,
+        "status": 6,
+        "release_region": 8
+      },
+      {
+        "id": 921938,
+        "date": 1787875200,
+        "platform": 508,
+        "status": 6,
+        "release_region": 8
+      }
+    ],
+    "screenshots": [
+      {
+        "id": 487788,
+        "image_id": "scagdo"
+      },
+      {
+        "id": 1406912,
+        "image_id": "scu5kw"
+      },
+      {
+        "id": 1406913,
+        "image_id": "scu5kx"
+      },
+      {
+        "id": 703441,
+        "image_id": "scf2s1"
+      },
+      {
+        "id": 487790,
+        "image_id": "scagdq"
+      },
+      {
+        "id": 487791,
+        "image_id": "scagdr"
+      },
+      {
+        "id": 487792,
+        "image_id": "scagds"
+      },
+      {
+        "id": 487786,
+        "image_id": "scagdm"
+      },
+      {
+        "id": 487789,
+        "image_id": "scagdp"
+      },
+      {
+        "id": 487787,
+        "image_id": "scagdn"
+      }
+    ],
+    "slug": "elden-ring",
+    "storyline": "Elden Ring takes place in the Lands Between, a fictional realm over which several demigods rule. It was previously ruled over by the immortal Queen Marika, who acted as keeper of the Elden Ring, a powerful force that manifested itself as the physical concept of order. When Marika shattered the Elden Ring and disappeared, her demigod children began fighting over pieces of the Ring in an event called The Shattering. Each demigod has a shard of the Ring called a Great Rune, which corrupts them with power. In the game, the player character is a Tarnished, one of a group of exiles from the Lands Between who are summoned back after the Shattering. The player must traverse the realm to repair the Elden Ring and become the Elden Lord.",
+    "summary": "Elden Ring is an action RPG developed by FromSoftware and published by Bandai Namco Entertainment, released in February 2022. Directed by Hidetaka Miyazaki, with world-building contributions from novelist George R. R. Martin, the game features an expansive open world called the Lands Between. Players assume the role of a customisable character known as the Tarnished, who must explore this world, battle formidable enemies, and seek to restore the Elden Ring to become the Elden Lord.\n\nThe game builds on the challenging gameplay mechanics familiar from the Dark Souls series but introduces a more open-ended structure with vast exploration, dynamic weather, and a day-night cycle. It offers deep lore, complex characters, and an interconnected world filled with secrets, dungeons, and powerful bosses.",
+    "themes": [
+      {
+        "id": 1,
+        "name": "Action"
+      },
+      {
+        "id": 17,
+        "name": "Fantasy"
+      },
+      {
+        "id": 38,
+        "name": "Open world"
+      }
+    ],
+    "total_rating": 95.18148635396659,
+    "total_rating_count": 2340,
+    "url": "https://www.igdb.com/games/elden-ring",
+    "videos": [
+      {
+        "id": 58619,
+        "name": "Trailer",
+        "video_id": "D1mDo1CEMuE"
+      },
+      {
+        "id": 50584,
+        "name": "Gameplay Trailer",
+        "video_id": "E3Huy2cdih0"
+      },
+      {
+        "id": 64564,
+        "name": "Launch Trailer",
+        "video_id": "qqiC88f9ogU"
+      },
+      {
+        "id": 61874,
+        "name": "Trailer",
+        "video_id": "D8YkCHkWRyk"
+      },
+      {
+        "id": 62187,
+        "name": "Trailer",
+        "video_id": "DbPbQMuEyX8"
+      },
+      {
+        "id": 62188,
+        "name": "Gameplay Trailer",
+        "video_id": "l6pCyV7PnqI"
+      },
+      {
+        "id": 121254,
+        "name": "Announcement Trailer",
+        "video_id": "e5wwSxl0atc"
+      },
+      {
+        "id": 185696,
+        "name": "Accolades Trailer",
+        "video_id": "gyMcCOc6bIM"
+      }
+    ],
+    "websites": [
+      {
+        "id": 247126,
+        "url": "https://www.twitch.tv/directory/game/Elden%20Ring",
+        "type": 6
+      },
+      {
+        "id": 247127,
+        "url": "https://www.youtube.com/c/BandaiNamcoEntertainmentAmerica",
+        "type": 9
+      },
+      {
+        "id": 790471,
+        "url": "https://store.playstation.com/en-us/concept/10000333",
+        "type": 23
+      },
+      {
+        "id": 790470,
+        "url": "https://www.xbox.com/en-us/games/store/elden-ring/9P3J32CTXLRZ",
+        "type": 22
+      },
+      {
+        "id": 210645,
+        "url": "https://store.steampowered.com/app/1245620",
+        "type": 13
+      },
+      {
+        "id": 225451,
+        "url": "https://www.facebook.com/ELDENRINGEU",
+        "type": 4
+      },
+      {
+        "id": 125915,
+        "url": "https://twitter.com/ELDENRING",
+        "type": 5
+      },
+      {
+        "id": 247128,
+        "url": "https://discord.gg/invite/eldenring",
+        "type": 18
+      },
+      {
+        "id": 611948,
+        "url": "https://www.bandainamcoent.com/games/elden-ring",
+        "type": 1
+      },
+      {
+        "id": 125916,
+        "url": "https://reddit.com/r/EldenRing",
+        "type": 14
+      },
+      {
+        "id": 225452,
+        "url": "https://www.instagram.com/eldenring?hl=en",
+        "type": 8
+      },
+      {
+        "id": 702891,
+        "url": "https://eldenring.wiki.gg/",
+        "type": 2
+      },
+      {
+        "id": 225453,
+        "url": "https://en.wikipedia.org/wiki/Elden_Ring",
+        "type": 3
+      }
+    ],
+    "game_type": 0
+  },
+  {
+    "id": 119171,
+    "aggregated_rating": 94.5,
+    "aggregated_rating_count": 10,
+    "artworks": [
+      {
+        "id": 169877,
+        "image_id": "ar3n2t"
+      },
+      {
+        "id": 304743,
+        "image_id": "ar6j53"
+      },
+      {
+        "id": 178125,
+        "image_id": "ar3tfx"
+      },
+      {
+        "id": 169875,
+        "image_id": "ar3n2r"
+      },
+      {
+        "id": 169876,
+        "image_id": "ar3n2s"
+      }
+    ],
+    "cover": {
+      "id": 289025,
+      "image_id": "co670h"
+    },
+    "external_games": [
+      {
+        "id": 1775824,
+        "uid": "73727",
+        "external_game_source": 3
+      },
+      {
+        "id": 2869528,
+        "uid": "9ND58LQTG09T",
+        "external_game_source": 11
+      },
+      {
+        "id": 2070558,
+        "uid": "1456460669",
+        "external_game_source": 5
+      },
+      {
+        "id": 1725312,
+        "uid": "1086940",
+        "external_game_source": 1
+      },
+      {
+        "id": 1914473,
+        "uid": "512923",
+        "external_game_source": 14
+      },
+      {
+        "id": 2678929,
+        "uid": "10007460",
+        "external_game_source": 36
+      }
+    ],
+    "first_release_date": 1691020800,
+    "game_modes": [
+      {
+        "id": 1,
+        "name": "Single player"
+      },
+      {
+        "id": 2,
+        "name": "Multiplayer"
+      },
+      {
+        "id": 3,
+        "name": "Co-operative"
+      },
+      {
+        "id": 4,
+        "name": "Split screen"
+      }
+    ],
+    "genres": [
+      {
+        "id": 12,
+        "name": "Role-playing (RPG)"
+      },
+      {
+        "id": 15,
+        "name": "Strategy"
+      },
+      {
+        "id": 16,
+        "name": "Turn-based strategy (TBS)"
+      },
+      {
+        "id": 31,
+        "name": "Adventure"
+      }
+    ],
+    "hypes": 39,
+    "involved_companies": [
+      {
+        "id": 214383,
+        "company": {
+          "id": 47197,
+          "name": "Wushu Studios"
+        },
+        "developer": false,
+        "publisher": false
+      },
+      {
+        "id": 301215,
+        "company": {
+          "id": 8444,
+          "name": "Anshar Studios"
+        },
+        "developer": false,
+        "publisher": false
+      },
+      {
+        "id": 334788,
+        "company": {
+          "id": 510,
+          "name": "Larian Studios"
+        },
+        "developer": true,
+        "publisher": true
+      }
+    ],
+    "name": "Baldur's Gate III",
+    "platforms": [170, 169, 3, 6, 167, 14],
+    "release_dates": [
+      {
+        "id": 574300,
+        "date": 1695340800,
+        "platform": 14,
+        "status": 6,
+        "release_region": 8
+      },
+      {
+        "id": 487025,
+        "date": 1693958400,
+        "platform": 167,
+        "status": 6,
+        "release_region": 8
+      },
+      {
+        "id": 543182,
+        "date": 1701993600,
+        "platform": 169,
+        "status": 6,
+        "release_region": 8
+      },
+      {
+        "id": 543563,
+        "date": 1601942400,
+        "platform": 6,
+        "status": 3,
+        "release_region": 8
+      },
+      {
+        "id": 543566,
+        "date": 1601942400,
+        "platform": 14,
+        "status": 3,
+        "release_region": 8
+      },
+      {
+        "id": 781205,
+        "platform": 170,
+        "status": 5,
+        "release_region": 8
+      },
+      {
+        "id": 543567,
+        "date": 1601942400,
+        "platform": 170,
+        "status": 3,
+        "release_region": 8
+      },
+      {
+        "id": 508258,
+        "date": 1691020800,
+        "platform": 6,
+        "status": 6,
+        "release_region": 8
+      },
+      {
+        "id": 875774,
+        "date": 1758585600,
+        "platform": 3,
+        "status": 6,
+        "release_region": 8
+      }
+    ],
+    "screenshots": [
+      {
+        "id": 375103,
+        "image_id": "sc81fj"
+      },
+      {
+        "id": 1581035,
+        "image_id": "scxvxn"
+      },
+      {
+        "id": 1581048,
+        "image_id": "scxvy0"
+      },
+      {
+        "id": 1581049,
+        "image_id": "scxvy1"
+      },
+      {
+        "id": 375101,
+        "image_id": "sc81fh"
+      },
+      {
+        "id": 375098,
+        "image_id": "sc81fe"
+      },
+      {
+        "id": 1381715,
+        "image_id": "sctm4z"
+      },
+      {
+        "id": 1577635,
+        "image_id": "scxtb7"
+      },
+      {
+        "id": 1577636,
+        "image_id": "scxtb8"
+      },
+      {
+        "id": 1577632,
+        "image_id": "scxtb4"
+      },
+      {
+        "id": 1581036,
+        "image_id": "scxvxo"
+      },
+      {
+        "id": 1577634,
+        "image_id": "scxtb6"
+      },
+      {
+        "id": 375107,
+        "image_id": "sc81fn"
+      },
+      {
+        "id": 1577633,
+        "image_id": "scxtb5"
+      },
+      {
+        "id": 375099,
+        "image_id": "sc81ff"
+      },
+      {
+        "id": 375105,
+        "image_id": "sc81fl"
+      }
+    ],
+    "slug": "baldurs-gate-iii",
+    "storyline": "The land of Faerûn is in turmoil. Refugees cross the wilds, fleeing the helltorn stronghold of Elturel. A vicious cult marches across the Sword Coast, uniting every race of monsters and men under the banner of a cryptic god they call the Absolute. Chaos strikes at Faerûn's foundations, and none may escape its talons. Not even you.\n\nThe grotesque nautiloid ship appears out of nowhere, blotting out the sun. Its writhing tentacles snatch you from where you stand. The mind flayers have come, imprisoning you on their ship, infecting you with their horrid parasite. You will become one of them.\n\nBy fate or fortune, you survive when the nautiloid crashes in the Sword Coast outlands. You set out for civilisation, desperate for a cure for the parasite festering in your brain, only to take centre stage in a conspiracy that runs as deep as the Nine Hells. New enemies await.\n\nAs for old foes... the shadows stir.\nAnd all roads lead to the legendary city of Baldur's Gate.",
+    "summary": "An ancient evil has returned to Baldur's Gate, intent on devouring it from the inside out. The fate of Faerun lies in your hands. Alone, you may resist. But together, you can overcome.",
+    "themes": [
+      {
+        "id": 1,
+        "name": "Action"
+      },
+      {
+        "id": 17,
+        "name": "Fantasy"
+      }
+    ],
+    "total_rating": 94.76293906840701,
+    "total_rating_count": 1658,
+    "url": "https://www.igdb.com/games/baldurs-gate-iii",
+    "videos": [
+      {
+        "id": 34304,
+        "name": "Cinematic Trailer",
+        "video_id": "jNY7AEQ59-8"
+      },
+      {
+        "id": 37259,
+        "name": "Trailer",
+        "video_id": "o5xpbAsly48"
+      },
+      {
+        "id": 80611,
+        "name": "Trailer",
+        "video_id": "tavPnYeFrV4"
+      },
+      {
+        "id": 91735,
+        "name": "Trailer",
+        "video_id": "zTX79cgruXE"
+      },
+      {
+        "id": 91736,
+        "name": "Dev Diary",
+        "video_id": "t0uYhTLPGLQ"
+      },
+      {
+        "id": 95037,
+        "name": "Launch Trailer",
+        "video_id": "XuCfkgaaa08"
+      },
+      {
+        "id": 153814,
+        "name": "Announcement Trailer",
+        "video_id": "OcP0WdH7rTs"
+      },
+      {
+        "id": 153815,
+        "name": "Release Date Trailer",
+        "video_id": "Ks-KF9iueE0"
+      },
+      {
+        "id": 185715,
+        "name": "Accolades Trailer",
+        "video_id": "fcmH0c3ywxk"
+      }
+    ],
+    "websites": [
+      {
+        "id": 746418,
+        "url": "https://www.youtube.com/LarianStudios/",
+        "type": 9
+      },
+      {
+        "id": 746412,
+        "url": "https://baldursgate3.game",
+        "type": 1
+      },
+      {
+        "id": 804313,
+        "url": "https://store.playstation.com/en-us/concept/10007460",
+        "type": 23
+      },
+      {
+        "id": 804312,
+        "url": "https://www.xbox.com/en-us/games/store/baldur's-gate-3/9ND58LQTG09T",
+        "type": 22
+      },
+      {
+        "id": 746415,
+        "url": "https://x.com/baldursgate3",
+        "type": 5
+      },
+      {
+        "id": 746414,
+        "url": "https://www.facebook.com/baldursgate3/",
+        "type": 4
+      },
+      {
+        "id": 750829,
+        "url": "https://www.gog.com/en/game/baldurs_gate_iii",
+        "type": 17
+      },
+      {
+        "id": 246552,
+        "url": "https://store.steampowered.com/app/1086940",
+        "type": 13
+      },
+      {
+        "id": 388947,
+        "url": "https://www.twitch.tv/directory/game/Baldur's%20Gate%203",
+        "type": 6
+      },
+      {
+        "id": 113817,
+        "url": "https://en.wikipedia.org/wiki/Baldur%27s_Gate_III",
+        "type": 3
+      },
+      {
+        "id": 578549,
+        "url": "https://www.reddit.com/r/BaldursGate3/",
+        "type": 14
+      },
+      {
+        "id": 707278,
+        "url": "https://bg3.wiki/wiki/Baldur%27s_Gate_3",
+        "type": 2
+      },
+      {
+        "id": 662348,
+        "url": "https://discord.gg/invite/larianstudios",
+        "type": 18
+      },
+      {
+        "id": 662347,
+        "url": "https://www.instagram.com/larianstudios/",
+        "type": 8
+      },
+      {
+        "id": 707279,
+        "url": "https://bsky.app/profile/larianstudios.com",
+        "type": 19
+      }
+    ],
+    "game_type": 0
+  },
+  {
+    "id": 119388,
+    "aggregated_rating": 95.33333333333333,
+    "aggregated_rating_count": 6,
+    "artworks": [
+      {
+        "id": 168629,
+        "image_id": "ar3m45"
+      },
+      {
+        "id": 168631,
+        "image_id": "ar3m47"
+      },
+      {
+        "id": 168630,
+        "image_id": "ar3m46"
+      },
+      {
+        "id": 168632,
+        "image_id": "ar3m48"
+      }
+    ],
+    "cover": {
+      "id": 274264,
+      "image_id": "co5vmg"
+    },
+    "external_games": [
+      {
+        "id": 1779659,
+        "uid": "73813",
+        "external_game_source": 3
+      },
+      {
+        "id": 2591989,
+        "uid": "B09S4R3WT1",
+        "external_game_source": 20
+      },
+      {
+        "id": 1936527,
+        "uid": "B07SDFKJ9Q",
+        "external_game_source": 20
+      },
+      {
+        "id": 2662490,
+        "uid": "B0BTJ8FG9B",
+        "external_game_source": 20
+      },
+      {
+        "id": 3190367,
+        "uid": "B07SNRGQC4",
+        "external_game_source": 20
+      },
+      {
+        "id": 2682131,
+        "uid": "B0BX854JYZ",
+        "external_game_source": 20
+      },
+      {
+        "id": 2669128,
+        "uid": "B0BTS5T1VC",
+        "external_game_source": 20
+      },
+      {
+        "id": 3218997,
+        "uid": "B0BVW3SJMF",
+        "external_game_source": 20
+      },
+      {
+        "id": 1914554,
+        "uid": "512998",
+        "external_game_source": 14
+      },
+      {
+        "id": 3190360,
+        "uid": "B0BF8ZS243",
+        "external_game_source": 20
+      }
+    ],
+    "first_release_date": 1683849600,
+    "game_modes": [
+      {
+        "id": 1,
+        "name": "Single player"
+      }
+    ],
+    "genres": [
+      {
+        "id": 9,
+        "name": "Puzzle"
+      },
+      {
+        "id": 31,
+        "name": "Adventure"
+      }
+    ],
+    "hypes": 79,
+    "involved_companies": [
+      {
+        "id": 200273,
+        "company": {
+          "id": 1119,
+          "name": "Monolith Soft"
+        },
+        "developer": false,
+        "publisher": false
+      },
+      {
+        "id": 200272,
+        "company": {
+          "id": 45209,
+          "name": "Nintendo EPD Production Group No. 3"
+        },
+        "developer": true,
+        "publisher": false
+      },
+      {
+        "id": 220085,
+        "company": {
+          "id": 70,
+          "name": "Nintendo"
+        },
+        "developer": false,
+        "publisher": true
+      }
+    ],
+    "name": "The Legend of Zelda: Tears of the Kingdom",
+    "platforms": [130],
+    "release_dates": [
+      {
+        "id": 493599,
+        "date": 1683849600,
+        "platform": 130,
+        "status": 6,
+        "release_region": 8
+      }
+    ],
+    "screenshots": [
+      {
+        "id": 498356,
+        "image_id": "scaoj8"
+      },
+      {
+        "id": 498357,
+        "image_id": "scaoj9"
+      },
+      {
+        "id": 498355,
+        "image_id": "scaoj7"
+      },
+      {
+        "id": 498354,
+        "image_id": "scaoj6"
+      },
+      {
+        "id": 308007,
+        "image_id": "sc6lnr"
+      }
+    ],
+    "slug": "the-legend-of-zelda-tears-of-the-kingdom",
+    "storyline": "While exploring the caves underneath Hyrule Castle to investigate the origins of the gloom (a dangerous substance which appeared all over the kingdom), Link and Zelda not only find old archeological remains of the Zonai, an ancient race said to have descended from the sky, but also an maleficent mummy held by a bodiless arm, who suddenly reanimates, defeats Link, breaks the Master Sword and rise large structures, once found underground, to the skies above Hyrule, with Zelda vanishing with a spark from a strange amulet found on the site.\nSome time later, Link awakens in an unknown place on a floating sky island and meets a mysterious spirit called Rauru, which transplanted his arm (the same arm which was holding the mummy) onto Link, since his right arm was beyond saving. Guided by this new ally, Link sets out in an adventure to protect Hyrule, find Princess Zelda and uncover the mysteries of the Zonai.",
+    "summary": "An epic adventure across the land and skies of Hyrule awaits in The Legend of Zelda: Tears of the Kingdom for Nintendo Switch. The adventure is yours to create in a world fueled by your imagination.\n\nIn this sequel to The Legend of Zelda: Breath of the Wild, you'll decide your own path through the sprawling landscapes of Hyrule and the mysterious islands floating in the vast skies above. Can you harness the power of Link's new abilities to fight back against the malevolent forces that threaten the kingdom?",
+    "themes": [
+      {
+        "id": 1,
+        "name": "Action"
+      },
+      {
+        "id": 17,
+        "name": "Fantasy"
+      },
+      {
+        "id": 18,
+        "name": "Science fiction"
+      },
+      {
+        "id": 33,
+        "name": "Sandbox"
+      },
+      {
+        "id": 38,
+        "name": "Open world"
+      }
+    ],
+    "total_rating": 94.09550173968466,
+    "total_rating_count": 940,
+    "url": "https://www.igdb.com/games/the-legend-of-zelda-tears-of-the-kingdom",
+    "videos": [
+      {
+        "id": 28055,
+        "name": "Trailer",
+        "video_id": "3fr1Z07AV00"
+      },
+      {
+        "id": 51125,
+        "name": "Trailer",
+        "video_id": "Pi-MRZBP91I"
+      },
+      {
+        "id": 74619,
+        "name": "Trailer",
+        "video_id": "2SNF4M_v7wc"
+      },
+      {
+        "id": 83895,
+        "name": "Trailer",
+        "video_id": "fYZuiFDQwQw"
+      },
+      {
+        "id": 87200,
+        "name": "Gameplay Video",
+        "video_id": "a6qna-ZCbxA"
+      },
+      {
+        "id": 87566,
+        "name": "Gameplay Trailer",
+        "video_id": "uHGShqcAHlQ"
+      },
+      {
+        "id": 185705,
+        "name": "Accolades Trailer",
+        "video_id": "_-2rpZs1ZhE"
+      }
+    ],
+    "websites": [
+      {
+        "id": 389020,
+        "url": "https://www.twitch.tv/directory/game/The%20Legend%20of%20Zelda:%20Tears%20of%20the%20Kingdom",
+        "type": 6
+      },
+      {
+        "id": 799786,
+        "url": "https://www.nintendo.com/store/products/the-legend-of-zelda-tears-of-the-kingdom-switch/",
+        "type": 24
+      },
+      {
+        "id": 801791,
+        "url": "https://www.reddit.com/r/tearsofthekingdom/",
+        "type": 14
+      },
+      {
+        "id": 311552,
+        "url": "https://zelda.com/tears-of-the-kingdom",
+        "type": 1
+      },
+      {
+        "id": 541141,
+        "url": "https://en.wikipedia.org/wiki/The_Legend_of_Zelda:_Tears_of_the_Kingdom",
+        "type": 3
+      },
+      {
+        "id": 575035,
+        "url": "https://zeldawiki.wiki/wiki/The_Legend_of_Zelda:_Tears_of_the_Kingdom",
+        "type": 2
+      }
+    ],
+    "game_type": 0
+  },
+  {
+    "id": 217590,
+    "aggregated_rating": 88.16666666666667,
+    "aggregated_rating_count": 6,
+    "artworks": [
+      {
+        "id": 91268,
+        "image_id": "ar1yf8"
+      },
+      {
+        "id": 254507,
+        "image_id": "ar5gdn"
+      },
+      {
+        "id": 279263,
+        "image_id": "ar5zhb"
+      },
+      {
+        "id": 279262,
+        "image_id": "ar5zha"
+      }
+    ],
+    "cover": {
+      "id": 354215,
+      "image_id": "co7lbb"
+    },
+    "external_games": [
+      {
+        "id": 3190320,
+        "uid": "B0CKSX2S72",
+        "external_game_source": 20
+      },
+      {
+        "id": 2872439,
+        "uid": "B0CPM34CNJ",
+        "external_game_source": 20
+      },
+      {
+        "id": 2751154,
+        "uid": "B0CGFC3VBL",
+        "external_game_source": 20
+      },
+      {
+        "id": 2879183,
+        "uid": "B0CQ8HX7V4",
+        "external_game_source": 20
+      },
+      {
+        "id": 2882837,
+        "uid": "B0CQ8KFKBV",
+        "external_game_source": 20
+      },
+      {
+        "id": 2879037,
+        "uid": "B0CRXBT65S",
+        "external_game_source": 20
+      },
+      {
+        "id": 2881122,
+        "uid": "B0CQ8HX7V4",
+        "external_game_source": 20
+      },
+      {
+        "id": 2881042,
+        "uid": "B0CQ8KFKBV",
+        "external_game_source": 20
+      },
+      {
+        "id": 2875627,
+        "uid": "B0CR44BNT9",
+        "external_game_source": 20
+      },
+      {
+        "id": 2882303,
+        "uid": "9PPSM14VKCLW",
+        "external_game_source": 11
+      },
+      {
+        "id": 2874695,
+        "uid": "B0CQLJ4TDL",
+        "external_game_source": 20
+      },
+      {
+        "id": 2619551,
+        "uid": "1778820",
+        "external_game_source": 1
+      },
+      {
+        "id": 2751186,
+        "uid": "B0CGFCGBYD",
+        "external_game_source": 20
+      },
+      {
+        "id": 2873895,
+        "uid": "B0CQLKXY7N",
+        "external_game_source": 20
+      },
+      {
+        "id": 2879070,
+        "uid": "B0CQ8KFKBV",
+        "external_game_source": 20
+      },
+      {
+        "id": 2874701,
+        "uid": "B0CQLKXY7N",
+        "external_game_source": 20
+      },
+      {
+        "id": 2873865,
+        "uid": "B0CQLJ4TDL",
+        "external_game_source": 20
+      },
+      {
+        "id": 2882972,
+        "uid": "B0CQ8HX7V4",
+        "external_game_source": 20
+      },
+      {
+        "id": 2914505,
+        "uid": "B0CNZ32F6W",
+        "external_game_source": 20
+      },
+      {
+        "id": 3218942,
+        "uid": "B0H4QP22CS",
+        "external_game_source": 20
+      },
+      {
+        "id": 2872419,
+        "uid": "B0CPM2J8S4",
+        "external_game_source": 20
+      },
+      {
+        "id": 2874717,
+        "uid": "B0CQLJ634V",
+        "external_game_source": 20
+      },
+      {
+        "id": 2914501,
+        "uid": "B0CNZ32F6W",
+        "external_game_source": 20
+      },
+      {
+        "id": 2875596,
+        "uid": "B0CR433N4R",
+        "external_game_source": 20
+      },
+      {
+        "id": 2873914,
+        "uid": "B0CQLJ634V",
+        "external_game_source": 20
+      },
+      {
+        "id": 2914503,
+        "uid": "B0CNZ32F6W",
+        "external_game_source": 20
+      },
+      {
+        "id": 2734063,
+        "uid": "10006270",
+        "external_game_source": 36
+      },
+      {
+        "id": 2586910,
+        "uid": "538054672",
+        "external_game_source": 14
+      }
+    ],
+    "first_release_date": 1706227200,
+    "game_modes": [
+      {
+        "id": 1,
+        "name": "Single player"
+      },
+      {
+        "id": 2,
+        "name": "Multiplayer"
+      },
+      {
+        "id": 4,
+        "name": "Split screen"
+      }
+    ],
+    "genres": [
+      {
+        "id": 4,
+        "name": "Fighting"
+      }
+    ],
+    "hypes": 4,
+    "involved_companies": [
+      {
+        "id": 227895,
+        "company": {
+          "id": 22721,
+          "name": "Bandai Namco Studios"
+        },
+        "developer": true,
+        "publisher": false
+      },
+      {
+        "id": 227894,
+        "company": {
+          "id": 248,
+          "name": "Bandai Namco Entertainment"
+        },
+        "developer": false,
+        "publisher": true
+      },
+      {
+        "id": 255818,
+        "company": {
+          "id": 17457,
+          "name": "Flame Hearts"
+        },
+        "developer": false,
+        "publisher": false
+      },
+      {
+        "id": 362920,
+        "company": {
+          "id": 16586,
+          "name": "Bandai Namco Studios Singapore"
+        },
+        "developer": false,
+        "publisher": false
+      }
+    ],
+    "name": "Tekken 8",
+    "platforms": [169, 6, 167],
+    "release_dates": [
+      {
+        "id": 506076,
+        "date": 1706227200,
+        "platform": 169,
+        "status": 6,
+        "release_region": 8
+      },
+      {
+        "id": 506075,
+        "date": 1706227200,
+        "platform": 167,
+        "status": 6,
+        "release_region": 8
+      },
+      {
+        "id": 560676,
+        "date": 1706227200,
+        "platform": 6,
+        "status": 6,
+        "release_region": 8
+      }
+    ],
+    "screenshots": [
+      {
+        "id": 1304819,
+        "image_id": "scrysz"
+      },
+      {
+        "id": 1304822,
+        "image_id": "scryt2"
+      },
+      {
+        "id": 1643779,
+        "image_id": "scz8cj"
+      },
+      {
+        "id": 1643776,
+        "image_id": "scz8cg"
+      },
+      {
+        "id": 1643775,
+        "image_id": "scz8cf"
+      },
+      {
+        "id": 1643778,
+        "image_id": "scz8ci"
+      },
+      {
+        "id": 1643777,
+        "image_id": "scz8ch"
+      },
+      {
+        "id": 1304820,
+        "image_id": "scryt0"
+      },
+      {
+        "id": 1304821,
+        "image_id": "scryt1"
+      },
+      {
+        "id": 1304823,
+        "image_id": "scryt3"
+      },
+      {
+        "id": 1304824,
+        "image_id": "scryt4"
+      },
+      {
+        "id": 1304825,
+        "image_id": "scryt5"
+      },
+      {
+        "id": 1304827,
+        "image_id": "scryt7"
+      },
+      {
+        "id": 1304826,
+        "image_id": "scryt6"
+      },
+      {
+        "id": 1304828,
+        "image_id": "scryt8"
+      }
+    ],
+    "slug": "tekken-8",
+    "storyline": "Six months after the defeat of Heihachi Mishima, Jin Kazama and the rebel army Yggdrasil launch an operation against his father, Kazuya Mishima, in New York City. The mission fails when Jin loses control of his Devil Gene powers, and Kazuya openly reveals his devil form to the world. Seizing the moment, Kazuya announces a new King of Iron Fist Tournament in which nations must compete or face annihilation. Jin, recovering from his injuries and unable to reliably access his powers, enters the tournament qualifiers in Japan, where he encounters Reina, a mysterious student whose fighting style resembles that of his late grandfather. As Kazuya's true agenda begins to unfold and ancient forces connected to the Devil Gene stir beneath the surface, Jin must confront both his father and the darkness within himself.",
+    "summary": "Tekken 8 is a 3D fighting game and the eighth main installment in the Tekken series, notable for being the first entry to debut on home consoles rather than in arcades. Built on Unreal Engine 5, the game introduces the \"Heat\" system, which rewards aggressive play by granting enhanced moves and chip damage while in an activated state, and replaces the prior \"Screw\" mechanic with \"Tornado\" hits. The game features crossplay across PlayStation 5, Windows, and Xbox Series X/S. Additional modes include Arcade Quest, an online lobby with customizable avatars and tournament play, and a cinematic story mode. It is the final Tekken game involving longtime series director Katsuhiro Harada before his departure from Bandai Namco.",
+    "themes": [
+      {
+        "id": 1,
+        "name": "Action"
+      }
+    ],
+    "total_rating": 81.81384550481306,
+    "total_rating_count": 134,
+    "url": "https://www.igdb.com/games/tekken-8",
+    "videos": [
+      {
+        "id": 74933,
+        "name": "Trailer",
+        "video_id": "07FdDRbdurg"
+      },
+      {
+        "id": 74934,
+        "name": "Announcement Trailer",
+        "video_id": "2hPuRQz6IlM"
+      },
+      {
+        "id": 80613,
+        "name": "Gameplay Trailer",
+        "video_id": "jGQBmSsunT4"
+      },
+      {
+        "id": 96191,
+        "name": "Trailer",
+        "video_id": "457g-rjA_cY"
+      },
+      {
+        "id": 186055,
+        "name": "Launch Trailer",
+        "video_id": "_MM4clV2qjE"
+      }
+    ],
+    "websites": [
+      {
+        "id": 319683,
+        "url": "https://store.steampowered.com/app/1778820",
+        "type": 13
+      },
+      {
+        "id": 874238,
+        "url": "https://www.xbox.com/en-us/games/store/tekken-8/9PPSM14VKCLW",
+        "type": 22
+      },
+      {
+        "id": 874239,
+        "url": "https://store.playstation.com/en-us/concept/10006270",
+        "type": 23
+      },
+      {
+        "id": 544216,
+        "url": "https://www.reddit.com/r/Tekken",
+        "type": 14
+      },
+      {
+        "id": 311701,
+        "url": "https://www.twitch.tv/directory/game/Tekken%208",
+        "type": 6
+      },
+      {
+        "id": 544220,
+        "url": "https://twitter.com/TEKKEN",
+        "type": 5
+      },
+      {
+        "id": 544219,
+        "url": "https://www.facebook.com/TekkenAmericas",
+        "type": 4
+      },
+      {
+        "id": 544218,
+        "url": "https://www.bandainamcoent.com/games/tekken-8",
+        "type": 1
+      },
+      {
+        "id": 544222,
+        "url": "https://discord.gg/tekkenofficial",
+        "type": 18
+      },
+      {
+        "id": 544223,
+        "url": "https://tekken.fandom.com/wiki/Tekken_8",
+        "type": 2
+      },
+      {
+        "id": 544224,
+        "url": "https://en.wikipedia.org/wiki/Tekken_8",
+        "type": 3
+      },
+      {
+        "id": 544221,
+        "url": "https://www.instagram.com/tekken/",
+        "type": 8
+      },
+      {
+        "id": 662042,
+        "url": "https://www.youtube.com/@bandainamcoentertainment",
+        "type": 9
+      }
+    ],
+    "game_type": 0
+  }
+]

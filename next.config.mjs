@@ -9,8 +9,7 @@ const nextConfig = {
   images: {
     remotePatterns: [
       { hostname: 'gravatar.com' },
-      { hostname: 'image.tmdb.org' },
-      { hostname: 'artworks.thetvdb.com' },
+      { hostname: 'images.igdb.com' },
       { hostname: 'plex.tv' },
     ],
   },

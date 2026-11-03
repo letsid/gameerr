@@ -1,5 +1,7 @@
+import igdb from '@server/api/igdb';
 import { MediaRequestStatus, MediaStatus } from '@server/constants/media';
 import { getRepository } from '@server/datasource';
+import type { RequestGameInfo } from '@server/entity/MediaRequest';
 import {
   BlocklistedMediaError,
   DuplicateMediaRequestError,
@@ -14,6 +16,7 @@ import type {
   RequestCountResponse,
   RequestResultsResponse,
 } from '@server/interfaces/api/requestInterfaces';
+import { getGameDetails, toRequestGameInfo } from '@server/lib/gameDetails';
 import { Permission } from '@server/lib/permissions';
 import logger from '@server/logger';
 import { isAuthenticated } from '@server/middleware/auth';
@@ -205,7 +208,20 @@ requestRoutes.post<never, MediaRequest, MediaRequestBody>(
         return next({ status: 400, message: 'Invalid request body.' });
       }
 
-      const request = await MediaRequest.request(body.data, req.user);
+      // Validates the platform and keeps title and cover on the media row.
+      // Without IGDB the request still goes through, just without both.
+      let game: RequestGameInfo | undefined;
+      if (igdb.isConfigured()) {
+        const details = await getGameDetails(body.data.igdbId);
+
+        if (!details) {
+          return next({ status: 404, message: 'Game not found.' });
+        }
+
+        game = toRequestGameInfo(details);
+      }
+
+      const request = await MediaRequest.request(body.data, req.user, game);
 
       return res.status(201).json(request);
     } catch (error) {

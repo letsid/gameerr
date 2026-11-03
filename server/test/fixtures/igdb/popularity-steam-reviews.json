@@ -1,0 +1,128 @@
+[
+  {
+    "id": 3571489,
+    "game_id": 119171,
+    "popularity_type": 6,
+    "value": 0.005910644158783,
+    "calculated_at": 1793686490
+  },
+  {
+    "id": 3573000,
+    "game_id": 217590,
+    "popularity_type": 6,
+    "value": 0.000264928260163,
+    "calculated_at": 1793686490
+  },
+  {
+    "id": 3571486,
+    "game_id": 119133,
+    "popularity_type": 6,
+    "value": 0.007875157010311,
+    "calculated_at": 1793686490
+  },
+  {
+    "id": 3571510,
+    "game_id": 1942,
+    "popularity_type": 6,
+    "value": 0.006442626844735,
+    "calculated_at": 1793686490
+  },
+  {
+    "id": 3573273,
+    "game_id": 217590,
+    "popularity_type": 8,
+    "value": 0.000421055900473,
+    "calculated_at": 1793686490
+  },
+  {
+    "id": 3571478,
+    "game_id": 1020,
+    "popularity_type": 6,
+    "value": 0.013960323262222,
+    "calculated_at": 1793686490
+  },
+  {
+    "id": 3571526,
+    "game_id": 25076,
+    "popularity_type": 6,
+    "value": 0.005429079679581,
+    "calculated_at": 1793686490
+  },
+  {
+    "id": 3571636,
+    "game_id": 119133,
+    "popularity_type": 8,
+    "value": 0.007285650189036,
+    "calculated_at": 1793686490
+  },
+  {
+    "id": 3571641,
+    "game_id": 119171,
+    "popularity_type": 8,
+    "value": 0.005244665346262,
+    "calculated_at": 1793686490
+  },
+  {
+    "id": 3571717,
+    "game_id": 25076,
+    "popularity_type": 8,
+    "value": 0.005057676481049,
+    "calculated_at": 1793686490
+  },
+  {
+    "id": 3571683,
+    "game_id": 1942,
+    "popularity_type": 8,
+    "value": 0.005759622476652,
+    "calculated_at": 1793686490
+  },
+  {
+    "id": 3571620,
+    "game_id": 1020,
+    "popularity_type": 8,
+    "value": 0.01372462417341,
+    "calculated_at": 1793686490
+  },
+  {
+    "id": 612106,
+    "game_id": 25076,
+    "popularity_type": 7,
+    "value": 0.002788282829095,
+    "calculated_at": 1793686226
+  },
+  {
+    "id": 616258,
+    "game_id": 217590,
+    "popularity_type": 7,
+    "value": 0.001375046273239,
+    "calculated_at": 1793686226
+  },
+  {
+    "id": 611922,
+    "game_id": 119171,
+    "popularity_type": 7,
+    "value": 0.001175319429358,
+    "calculated_at": 1793686226
+  },
+  {
+    "id": 612003,
+    "game_id": 1942,
+    "popularity_type": 7,
+    "value": 0.001586244909331,
+    "calculated_at": 1793686226
+  },
+  {
+    "id": 611906,
+    "game_id": 119133,
+    "popularity_type": 7,
+    "value": 0.003683572869094,
+    "calculated_at": 1793686226
+  },
+  {
+    "id": 611882,
+    "game_id": 1020,
+    "popularity_type": 7,
+    "value": 0.012284426517509,
+    "calculated_at": 1793686226
+  }
+]
