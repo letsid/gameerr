@@ -124,6 +124,13 @@ export interface MetadataSettings {
   bestReleaseGapYears: number;
 }
 
+export type FulfillmentProviderId = 'manual';
+
+export interface FulfillmentSettings {
+  // Backend approved requests are handed to
+  provider: FulfillmentProviderId;
+}
+
 interface PublicSettings {
   initialized: boolean;
 }
@@ -305,6 +312,7 @@ export interface AllSettings {
   plex: PlexSettings;
   jellyfin: JellyfinSettings;
   metadata: MetadataSettings;
+  fulfillment: FulfillmentSettings;
   public: PublicSettings;
   notifications: NotificationSettings;
   jobs: Record<JobId, JobSettings>;
@@ -399,6 +407,9 @@ class Settings {
         recentReleaseDays: 60,
         upcomingReleaseDays: 90,
         bestReleaseGapYears: 5,
+      },
+      fulfillment: {
+        provider: 'manual',
       },
       public: {
         initialized: false,
@@ -580,6 +591,14 @@ class Settings {
 
   set metadata(data: MetadataSettings) {
     this.data.metadata = mergeSettings(this.data.metadata, data);
+  }
+
+  get fulfillment(): FulfillmentSettings {
+    return this.data.fulfillment;
+  }
+
+  set fulfillment(data: FulfillmentSettings) {
+    this.data.fulfillment = mergeSettings(this.data.fulfillment, data);
   }
 
   get public(): PublicSettings {

@@ -2,6 +2,7 @@ import { MediaRequestStatus, MediaStatus } from '@server/constants/media';
 import { getRepository } from '@server/datasource';
 import Media from '@server/entity/Media';
 import { MediaRequest } from '@server/entity/MediaRequest';
+import { submitForFulfillment } from '@server/lib/fulfillment';
 import { Notification } from '@server/lib/notifications';
 import logger from '@server/logger';
 import { withNestedTransaction } from '@server/utils/nestedTransaction';
@@ -13,6 +14,22 @@ import type {
   UpdateEvent,
 } from 'typeorm';
 import { EventSubscriber, In, Not } from 'typeorm';
+
+/**
+ * Starts fulfillment once the saving transaction is done, so the provider
+ * can write to the database without waiting on it
+ */
+const scheduleFulfillment = (request: MediaRequest) => {
+  setImmediate(() => {
+    submitForFulfillment(request).catch((e) =>
+      logger.error('Fulfillment could not be started', {
+        label: 'Fulfillment',
+        requestId: request.id,
+        errorMessage: e instanceof Error ? e.message : String(e),
+      })
+    );
+  });
+};
 
 @EventSubscriber()
 export class MediaRequestSubscriber implements EntitySubscriberInterface<MediaRequest> {
@@ -146,6 +163,14 @@ export class MediaRequestSubscriber implements EntitySubscriberInterface<MediaRe
       if (event.entity.status === MediaRequestStatus.COMPLETED) {
         await this.notifyAvailable(event.entity as MediaRequest, event);
       }
+
+      // Approval, or a retry of a failed request
+      if (
+        event.entity.status === MediaRequestStatus.APPROVED &&
+        event.databaseEntity?.status !== MediaRequestStatus.APPROVED
+      ) {
+        scheduleFulfillment(event.entity as MediaRequest);
+      }
     } catch (e) {
       logger.error(
         'Error while updating parent status in afterUpdate subscriber',
@@ -167,6 +192,11 @@ export class MediaRequestSubscriber implements EntitySubscriberInterface<MediaRe
       await withNestedTransaction(event.manager, async (manager) => {
         await this.updateParentStatus(manager, event.entity as MediaRequest);
       });
+
+      // Auto-approved requests skip the approval step
+      if (event.entity.status === MediaRequestStatus.APPROVED) {
+        scheduleFulfillment(event.entity as MediaRequest);
+      }
     } catch (e) {
       logger.error(
         'Error while updating parent status in afterInsert subscriber',
