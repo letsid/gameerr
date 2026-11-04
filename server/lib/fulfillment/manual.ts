@@ -15,6 +15,10 @@ class ManualFulfillmentProvider implements FulfillmentProvider {
   public readonly id = 'manual';
   public readonly name = 'Manual';
 
+  public supports(): boolean {
+    return true;
+  }
+
   public async submit(
     request: MediaRequest,
     media: Media

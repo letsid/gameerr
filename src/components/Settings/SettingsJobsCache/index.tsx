@@ -80,6 +80,8 @@ const messages: { [messageName: string]: MessageDescriptor } = defineMessages(
     'plex-refresh-token': 'Plex Refresh Token',
     'image-cache-cleanup': 'Image Cache Cleanup',
     'discover-lists-refresh': 'Discover Lists Refresh',
+    'library-sync': 'Library Sync',
+    'fulfillment-sync': 'Fulfillment Sync',
     editJobSchedule: 'Modify Job',
     jobScheduleEditSaved: 'Job edited successfully!',
     jobScheduleEditFailed: 'Something went wrong while saving the job.',

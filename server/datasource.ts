@@ -1,6 +1,7 @@
 import { Blocklist } from '@server/entity/Blocklist';
 import DiscoverSlider from '@server/entity/DiscoverSlider';
 import GameMetadataCache from '@server/entity/GameMetadataCache';
+import LibraryItem from '@server/entity/LibraryItem';
 import Media from '@server/entity/Media';
 import { MediaRequest } from '@server/entity/MediaRequest';
 import { Session } from '@server/entity/Session';
@@ -22,6 +23,7 @@ const entities = [
   Blocklist,
   DiscoverSlider,
   GameMetadataCache,
+  LibraryItem,
   Media,
   MediaRequest,
   Session,

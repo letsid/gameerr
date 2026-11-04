@@ -1,9 +1,9 @@
 import igdb from '@server/api/igdb';
 import { MediaRequestStatus, MediaStatus } from '@server/constants/media';
 import { getRepository } from '@server/datasource';
-import Media from '@server/entity/Media';
 import type { RequestGameInfo } from '@server/entity/MediaRequest';
 import {
+  AlreadyOwnedError,
   BlocklistedMediaError,
   DuplicateMediaRequestError,
   InvalidPlatformError,
@@ -18,13 +18,12 @@ import type {
   RequestResultsResponse,
 } from '@server/interfaces/api/requestInterfaces';
 import { getGameDetails, toRequestGameInfo } from '@server/lib/gameDetails';
-import { Notification } from '@server/lib/notifications';
 import { Permission } from '@server/lib/permissions';
+import { completeRequest } from '@server/lib/requestCompletion';
 import logger from '@server/logger';
 import { isAuthenticated } from '@server/middleware/auth';
 import requestLock, { requestKey, userKey } from '@server/utils/requestLock';
 import { Router } from 'express';
-import { In } from 'typeorm';
 import { z } from 'zod';
 
 const requestRoutes = Router();
@@ -237,6 +236,7 @@ requestRoutes.post<never, MediaRequest, MediaRequestBody>(
         case QuotaRestrictedError:
           return next({ status: 403, message: error.message });
         case DuplicateMediaRequestError:
+        case AlreadyOwnedError:
           return next({ status: 409, message: error.message });
         case InvalidPlatformError:
           return next({ status: 400, message: error.message });
@@ -549,7 +549,6 @@ requestRoutes.post<{
   isAuthenticated(Permission.MANAGE_REQUESTS),
   async (req, res, next) => {
     const requestRepository = getRepository(MediaRequest);
-    const mediaRepository = getRepository(Media);
     const requestId = Number(req.params.requestId);
 
     try {
@@ -566,54 +565,7 @@ requestRoutes.post<{
           });
         }
 
-        // Completing one platform must not close the requests of others,
-        // which a media save would do through the media subscriber.
-        // When the game is already available the request subscriber sends
-        // the availability notification itself.
-        const wasAvailable =
-          (
-            await mediaRepository.findOneOrFail({
-              where: { id: request.media.id },
-            })
-          ).status === MediaStatus.AVAILABLE;
-
-        request.status = MediaRequestStatus.COMPLETED;
-        request.modifiedBy = req.user;
-        await requestRepository.save(request);
-
-        const media = await mediaRepository.findOneOrFail({
-          where: { id: request.media.id },
-        });
-        const stillOpen = await requestRepository.count({
-          where: {
-            media: { id: media.id },
-            status: In([
-              MediaRequestStatus.PENDING,
-              MediaRequestStatus.APPROVED,
-              MediaRequestStatus.FAILED,
-            ]),
-          },
-        });
-
-        if (stillOpen === 0 && media.status !== MediaStatus.AVAILABLE) {
-          media.status = MediaStatus.AVAILABLE;
-          media.mediaAddedAt = new Date();
-          await mediaRepository
-            .createQueryBuilder()
-            .update()
-            .set({ status: media.status, mediaAddedAt: media.mediaAddedAt })
-            .where('id = :id', { id: media.id })
-            .callListeners(false)
-            .execute();
-        }
-
-        if (!wasAvailable) {
-          MediaRequest.sendNotification(
-            request,
-            media,
-            Notification.MEDIA_AVAILABLE
-          );
-        }
+        await completeRequest(request, req.user);
 
         return res.status(200).json(request);
       });

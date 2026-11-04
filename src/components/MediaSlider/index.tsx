@@ -111,6 +111,7 @@ const MediaSlider = ({
         isAddedToWatchlist={title.mediaInfo?.watchlists?.length ?? 0}
         coverImageId={title.coverImageId}
         status={title.mediaInfo?.status}
+        inLibrary={!!title.library?.length}
         summary={title.summary}
         title={title.name}
         year={title.year}

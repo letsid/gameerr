@@ -27,6 +27,17 @@ export interface SteamAppData {
 }
 
 /**
+ * IPlayerService/GetOwnedGames of the official Steam Web API. A private
+ * profile answers with an empty response object.
+ */
+export interface SteamOwnedGamesResponse {
+  response: {
+    game_count?: number;
+    games?: { appid: number; playtime_forever?: number }[];
+  };
+}
+
+/**
  * appdetails answers with an object keyed by the requested app id
  */
 export type SteamAppDetailsResponse = Record<

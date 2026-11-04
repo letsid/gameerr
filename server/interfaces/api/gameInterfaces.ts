@@ -2,6 +2,7 @@ import type Media from '@server/entity/Media';
 import type { DiscoverGame, DiscoverListId } from '@server/lib/discover';
 import type { GameDetails } from '@server/lib/gameDetails';
 import type { ScoreBadge } from '@server/lib/gameScores';
+import type { LibraryEntry } from '@server/lib/library';
 import type { Platform } from '@server/lib/platforms';
 
 /**
@@ -10,6 +11,8 @@ import type { Platform } from '@server/lib/platforms';
 export interface GameResult extends DiscoverGame {
   year?: string;
   mediaInfo?: Media;
+  // Platforms the game is already in the library on
+  library?: LibraryEntry[];
 }
 
 export interface GameResultsResponse {
@@ -29,6 +32,7 @@ export interface DiscoverListResponse extends GameResultsResponse {
 
 export interface GameDetailsResponse extends GameDetails {
   mediaInfo?: Media;
+  library: LibraryEntry[];
 }
 
 export interface GameScoresResponse {

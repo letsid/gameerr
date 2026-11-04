@@ -13,9 +13,9 @@ export type FulfillmentState =
 
 export interface FulfillmentResult {
   state: FulfillmentState;
+  // The backend's own status word, e.g. Questarr's "downloading"
+  backendState?: string;
   message?: string;
-  // Id of the request in the backend, for later status checks
-  externalId?: string;
 }
 
 /**
@@ -25,6 +25,10 @@ export interface FulfillmentResult {
 export interface FulfillmentProvider {
   readonly id: string;
   readonly name: string;
+  /**
+   * Whether the backend is set up and can take requests for the platform
+   */
+  supports(platform: number): boolean;
   /**
    * Hands an approved request to the backend. Throwing marks the request
    * as failed.

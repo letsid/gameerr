@@ -1,6 +1,7 @@
 import JellyfinAPI from '@server/api/jellyfin';
 import PlexAPI from '@server/api/plexapi';
 import PlexTvAPI from '@server/api/plextv';
+import { getQuestarr, QuestarrNotConfiguredError } from '@server/api/questarr';
 import { ApiErrorCode } from '@server/constants/error';
 import { getRepository } from '@server/datasource';
 import Media from '@server/entity/Media';
@@ -8,6 +9,7 @@ import { MediaRequest } from '@server/entity/MediaRequest';
 import { User } from '@server/entity/User';
 import type { PlexConnection } from '@server/interfaces/api/plexInterfaces';
 import type {
+  FulfillmentSettingsResponse,
   LogMessage,
   LogsResultsResponse,
   MetadataSettingsResponse,
@@ -147,6 +149,97 @@ settingsRoutes.post<never, MetadataSettingsResponse>(
     return res.status(200).json(metadataSettingsResponse());
   }
 );
+
+const fulfillmentSettingsBody = z
+  .object({
+    provider: z.enum(['manual', 'questarr']),
+    questarrUrl: z
+      .string()
+      .trim()
+      .max(500)
+      .refine((value) => value === '' || /^https?:\/\/[^\s]+$/.test(value), {
+        message: 'Questarr URL must start with http:// or https://',
+      }),
+    // SteamID64 values are 17 digits
+    steamIds: z
+      .array(
+        z
+          .string()
+          .trim()
+          .regex(/^\d{17}$/)
+      )
+      .max(20),
+  })
+  .partial();
+
+const fulfillmentSettingsResponse = (): FulfillmentSettingsResponse => {
+  const settings = getSettings();
+  const credentials = getMetadataCredentials();
+
+  return {
+    provider: settings.fulfillment.provider,
+    questarrUrl: settings.fulfillment.questarrUrl,
+    steamIds: settings.library.steamIds,
+    questarrConfigured:
+      !!credentials.questarrUrl && !!credentials.questarrApiKey,
+    steamConfigured: !!credentials.steamApiKey,
+  };
+};
+
+settingsRoutes.get<never, FulfillmentSettingsResponse>(
+  '/fulfillment',
+  (_req, res) => res.status(200).json(fulfillmentSettingsResponse())
+);
+
+// API keys are deliberately not accepted here, they come from the
+// environment or the settings file
+settingsRoutes.post<never, FulfillmentSettingsResponse>(
+  '/fulfillment',
+  async (req, res, next) => {
+    const body = fulfillmentSettingsBody.safeParse(req.body);
+
+    if (!body.success) {
+      return next({
+        status: 400,
+        message: body.error.issues[0]?.message ?? 'Invalid settings.',
+      });
+    }
+
+    const settings = getSettings();
+    settings.fulfillment = {
+      ...settings.fulfillment,
+      ...(body.data.provider ? { provider: body.data.provider } : {}),
+      ...(body.data.questarrUrl !== undefined
+        ? { questarrUrl: body.data.questarrUrl.replace(/\/+$/, '') }
+        : {}),
+    };
+    if (body.data.steamIds) {
+      settings.library = {
+        ...settings.library,
+        steamIds: [...new Set(body.data.steamIds)],
+      };
+    }
+    await settings.save();
+
+    return res.status(200).json(fulfillmentSettingsResponse());
+  }
+);
+
+settingsRoutes.post('/fulfillment/questarr/test', async (_req, res, next) => {
+  try {
+    const handshake = await getQuestarr().ping();
+    return res.status(200).json(handshake);
+  } catch (e) {
+    return next({
+      status: e instanceof QuestarrNotConfiguredError ? 400 : 502,
+      message:
+        e?.response?.data?.error ??
+        (e instanceof QuestarrNotConfiguredError
+          ? e.message
+          : `Questarr did not answer: ${e.message}`),
+    });
+  }
+});
 
 settingsRoutes.get('/network', (req, res) => {
   const settings = getSettings();

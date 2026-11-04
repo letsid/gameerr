@@ -1,11 +1,15 @@
 import ExternalAPI from '@server/api/externalapi';
 import type {
+  IgdbExternalGame,
   IgdbGame,
   IgdbPlatform,
   IgdbReleaseDate,
   IgdbTokenResponse,
 } from '@server/api/igdb/interfaces';
-import { IGDB_STANDALONE_GAME_TYPES } from '@server/api/igdb/interfaces';
+import {
+  IGDB_EXTERNAL_SOURCE_STEAM,
+  IGDB_STANDALONE_GAME_TYPES,
+} from '@server/api/igdb/interfaces';
 import cacheManager from '@server/lib/cache';
 import { getMetadataCredentials } from '@server/lib/settings';
 import logger from '@server/logger';
@@ -410,6 +414,36 @@ class IgdbAPI extends ExternalAPI {
     }
 
     return earliest;
+  }
+
+  /**
+   * IGDB game ids for Steam app ids, through external_games
+   */
+  public async getGameIdsForSteamApps(
+    appIds: number[]
+  ): Promise<Map<number, number>> {
+    const byAppId = new Map<number, number>();
+    const unique = [...new Set(appIds)].filter(
+      (id) => Number.isInteger(id) && id > 0
+    );
+
+    for (let i = 0; i < unique.length; i += IGDB_MAX_LIMIT) {
+      const chunk = unique.slice(i, i + IGDB_MAX_LIMIT);
+      const rows = await this.query<IgdbExternalGame[]>(
+        'external_games',
+        `fields game,uid; where external_game_source = ${IGDB_EXTERNAL_SOURCE_STEAM} & uid = (${chunk.map((id) => `"${id}"`).join(',')}); limit ${IGDB_MAX_LIMIT};`,
+        0
+      );
+
+      rows.forEach((row) => {
+        const appId = Number(row.uid);
+        if (row.game && Number.isInteger(appId) && !byAppId.has(appId)) {
+          byAppId.set(appId, row.game);
+        }
+      });
+    }
+
+    return byAppId;
   }
 
   public async getTopRatedGames({

@@ -72,6 +72,7 @@ const ListView = ({
                 summary={title.summary}
                 year={title.year}
                 status={title.mediaInfo?.status}
+                inLibrary={!!title.library?.length}
                 isAddedToWatchlist={title.mediaInfo?.watchlists?.length ?? 0}
                 canExpand
               />

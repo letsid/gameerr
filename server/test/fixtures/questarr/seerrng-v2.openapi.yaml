@@ -1,0 +1,633 @@
+openapi: 3.1.0
+info:
+  title: QuestarrNG SeerrNG software provider
+  version: '2'
+  description: |
+    Version 2 of QuestarrNG's provider contract for SeerrNG. SeerrNG owns
+    approval, quotas, requester permissions, and requester-facing history.
+    QuestarrNG owns PC acquisition and streams registered library assets.
+servers:
+  - url: /api/integration/seerrng/v1
+security:
+  - integrationApiKey: []
+  - jwtBearer: []
+paths:
+  /ping:
+    get:
+      operationId: getProviderHandshake
+      summary: Read provider version and capabilities
+      responses:
+        '200':
+          description: Provider handshake
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Handshake'
+  /catalog/search:
+    get:
+      operationId: searchCatalog
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema: { type: string, minLength: 1, maxLength: 200 }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 50, default: 20 }
+      responses:
+        '200':
+          description: Matching catalog games
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/CatalogGame' }
+  /catalog/search-page:
+    get:
+      operationId: searchCatalogPage
+      parameters:
+        - {
+            name: q,
+            in: query,
+            required: true,
+            schema: { type: string, minLength: 1, maxLength: 200 },
+          }
+        - { name: cursor, in: query, schema: { type: string } }
+        - {
+            name: limit,
+            in: query,
+            schema: { type: integer, minimum: 1, maximum: 50, default: 20 },
+          }
+        - { name: platformIds, in: query, schema: { type: string } }
+        - { name: genre, in: query, schema: { type: string } }
+        - {
+            name: releaseYear,
+            in: query,
+            schema: { type: integer, minimum: 1 },
+          }
+      responses:
+        '200':
+          description: A catalog page and an opaque query-bound cursor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogPage'
+  /catalog/popular:
+    get:
+      operationId: getPopularCatalog
+      parameters:
+        - {
+            name: limit,
+            in: query,
+            schema: { type: integer, minimum: 1, maximum: 50, default: 20 },
+          }
+      responses:
+        '200':
+          description: Popular catalog games
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/CatalogGame' }
+  /catalog/popular-page:
+    get:
+      operationId: getPopularCatalogPage
+      parameters:
+        - {
+            name: offset,
+            in: query,
+            schema: { type: integer, minimum: 0, default: 0 },
+          }
+        - {
+            name: limit,
+            in: query,
+            schema: { type: integer, minimum: 1, maximum: 50, default: 20 },
+          }
+        - { name: platformIds, in: query, schema: { type: string } }
+        - { name: genre, in: query, schema: { type: string } }
+        - {
+            name: releaseYear,
+            in: query,
+            schema: { type: integer, minimum: 1 },
+          }
+      responses:
+        '200':
+          description: A popular catalog page and next offset
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogPage'
+  /catalog/platforms:
+    get:
+      operationId: getCatalogPlatforms
+      responses:
+        '200':
+          description: IGDB platforms; SeerrNG decides which are requestable
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required: [id, name]
+                  properties:
+                    id: { type: integer, minimum: 1 }
+                    name: { type: string }
+  /catalog/games/{igdbId}:
+    get:
+      operationId: getCatalogGame
+      parameters:
+        - name: igdbId
+          in: path
+          required: true
+          schema: { type: integer, minimum: 1 }
+        - name: platformId
+          in: query
+          schema: { type: integer, minimum: 1 }
+      responses:
+        '200':
+          description: Normalized catalog game details
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CatalogGame' }
+        '404': { $ref: '#/components/responses/Error' }
+  /catalog/games/{igdbId}/editions:
+    get:
+      operationId: getGameEditions
+      summary: Editions, included content, and add-ons for one game
+      description: >
+        Content IGDB does not describe stays unknown: storyContent is null and an
+        edition with no linked content has contentKnown false.
+      parameters:
+        - name: igdbId
+          in: path
+          required: true
+          schema: { type: integer, minimum: 1 }
+      responses:
+        '200':
+          description: Editions and standalone add-ons
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/GameEditions' }
+        '404': { $ref: '#/components/responses/Error' }
+  /catalog/discover:
+    get:
+      operationId: discoverGames
+      summary: Find games by themes, modes, perspectives, genres, and languages
+      parameters:
+        - { name: q, in: query, schema: { type: string, maxLength: 100 } }
+        - { name: themes, in: query, schema: { type: string } }
+        - { name: gameModes, in: query, schema: { type: string } }
+        - { name: perspectives, in: query, schema: { type: string } }
+        - { name: genres, in: query, schema: { type: string } }
+        - { name: languages, in: query, schema: { type: string } }
+        - { name: excludeThemes, in: query, schema: { type: string } }
+        - { name: excludeGameModes, in: query, schema: { type: string } }
+        - { name: excludeGenres, in: query, schema: { type: string } }
+        - { name: minYear, in: query, schema: { type: integer, minimum: 1970 } }
+        - {
+            name: maxHoursToBeat,
+            in: query,
+            schema: { type: number, exclusiveMinimum: 0 },
+          }
+        - {
+            name: limit,
+            in: query,
+            schema: { type: integer, minimum: 1, maximum: 48 },
+          }
+        - { name: cursor, in: query, schema: { type: string } }
+      responses:
+        '200':
+          description: Matching games with their facets
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [results]
+                properties:
+                  results: { type: array, items: { type: object } }
+                  nextCursor: { type: [string, 'null'] }
+        '400': { $ref: '#/components/responses/Error' }
+  /library/lookup:
+    get:
+      operationId: lookupLibraryGames
+      parameters:
+        - name: igdbIds
+          in: query
+          required: true
+          schema: { type: string, example: '42,43' }
+      responses:
+        '200':
+          description: Visible games owned by the authenticated QuestarrNG account
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [games]
+                properties:
+                  games:
+                    type: array
+                    items:
+                      type: object
+                      required: [igdbId, status]
+                      properties:
+                        igdbId: { type: integer }
+                        status: { type: string }
+  /requests:
+    post:
+      operationId: submitAcquisitionRequest
+      summary: Submit or idempotently replay a PC game request
+      description: externalRequestId is unique per QuestarrNG user and remains durable across restarts.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateRequest' }
+      responses:
+        '201':
+          description: A new request was accepted
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RequestState' }
+        '200':
+          description: The same ID, title, and variant were already submitted
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RequestState' }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /requests/{externalRequestId}:
+    parameters:
+      - name: externalRequestId
+        in: path
+        required: true
+        schema: { type: string, minLength: 1, maxLength: 255 }
+    get:
+      operationId: getRequestStatus
+      responses:
+        '200':
+          description: Current acquisition state
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RequestState' }
+        '404': { $ref: '#/components/responses/Error' }
+  /requests/{externalRequestId}/retry:
+    parameters:
+      - name: externalRequestId
+        in: path
+        required: true
+        schema: { type: string, minLength: 1, maxLength: 255 }
+    post:
+      operationId: retryAcquisitionRequest
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                confirmNoExistingDownload: { type: boolean, default: false }
+      responses:
+        '200':
+          description: The retry result and current request state
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RequestState' }
+        '409': { $ref: '#/components/responses/Error' }
+  /requests/{externalRequestId}/cancel:
+    parameters:
+      - name: externalRequestId
+        in: path
+        required: true
+        schema: { type: string, minLength: 1, maxLength: 255 }
+    post:
+      operationId: cancelAcquisitionRequest
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                confirmNoExistingDownload: { type: boolean, default: false }
+      responses:
+        '200':
+          description: Cancellation result; imported files are retained
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RequestState' }
+        '409': { $ref: '#/components/responses/Error' }
+  /requests/{externalRequestId}/assets:
+    parameters:
+      - name: externalRequestId
+        in: path
+        required: true
+        schema: { type: string, minLength: 1, maxLength: 255 }
+    get:
+      operationId: listRequestAssets
+      responses:
+        '200':
+          description: Registered files still contained by the configured library root
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [assets, bundleSupported]
+                properties:
+                  assets:
+                    type: array
+                    items: { $ref: '#/components/schemas/Asset' }
+                  bundleSupported:
+                    {
+                      type: boolean,
+                      description: True when at least two deliverable assets are available.,
+                    }
+                  bundleName:
+                    {
+                      type: string,
+                      description: Present when bundleSupported is true.,
+                    }
+        '404': { $ref: '#/components/responses/Error' }
+  /requests/{externalRequestId}/assets/bundle:
+    parameters:
+      - name: externalRequestId
+        in: path
+        required: true
+        schema: { type: string, minLength: 1, maxLength: 255 }
+    get:
+      operationId: streamRequestAssetBundle
+      description: Streams a gzip-compressed tar archive when at least two deliverable assets are present.
+      responses:
+        '200':
+          description: Streaming bundle; the browser must receive it through SeerrNG
+          headers:
+            Cache-Control: { schema: { const: no-store } }
+            Content-Disposition: { schema: { type: string } }
+          content:
+            application/gzip: { schema: { type: string, format: binary } }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /requests/{externalRequestId}/assets/{assetId}:
+    parameters:
+      - name: externalRequestId
+        in: path
+        required: true
+        schema: { type: string, minLength: 1, maxLength: 255 }
+    get:
+      operationId: streamRequestAsset
+      parameters:
+        - name: assetId
+          in: path
+          required: true
+          schema: { type: string, minLength: 1, maxLength: 256 }
+        - name: Range
+          in: header
+          schema: { type: string, example: 'bytes=0-1048575' }
+      responses:
+        '200':
+          description: Single asset stream; the browser must receive it through SeerrNG
+          headers:
+            Cache-Control: { schema: { const: no-store } }
+          content:
+            application/octet-stream:
+              { schema: { type: string, format: binary } }
+        '206': { description: A single byte range was returned }
+        '404': { $ref: '#/components/responses/Error' }
+        '416': { description: Requested range is not satisfiable }
+components:
+  securitySchemes:
+    integrationApiKey:
+      type: apiKey
+      in: header
+      name: X-Api-Key
+    jwtBearer:
+      type: http
+      scheme: bearer
+      description: JWT, or a QuestarrNG qsr_ integration key when bearer-style headers are required.
+  responses:
+    Error:
+      description: Safe, user-facing error message
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [error]
+            properties:
+              error: { type: string }
+  schemas:
+    Handshake:
+      type: object
+      required:
+        [service, version, apiVersion, requestContractVersion, capabilities]
+      properties:
+        service: { const: QuestarrNG }
+        version: { type: string }
+        apiVersion: { const: 1 }
+        requestContractVersion: { const: 2 }
+        capabilities:
+          type: object
+          required:
+            [
+              catalog,
+              pcAcquisition,
+              emulationAcquisition,
+              requestActions,
+              assetStreaming,
+            ]
+          properties:
+            catalog: { type: boolean }
+            pcAcquisition: { type: boolean }
+            emulationAcquisition: { type: boolean }
+            requestActions:
+              type: object
+              required: [retry, cancel]
+              properties:
+                retry: { type: boolean }
+                cancel: { type: boolean }
+            assetStreaming: { type: boolean }
+            editions: { type: boolean }
+            discover: { type: boolean }
+            wantedContent: { type: boolean }
+    GameEditions:
+      type: object
+      required: [base, editions, addons]
+      properties:
+        base:
+          type: object
+          required: [igdbId, title, owned]
+          properties:
+            igdbId: { type: integer }
+            title: { type: string }
+            owned: { type: boolean }
+            status: { type: string }
+        editions:
+          type: array
+          items:
+            type: object
+            required: [igdbId, title, includes, contentKnown, owned]
+            properties:
+              igdbId: { type: integer }
+              title: { type: string }
+              summary: { type: string }
+              releaseDate: { type: string }
+              includes:
+                {
+                  type: array,
+                  items: { $ref: '#/components/schemas/GameContent' },
+                }
+              contentKnown: { type: boolean }
+              owned: { type: boolean }
+        addons:
+          { type: array, items: { $ref: '#/components/schemas/GameContent' } }
+    GameContent:
+      type: object
+      required: [igdbId, title, type, storyContent, owned]
+      properties:
+        igdbId: { type: integer }
+        title: { type: string }
+        type:
+          {
+            enum:
+              [
+                expansion,
+                dlc,
+                cosmetic,
+                season-pass,
+                bonus,
+                soundtrack,
+                unknown,
+              ],
+          }
+        storyContent: { type: [boolean, 'null'] }
+        releaseDate: { type: string }
+        coverUrl: { type: string }
+        owned: { type: boolean }
+    ContentSelection:
+      oneOf:
+        - type: object
+          required: [kind, mode, editionId]
+          properties:
+            kind: { const: game-content }
+            mode: { const: edition }
+            editionId: { type: integer, minimum: 1 }
+        - type: object
+          required: [kind, mode, addonIds]
+          properties:
+            kind: { const: game-content }
+            mode: { const: missing-selected }
+            addonIds:
+              {
+                type: array,
+                maxItems: 30,
+                items: { type: integer, minimum: 1 },
+              }
+    Variant:
+      type: object
+      required: [operatingSystem, architecture]
+      properties:
+        operatingSystem: { enum: [windows, linux, macos] }
+        architecture: { enum: [x64, arm64, x86, universal] }
+    CreateRequest:
+      type: object
+      required: [externalRequestId, title, variant]
+      properties:
+        externalRequestId: { type: string, minLength: 1, maxLength: 255 }
+        title: { type: string, minLength: 1, maxLength: 500 }
+        igdbId: { type: integer, minimum: 1 }
+        variant: { $ref: '#/components/schemas/Variant' }
+        selection: { $ref: '#/components/schemas/ContentSelection' }
+    RequestState:
+      type: object
+      required: [externalRequestId, status, deliverable, title, actions]
+      properties:
+        externalRequestId: { type: string }
+        status:
+          {
+            enum:
+              [
+                accepted,
+                searching,
+                downloading,
+                importing,
+                available,
+                failed,
+                cancelled,
+              ],
+          }
+        deliverable: { type: boolean }
+        error: { type: [string, 'null'] }
+        title: { type: string }
+        variant: { $ref: '#/components/schemas/Variant' }
+        game:
+          type: object
+          required: [id, title, status]
+          properties:
+            id: { type: string }
+            title: { type: string }
+            status: { type: string }
+        identity:
+          type: object
+          properties:
+            catalogProvider: { const: igdb }
+            catalogId: { type: integer, minimum: 1 }
+        content:
+          type: object
+          description: Present when the request selected an edition or add-ons.
+          properties:
+            mode: { enum: [edition, missing-selected] }
+            pending:
+              type: array
+              items:
+                type: object
+                properties:
+                  id: { type: integer }
+                  title: { type: string }
+            acquiredCount: { type: integer }
+        actions:
+          type: object
+          required: [retry, cancel]
+          properties:
+            retry: { type: boolean }
+            cancel: { type: boolean }
+    CatalogGame:
+      type: object
+      required: [id, igdbId, title]
+      properties:
+        id: { type: string }
+        igdbId: { type: integer }
+        title: { type: string }
+        summary: { type: string }
+        coverUrl: { type: string }
+        releaseDate: { type: string }
+        platforms: { type: array, items: { type: object } }
+        platformOptions: { type: array, items: { type: object } }
+        genres: { type: array, items: { type: string } }
+        rating: { type: [number, 'null'] }
+        publishers: { type: array, items: { type: object } }
+        developers: { type: array, items: { type: object } }
+        screenshots: { type: array, items: { type: object } }
+        videos:
+          type: array
+          items:
+            type: object
+            properties:
+              name: { type: string }
+              videoId: { type: string }
+        platformReleaseDate: { type: [string, 'null'] }
+    CatalogPage:
+      type: object
+      required: [results]
+      properties:
+        results:
+          type: array
+          items: { $ref: '#/components/schemas/CatalogGame' }
+        nextCursor: { type: [string, 'null'] }
+        nextOffset: { type: [integer, 'null'] }
+    Asset:
+      type: object
+      required: [id, name, size, url]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        size: { type: integer, minimum: 0 }
+        url: { type: string }

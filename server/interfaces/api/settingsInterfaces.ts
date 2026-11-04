@@ -87,3 +87,12 @@ export interface MetadataSettingsResponse {
   rawgConfigured: boolean;
   openCriticConfigured: boolean;
 }
+
+export interface FulfillmentSettingsResponse {
+  provider: 'manual' | 'questarr';
+  questarrUrl: string;
+  steamIds: string[];
+  // Whether a key is set, the keys themselves are never sent
+  questarrConfigured: boolean;
+  steamConfigured: boolean;
+}

@@ -3,7 +3,12 @@ import {
   isDiscoverRefreshRunning,
   refreshAllDiscoverLists,
 } from '@server/lib/discover';
+import {
+  isFulfillmentSyncRunning,
+  syncFulfillment,
+} from '@server/lib/fulfillment';
 import ImageProxy from '@server/lib/imageproxy';
+import { isLibrarySyncRunning, syncLibrary } from '@server/lib/library';
 import refreshToken from '@server/lib/refreshToken';
 import type { JobId } from '@server/lib/settings';
 import { getSettings } from '@server/lib/settings';
@@ -87,6 +92,50 @@ export const startJobs = (): void => {
       );
     }),
   });
+
+  // Owned games from Steam and Questarr, for library badges
+  scheduledJobs.push({
+    id: 'library-sync',
+    name: 'Library Sync',
+    type: 'process',
+    interval: 'hours',
+    cronSchedule: jobs['library-sync'].schedule,
+    running: isLibrarySyncRunning,
+    job: schedule.scheduleJob(jobs['library-sync'].schedule, () => {
+      logger.info('Starting scheduled job: Library Sync', { label: 'Jobs' });
+      syncLibrary().catch((e) =>
+        logger.error('Library sync failed', {
+          label: 'Jobs',
+          errorMessage: e.message,
+        })
+      );
+    }),
+  });
+
+  // Request progress from backends that work on their own, like Questarr
+  scheduledJobs.push({
+    id: 'fulfillment-sync',
+    name: 'Fulfillment Sync',
+    type: 'process',
+    interval: 'minutes',
+    cronSchedule: jobs['fulfillment-sync'].schedule,
+    running: isFulfillmentSyncRunning,
+    job: schedule.scheduleJob(jobs['fulfillment-sync'].schedule, () => {
+      syncFulfillment().catch((e) =>
+        logger.error('Fulfillment sync failed', {
+          label: 'Jobs',
+          errorMessage: e.message,
+        })
+      );
+    }),
+  });
+
+  syncLibrary().catch((e) =>
+    logger.error('Initial library sync failed', {
+      label: 'Jobs',
+      errorMessage: e.message,
+    })
+  );
 
   // Fill in lists that are missing, e.g. on first start
   refreshAllDiscoverLists({ force: false }).catch((e) =>

@@ -34,6 +34,8 @@ export interface IgdbReleaseDate {
 
 export interface IgdbExternalGame {
   id: number;
+  // Present when queried on the external_games endpoint
+  game?: number;
   uid?: string;
   /**
    * See external_game_sources: 1 = Steam, 5 = GOG

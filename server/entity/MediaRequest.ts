@@ -47,6 +47,7 @@ export class QuotaRestrictedError extends Error {}
 export class DuplicateMediaRequestError extends Error {}
 export class BlocklistedMediaError extends Error {}
 export class InvalidPlatformError extends Error {}
+export class AlreadyOwnedError extends Error {}
 
 /**
  * Game data resolved by the caller (from the metadata layer) before a
@@ -123,6 +124,13 @@ export class MediaRequest {
     if (game && !game.platforms.includes(requestBody.platform)) {
       throw new InvalidPlatformError(
         'The game is not available for the requested platform.'
+      );
+    }
+
+    const { isOwnedOnPlatform } = await import('@server/lib/library');
+    if (await isOwnedOnPlatform(requestBody.igdbId, requestBody.platform)) {
+      throw new AlreadyOwnedError(
+        'The game is already in the library for this platform.'
       );
     }
 
@@ -277,6 +285,25 @@ export class MediaRequest {
 
   @Column({ default: false })
   public ignoreQuota: boolean;
+
+  /**
+   * Fulfillment backend the request was handed to, e.g. manual or questarr
+   */
+  @Column({ type: 'varchar', nullable: true })
+  @Index()
+  public fulfillmentProvider?: string | null;
+
+  /**
+   * Last state the backend reported, in its own words
+   */
+  @Column({ type: 'varchar', nullable: true })
+  public fulfillmentState?: string | null;
+
+  @Column({ type: 'varchar', nullable: true })
+  public fulfillmentMessage?: string | null;
+
+  @DbAwareColumn({ type: 'datetime', nullable: true })
+  public fulfillmentCheckedAt?: Date | null;
 
   constructor(init?: Partial<MediaRequest>) {
     Object.assign(this, init);

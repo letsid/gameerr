@@ -5,6 +5,7 @@ import SensitiveInput from '@app/components/Common/SensitiveInput';
 import PlatformSelector from '@app/components/PlatformSelector';
 import CopyButton from '@app/components/Settings/CopyButton';
 import SettingsBadge from '@app/components/Settings/SettingsBadge';
+import SettingsFulfillment from '@app/components/Settings/SettingsFulfillment';
 import { availableLanguages } from '@app/context/LanguageContext';
 import useLocale from '@app/hooks/useLocale';
 import useToasts from '@app/hooks/useToasts';
@@ -516,6 +517,7 @@ const SettingsMain = () => {
           }}
         </Formik>
       </div>
+      <SettingsFulfillment />
     </>
   );
 };

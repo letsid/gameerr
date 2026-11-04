@@ -35,6 +35,9 @@ const messages = defineMessages('components.GameDetails', {
   igdbPage: 'IGDB',
   links: 'Links',
   attribution: 'Game data by <IgdbLink>IGDB</IgdbLink>',
+  inLibraryOn: 'In library: {platform} ({source})',
+  sourceSteam: 'Steam',
+  sourceQuestarr: 'Questarr',
 });
 
 // release_date_statuses that are not a full release
@@ -166,6 +169,28 @@ const GameDetails = () => {
           <div className="mt-3 flex justify-center xl:justify-start">
             <ScoreBadges gameId={data.id} />
           </div>
+          {data.library.length > 0 && (
+            <div
+              className="mt-2 flex flex-wrap justify-center gap-1 xl:justify-start"
+              data-testid="library-badges"
+            >
+              {data.library.map((entry) => (
+                <Badge
+                  key={`library-${entry.platform}-${entry.source}`}
+                  badgeType="success"
+                >
+                  {intl.formatMessage(messages.inLibraryOn, {
+                    platform: platformLabel(entry.platform, byId),
+                    source: intl.formatMessage(
+                      entry.source === 'steam'
+                        ? messages.sourceSteam
+                        : messages.sourceQuestarr
+                    ),
+                  })}
+                </Badge>
+              ))}
+            </div>
+          )}
         </div>
         <div className="media-actions">
           <RequestPanel
@@ -173,6 +198,7 @@ const GameDetails = () => {
             title={data.name}
             platforms={data.platforms}
             media={data.mediaInfo}
+            ownedPlatforms={data.library.map((entry) => entry.platform)}
             onRequested={() => mutate()}
           />
         </div>

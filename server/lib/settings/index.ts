@@ -124,11 +124,20 @@ export interface MetadataSettings {
   bestReleaseGapYears: number;
 }
 
-export type FulfillmentProviderId = 'manual';
+export type FulfillmentProviderId = 'manual' | 'questarr';
 
 export interface FulfillmentSettings {
-  // Backend approved requests are handed to
+  // Backend approved requests are handed to. Questarr only takes PC, Linux
+  // and Mac games, requests for other platforms stay manual.
   provider: FulfillmentProviderId;
+  questarrUrl: string;
+  questarrApiKey: string;
+}
+
+export interface LibrarySettings {
+  steamApiKey: string;
+  // SteamID64 values whose public libraries count as owned games
+  steamIds: string[];
 }
 
 interface PublicSettings {
@@ -301,7 +310,9 @@ interface JobSettings {
 export type JobId =
   | 'plex-refresh-token'
   | 'image-cache-cleanup'
-  | 'discover-lists-refresh';
+  | 'discover-lists-refresh'
+  | 'library-sync'
+  | 'fulfillment-sync';
 
 export interface AllSettings {
   clientId: string;
@@ -313,6 +324,7 @@ export interface AllSettings {
   jellyfin: JellyfinSettings;
   metadata: MetadataSettings;
   fulfillment: FulfillmentSettings;
+  library: LibrarySettings;
   public: PublicSettings;
   notifications: NotificationSettings;
   jobs: Record<JobId, JobSettings>;
@@ -325,6 +337,9 @@ export interface MetadataCredentials {
   igdbClientSecret: string;
   rawgApiKey: string;
   rapidApiKey: string;
+  questarrUrl: string;
+  questarrApiKey: string;
+  steamApiKey: string;
 }
 
 /**
@@ -342,6 +357,12 @@ export const getMetadataCredentials = (
     igdbClientSecret: env.IGDB_CLIENT_SECRET || metadata.igdbClientSecret,
     rawgApiKey: env.RAWG_API_KEY || metadata.rawgApiKey,
     rapidApiKey: env.RAPIDAPI_KEY || metadata.rapidApiKey,
+    questarrUrl: (env.QUESTARR_URL || settings.fulfillment.questarrUrl).replace(
+      /\/+$/,
+      ''
+    ),
+    questarrApiKey: env.QUESTARR_API_KEY || settings.fulfillment.questarrApiKey,
+    steamApiKey: env.STEAM_API_KEY || settings.library.steamApiKey,
   };
 };
 
@@ -410,6 +431,12 @@ class Settings {
       },
       fulfillment: {
         provider: 'manual',
+        questarrUrl: '',
+        questarrApiKey: '',
+      },
+      library: {
+        steamApiKey: '',
+        steamIds: [],
       },
       public: {
         initialized: false,
@@ -532,6 +559,12 @@ class Settings {
         'discover-lists-refresh': {
           schedule: '0 30 3 * * *',
         },
+        'library-sync': {
+          schedule: '0 15 */6 * * *',
+        },
+        'fulfillment-sync': {
+          schedule: '0 */5 * * * *',
+        },
       },
       network: {
         csrfProtection: false,
@@ -599,6 +632,14 @@ class Settings {
 
   set fulfillment(data: FulfillmentSettings) {
     this.data.fulfillment = mergeSettings(this.data.fulfillment, data);
+  }
+
+  get library(): LibrarySettings {
+    return this.data.library;
+  }
+
+  set library(data: LibrarySettings) {
+    this.data.library = mergeSettings(this.data.library, data);
   }
 
   get public(): PublicSettings {

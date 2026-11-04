@@ -2093,6 +2093,66 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MetadataSettings'
+  /settings/fulfillment:
+    get:
+      summary: Get fulfillment and library settings
+      description: Backend for approved requests and Steam accounts for the library. Keys are never returned.
+      tags:
+        - settings
+      responses:
+        '200':
+          description: Fulfillment settings
+          content:
+            application/json:
+              schema:
+                type: object
+    post:
+      summary: Update fulfillment and library settings
+      description: API keys are only read from the environment or the settings file.
+      tags:
+        - settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                provider:
+                  type: string
+                  enum: [manual, questarr]
+                questarrUrl:
+                  type: string
+                  example: http://questarr:5000
+                steamIds:
+                  type: array
+                  items:
+                    type: string
+                    example: '76561197960287930'
+      responses:
+        '200':
+          description: Updated settings
+          content:
+            application/json:
+              schema:
+                type: object
+  /settings/fulfillment/questarr/test:
+    post:
+      summary: Test the Questarr connection
+      description: Calls the ping endpoint of Questarr's provider contract and returns its handshake.
+      tags:
+        - settings
+      responses:
+        '200':
+          description: Questarr handshake
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Questarr is not configured
+        '502':
+          description: Questarr did not answer
   /settings/discover:
     get:
       summary: Get all discover sliders

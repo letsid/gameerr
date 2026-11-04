@@ -17,6 +17,7 @@ import { useIntl } from 'react-intl';
 
 const messages = defineMessages('components.GameDetails.RequestPanel', {
   requestFor: 'Request for',
+  inLibrary: '{platform} (in library)',
   requestSuccess: '<strong>{title}</strong> requested for {platform}!',
   requestFailed: 'Something went wrong while requesting the game.',
   noPlatforms: 'No platforms are known for this game yet.',
@@ -27,6 +28,8 @@ interface RequestPanelProps {
   title: string;
   platforms: number[];
   media?: Media;
+  // Platforms the game is already in the library on
+  ownedPlatforms?: number[];
   onRequested: () => void;
 }
 
@@ -50,6 +53,7 @@ const RequestPanel = ({
   title,
   platforms,
   media,
+  ownedPlatforms = [],
   onRequested,
 }: RequestPanelProps) => {
   const intl = useIntl();
@@ -92,10 +96,12 @@ const RequestPanel = ({
   useEffect(() => {
     if (platform === undefined || !options.includes(platform)) {
       setPlatform(
-        options.find((id) => !activeByPlatform.has(id)) ?? options[0]
+        options.find(
+          (id) => !activeByPlatform.has(id) && !ownedPlatforms.includes(id)
+        ) ?? options[0]
       );
     }
-  }, [options, platform, activeByPlatform]);
+  }, [options, platform, activeByPlatform, ownedPlatforms]);
 
   if (!hasPermission([Permission.REQUEST], { type: 'or' })) {
     return null;
@@ -109,7 +115,9 @@ const RequestPanel = ({
     );
   }
 
-  const blocked = platform !== undefined && activeByPlatform.has(platform);
+  const blocked =
+    platform !== undefined &&
+    (activeByPlatform.has(platform) || ownedPlatforms.includes(platform));
 
   const submit = async () => {
     if (platform === undefined) {
@@ -153,7 +161,11 @@ const RequestPanel = ({
         >
           {options.map((id) => (
             <option key={`request-platform-${id}`} value={id}>
-              {byId.get(id)?.name ?? platformLabel(id, byId)}
+              {ownedPlatforms.includes(id)
+                ? intl.formatMessage(messages.inLibrary, {
+                    platform: byId.get(id)?.name ?? platformLabel(id, byId),
+                  })
+                : (byId.get(id)?.name ?? platformLabel(id, byId))}
             </option>
           ))}
         </select>

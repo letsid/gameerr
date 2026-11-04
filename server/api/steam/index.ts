@@ -2,8 +2,10 @@ import ExternalAPI from '@server/api/externalapi';
 import type {
   SteamAppData,
   SteamAppDetailsResponse,
+  SteamOwnedGamesResponse,
 } from '@server/api/steam/interfaces';
 import cacheManager from '@server/lib/cache';
+import axios from 'axios';
 
 const STEAM_STORE_URL = 'https://store.steampowered.com';
 
@@ -49,3 +51,30 @@ class SteamStoreAPI extends ExternalAPI {
 const steam = new SteamStoreAPI();
 
 export default steam;
+
+const STEAM_WEB_API_URL = 'https://api.steampowered.com';
+
+/**
+ * App ids in a Steam account's library, through the official Web API.
+ * Resolves to undefined when the profile or its game details are private.
+ */
+export const getOwnedAppIds = async (
+  apiKey: string,
+  steamId: string
+): Promise<number[] | undefined> => {
+  const response = await axios.get<SteamOwnedGamesResponse>(
+    `${STEAM_WEB_API_URL}/IPlayerService/GetOwnedGames/v1/`,
+    {
+      params: {
+        key: apiKey,
+        steamid: steamId,
+        include_played_free_games: 1,
+        format: 'json',
+      },
+      timeout: 20000,
+    }
+  );
+
+  const games = response.data?.response?.games;
+  return games ? games.map((game) => game.appid) : undefined;
+};

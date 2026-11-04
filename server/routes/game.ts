@@ -6,6 +6,7 @@ import type {
 } from '@server/interfaces/api/gameInterfaces';
 import { getGameDetails } from '@server/lib/gameDetails';
 import { getGameScores } from '@server/lib/gameScores';
+import { getLibraryEntries } from '@server/lib/library';
 import logger from '@server/logger';
 import { Router } from 'express';
 
@@ -40,7 +41,11 @@ gameRoutes.get<{ id: string }, GameDetailsResponse>(
           }))
         : undefined;
 
-      return res.status(200).json({ ...game, mediaInfo: media as Media });
+      const library = (await getLibraryEntries([id])).get(id) ?? [];
+
+      return res
+        .status(200)
+        .json({ ...game, mediaInfo: media as Media, library });
     } catch (e) {
       if (e instanceof IgdbNotConfiguredError) {
         return next({ status: 503, message: e.message });

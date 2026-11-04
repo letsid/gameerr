@@ -39,11 +39,14 @@ interface TitleCardProps {
   status?: MediaStatus;
   canExpand?: boolean;
   inProgress?: boolean;
+  // Already in the library on at least one platform
+  inLibrary?: boolean;
   isAddedToWatchlist?: number | boolean;
   mutateParent?: () => void;
 }
 
 const messages = defineMessages('components.TitleCard', {
+  inLibrary: 'In Library',
   addToWatchList: 'Add to watchlist',
   watchlistSuccess:
     '<strong>{title}</strong> added to watchlist  successfully!',
@@ -62,6 +65,7 @@ const TitleCard = ({
   status,
   isAddedToWatchlist = false,
   inProgress = false,
+  inLibrary = false,
   canExpand = false,
   mutateParent,
 }: TitleCardProps) => {
@@ -358,15 +362,26 @@ const TitleCard = ({
                   </Button>
                 </Tooltip>
               )}
-            {currentStatus && currentStatus !== MediaStatus.UNKNOWN && (
-              <div className="ml-auto flex flex-col items-center gap-1">
-                <div className="pointer-events-none z-40 flex">
-                  <StatusBadgeMini
-                    status={currentStatus}
-                    inProgress={inProgress}
-                    shrink
-                  />
-                </div>
+            {((currentStatus && currentStatus !== MediaStatus.UNKNOWN) ||
+              inLibrary) && (
+              <div className="ml-auto flex flex-col items-end gap-1">
+                {currentStatus && currentStatus !== MediaStatus.UNKNOWN && (
+                  <div className="pointer-events-none z-40 flex">
+                    <StatusBadgeMini
+                      status={currentStatus}
+                      inProgress={inProgress}
+                      shrink
+                    />
+                  </div>
+                )}
+                {inLibrary && (
+                  <span
+                    className="pointer-events-none z-40 rounded-full border border-green-500 bg-green-600/90 px-2 py-0.5 text-[0.6rem] font-semibold text-white"
+                    data-testid="in-library"
+                  >
+                    {intl.formatMessage(messages.inLibrary)}
+                  </span>
+                )}
               </div>
             )}
           </div>
