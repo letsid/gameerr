@@ -3,11 +3,14 @@ import type {
   IgdbExternalGame,
   IgdbGame,
   IgdbPlatform,
+  IgdbPopularityPrimitive,
   IgdbReleaseDate,
+  IgdbTimeToBeat,
   IgdbTokenResponse,
 } from '@server/api/igdb/interfaces';
 import {
   IGDB_EXTERNAL_SOURCE_STEAM,
+  IGDB_POPULARITY_VISITS,
   IGDB_STANDALONE_GAME_TYPES,
 } from '@server/api/igdb/interfaces';
 import cacheManager from '@server/lib/cache';
@@ -507,6 +510,64 @@ class IgdbAPI extends ExternalAPI {
       `fields ${GAME_LIST_FIELDS.join(',')}; where ${filters.join(' & ')}; sort total_rating desc; limit ${Math.min(limit, IGDB_MAX_LIMIT)};`,
       0
     );
+  }
+
+  public async getTimeToBeat(
+    gameId: number
+  ): Promise<IgdbTimeToBeat | undefined> {
+    const rows = await this.query<IgdbTimeToBeat[]>(
+      'game_time_to_beats',
+      `fields game_id,hastily,normally,completely,count; where game_id = ${Math.trunc(gameId)}; limit 1;`,
+      0
+    );
+
+    return rows[0];
+  }
+
+  /**
+   * Game ids by current popularity, most popular first. IGDB tracks
+   * popularity per game, not per platform.
+   */
+  public async getPopularGameIds(limit: number): Promise<number[]> {
+    const rows = await this.query<IgdbPopularityPrimitive[]>(
+      'popularity_primitives',
+      `fields game_id,value; where popularity_type = ${IGDB_POPULARITY_VISITS}; sort value desc; limit ${Math.min(limit, IGDB_MAX_LIMIT)};`,
+      0
+    );
+
+    return rows
+      .map((row) => row.game_id)
+      .filter((id): id is number => Number.isInteger(id));
+  }
+
+  /**
+   * Of the given ids the standalone games, optionally released on a
+   * platform. The order of the ids is kept.
+   */
+  public async getStandaloneGames(
+    ids: number[],
+    platform?: number
+  ): Promise<IgdbGame[]> {
+    const unique = [...new Set(ids)];
+    const found = new Map<number, IgdbGame>();
+
+    for (let i = 0; i < unique.length; i += IGDB_MAX_LIMIT) {
+      const chunk = unique.slice(i, i + IGDB_MAX_LIMIT);
+      const games = await this.query<IgdbGame[]>(
+        'games',
+        `fields ${GAME_LIST_FIELDS.join(',')}; where id = ${apicalypseList(chunk)} & ${STANDALONE_GAME_FILTER}${
+          platform !== undefined
+            ? ` & platforms = (${Math.trunc(platform)})`
+            : ''
+        }; limit ${IGDB_MAX_LIMIT};`,
+        0
+      );
+      games.forEach((game) => found.set(game.id, game));
+    }
+
+    return unique
+      .map((id) => found.get(id))
+      .filter((game): game is IgdbGame => !!game);
   }
 }
 

@@ -5,6 +5,7 @@ import type { GameDetails } from '@server/lib/gameDetails';
 import type { ScoreBadge } from '@server/lib/gameScores';
 import type { LibraryEntry } from '@server/lib/library';
 import type { Platform } from '@server/lib/platforms';
+import type { TimeToBeat } from '@server/lib/timeToBeat';
 
 /**
  * A game as listed in discover and search results
@@ -54,4 +55,9 @@ export interface ChartResponse extends GameResultsResponse {
 
 export interface ChartCategoriesResponse {
   results: ChartId[];
+}
+
+export interface GameTimeToBeatResponse {
+  // Missing while nobody has timed the game
+  timeToBeat?: TimeToBeat;
 }

@@ -11,7 +11,12 @@ import { normalizePlatformIds } from '@server/lib/platforms';
 import { getSettings } from '@server/lib/settings';
 import logger from '@server/logger';
 
-export const DISCOVER_LISTS = ['recent', 'upcoming', 'best'] as const;
+export const DISCOVER_LISTS = [
+  'recent',
+  'upcoming',
+  'best',
+  'trending',
+] as const;
 export type DiscoverListId = (typeof DISCOVER_LISTS)[number];
 
 export const isDiscoverListId = (value: unknown): value is DiscoverListId =>
@@ -30,6 +35,9 @@ export const BEST_LIST_TARGET = 20;
 export const MIN_RATING_FLOOR = 10;
 
 const DAY = 24 * 60 * 60;
+
+// Popular games fetched before the platform filter thins them out
+const TRENDING_FETCH_SIZE = 500;
 
 export interface DiscoverGame {
   id: number;
@@ -196,7 +204,23 @@ export const computeDiscoverList = async (
       );
     case 'best':
       return (await bestOnPlatform(platform, minRatingCount)).results;
+    case 'trending':
+      return trendingOnPlatform(platform);
   }
+};
+
+/**
+ * Games people look at most on IGDB right now, on the platform. IGDB ranks
+ * popularity across platforms, so the list is the top of that ranking
+ * filtered to the platform.
+ */
+export const trendingOnPlatform = async (
+  platform: number
+): Promise<DiscoverGame[]> => {
+  const ids = await igdb.getPopularGameIds(TRENDING_FETCH_SIZE);
+  const games = await igdb.getStandaloneGames(ids, platform);
+
+  return games.slice(0, DISCOVER_LIST_SIZE).map(toDiscoverGame);
 };
 
 /**

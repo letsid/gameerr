@@ -3,10 +3,12 @@ import Media from '@server/entity/Media';
 import type {
   GameDetailsResponse,
   GameScoresResponse,
+  GameTimeToBeatResponse,
 } from '@server/interfaces/api/gameInterfaces';
 import { getGameDetails } from '@server/lib/gameDetails';
 import { getGameScores } from '@server/lib/gameScores';
 import { getLibraryEntries } from '@server/lib/library';
+import { getTimeToBeat } from '@server/lib/timeToBeat';
 import logger from '@server/logger';
 import { Router } from 'express';
 
@@ -90,6 +92,32 @@ gameRoutes.get<{ id: string }, GameScoresResponse>(
         errorMessage: e.message,
       });
       return next({ status: 500, message: 'Unable to load scores.' });
+    }
+  }
+);
+
+gameRoutes.get<{ id: string }, GameTimeToBeatResponse>(
+  '/:id/time-to-beat',
+  async (req, res, next) => {
+    const id = parseId(req.params.id);
+
+    if (!id) {
+      return next({ status: 400, message: 'Invalid game id.' });
+    }
+
+    try {
+      return res.status(200).json({ timeToBeat: await getTimeToBeat(id) });
+    } catch (e) {
+      if (e instanceof IgdbNotConfiguredError) {
+        return next({ status: 503, message: e.message });
+      }
+
+      logger.error('Failed to load time to beat', {
+        label: 'API',
+        id,
+        errorMessage: e.message,
+      });
+      return next({ status: 500, message: 'Unable to load time to beat.' });
     }
   }
 );

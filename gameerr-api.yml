@@ -3623,6 +3623,43 @@ paths:
                 type: object
         '404':
           description: Game not found
+  /game/{gameId}/time-to-beat:
+    get:
+      summary: Get how long users took to finish a game
+      description: Times in seconds as submitted to IGDB, for the main story at a rushed and a normal pace and for completing everything. `timeToBeat` is missing while nobody has timed the game.
+      tags:
+        - search
+      parameters:
+        - in: path
+          name: gameId
+          required: true
+          schema:
+            type: number
+            example: 1942
+      responses:
+        '200':
+          description: Time to beat
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  timeToBeat:
+                    type: object
+                    properties:
+                      hastily:
+                        type: number
+                        description: Seconds
+                      normally:
+                        type: number
+                        description: Seconds
+                      completely:
+                        type: number
+                        description: Seconds
+                      count:
+                        type: number
+        '503':
+          description: IGDB is not configured
   /game/{gameId}/scores:
     get:
       summary: Get score badges of a game
@@ -3708,7 +3745,7 @@ paths:
     get:
       summary: Get a precomputed discover list
       description: |
-        `recent` holds releases of the last days, `upcoming` the next releases, both ranked by IGDB hypes. `best` ranks by IGDB total rating among games with more ratings than the configured minimum. Lists are rebuilt nightly.
+        `recent` holds releases of the last days, `upcoming` the next releases, both ranked by IGDB hypes. `best` ranks by IGDB total rating among games with more ratings than the configured minimum. `trending` ranks by current IGDB page visits, filtered to the platform. Lists are rebuilt nightly.
       tags:
         - search
       parameters:
@@ -3717,7 +3754,7 @@ paths:
           required: true
           schema:
             type: string
-            enum: [recent, upcoming, best]
+            enum: [recent, upcoming, best, trending]
         - in: query
           name: platform
           description: IGDB platform ID, defaults to the first platform of the signed-in user

@@ -4,6 +4,7 @@ import LoadingSpinner from '@app/components/Common/LoadingSpinner';
 import PageTitle from '@app/components/Common/PageTitle';
 import RequestPanel from '@app/components/GameDetails/RequestPanel';
 import ScoreBadges from '@app/components/GameDetails/ScoreBadges';
+import TimeToBeat from '@app/components/GameDetails/TimeToBeat';
 import Slider from '@app/components/Slider';
 import StatusBadge from '@app/components/StatusBadge';
 import usePlatforms, { platformLabel } from '@app/hooks/usePlatforms';
@@ -168,6 +169,9 @@ const GameDetails = () => {
           </span>
           <div className="mt-3 flex justify-center xl:justify-start">
             <ScoreBadges gameId={data.id} />
+          </div>
+          <div className="mt-2 flex justify-center xl:justify-start">
+            <TimeToBeat gameId={data.id} />
           </div>
           {data.library.length > 0 && (
             <div

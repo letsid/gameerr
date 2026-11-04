@@ -250,6 +250,17 @@ const Discover = () => {
               />
             );
             break;
+          case DiscoverSliderType.TRENDING:
+            sliderComponent = (
+              <MediaSlider
+                sliderKey={`trending-${platform}`}
+                title={intl.formatMessage(sliderTitles.trending)}
+                url="/api/v1/discover/trending"
+                hideWhenEmpty
+                extraParams={`platform=${platform}`}
+              />
+            );
+            break;
           case DiscoverSliderType.UPCOMING:
             sliderComponent = (
               <MediaSlider

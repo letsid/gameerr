@@ -111,6 +111,19 @@ export interface IgdbPopularityPrimitive {
   calculated_at?: number;
 }
 
+export interface IgdbTimeToBeat {
+  id: number;
+  game_id?: number;
+  // Seconds, as submitted by IGDB users
+  hastily?: number;
+  normally?: number;
+  completely?: number;
+  count?: number;
+}
+
+// popularity_types id of IGDB visits, the page views of igdb.com
+export const IGDB_POPULARITY_VISITS = 1;
+
 export interface IgdbTokenResponse {
   access_token: string;
   expires_in: number;
