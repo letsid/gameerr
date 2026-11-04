@@ -135,6 +135,8 @@ const DiscoverSliderEdit = ({
         return slider.title ?? intl.formatMessage(sliderTitles.genre);
       case DiscoverSliderType.TRENDING:
         return intl.formatMessage(sliderTitles.trending);
+      case DiscoverSliderType.TOP_PICKS:
+        return intl.formatMessage(sliderTitles.toppicks);
       default:
         return slider.title ?? 'Unknown Slider';
     }

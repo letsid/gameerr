@@ -18,7 +18,6 @@ const messages = defineMessages('components.Setup.SetupLocal', {
   confirmPassword: 'Confirm Password',
   create: 'Create Account',
   creating: 'Creating…',
-  back: 'Go back',
   validationEmail: 'You must provide a valid email address',
   validationPassword: 'The password must be at least 8 characters long',
   validationPasswordMatch: 'Passwords must match',
@@ -26,11 +25,10 @@ const messages = defineMessages('components.Setup.SetupLocal', {
 });
 
 interface SetupLocalProps {
-  onCancel: () => void;
   onComplete: () => void;
 }
 
-const SetupLocal = ({ onCancel, onComplete }: SetupLocalProps) => {
+const SetupLocal = ({ onComplete }: SetupLocalProps) => {
   const intl = useIntl();
   const { revalidate } = useUser();
   const [error, setError] = useState<string | null>(null);
@@ -138,10 +136,7 @@ const SetupLocal = ({ onCancel, onComplete }: SetupLocalProps) => {
               </div>
             ))}
             {error && <div className="error mb-4">{error}</div>}
-            <div className="flex justify-between">
-              <Button buttonType="default" type="button" onClick={onCancel}>
-                {intl.formatMessage(messages.back)}
-              </Button>
+            <div className="flex justify-end">
               <Button
                 buttonType="primary"
                 type="submit"

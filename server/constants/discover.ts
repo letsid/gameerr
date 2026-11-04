@@ -10,6 +10,7 @@ export enum DiscoverSliderType {
   BEST_OF_YEAR,
   GENRE,
   TRENDING,
+  TOP_PICKS,
 }
 
 export const defaultSliders: Partial<DiscoverSlider>[] = [
@@ -38,15 +39,21 @@ export const defaultSliders: Partial<DiscoverSlider>[] = [
     order: 3,
   },
   {
-    type: DiscoverSliderType.RECENT_REQUESTS,
+    type: DiscoverSliderType.TOP_PICKS,
     enabled: true,
     isBuiltIn: true,
     order: 4,
   },
   {
-    type: DiscoverSliderType.WATCHLIST,
+    type: DiscoverSliderType.RECENT_REQUESTS,
     enabled: true,
     isBuiltIn: true,
     order: 5,
+  },
+  {
+    type: DiscoverSliderType.WATCHLIST,
+    enabled: true,
+    isBuiltIn: true,
+    order: 6,
   },
 ];

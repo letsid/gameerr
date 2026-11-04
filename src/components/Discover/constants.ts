@@ -10,4 +10,5 @@ export const sliderTitles = defineMessages('components.Discover', {
   bestofyear: 'Best of the Year',
   genre: 'Genre',
   trending: 'Trending',
+  toppicks: 'Top Picks by Genre',
 });

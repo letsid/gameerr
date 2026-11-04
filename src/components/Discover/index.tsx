@@ -8,6 +8,7 @@ import DiscoverSliderEdit from '@app/components/Discover/DiscoverSliderEdit';
 import PlatformTabs from '@app/components/Discover/PlatformTabs';
 import RecentRequestsSlider from '@app/components/Discover/RecentRequestsSlider';
 import RecentlyAddedSlider from '@app/components/Discover/RecentlyAddedSlider';
+import TopPicksSlider from '@app/components/Discover/TopPicksSlider';
 import WatchlistSlider from '@app/components/Discover/WatchlistSlider';
 import { sliderTitles } from '@app/components/Discover/constants';
 import MediaSlider from '@app/components/MediaSlider';
@@ -282,6 +283,9 @@ const Discover = () => {
                 extraParams={`platform=${platform}`}
               />
             );
+            break;
+          case DiscoverSliderType.TOP_PICKS:
+            sliderComponent = <TopPicksSlider platform={platform} />;
             break;
           default:
             // Slider types without a game implementation yet render nothing
