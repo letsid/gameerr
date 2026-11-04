@@ -76,4 +76,6 @@ RUN touch config/DOCKER && \
 
 EXPOSE 5055
 
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3   CMD wget -q --spider http://localhost:${PORT:-5055}/api/v1/status || exit 1
+
 CMD [ "npm", "start" ]

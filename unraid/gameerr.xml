@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>gameerr</Name>
+  <Repository>ghcr.io/letsid/gameerr:latest</Repository>
+  <Registry>https://github.com/letsid/gameerr/pkgs/container/gameerr</Registry>
+  <Network>bridge</Network>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/letsid/gameerr/issues</Support>
+  <Project>https://github.com/letsid/gameerr</Project>
+  <Overview>Gameerr is a request and discovery manager for video games. Users pick their platforms, browse releases, trending games and all-time charts per genre, and request games that an admin approves. Approved requests go to Questarr or QuestarrNG (PC, Linux, Mac) or to ROMarrNG (all other platforms). Game data comes from IGDB.</Overview>
+  <Category>MediaApp:Other Tools: Status:Stable</Category>
+  <WebUI>http://[IP]:[PORT:5055]</WebUI>
+  <TemplateURL>https://raw.githubusercontent.com/letsid/gameerr/gameerr/unraid/gameerr.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/letsid/gameerr/gameerr/public/android-chrome-512x512.png</Icon>
+  <ExtraParams>--init</ExtraParams>
+  <Config Name="WebUI" Target="5055" Default="5055" Mode="tcp" Description="Web interface" Type="Port" Display="always" Required="true" Mask="false">5055</Config>
+  <Config Name="Config" Target="/app/config" Default="/mnt/user/appdata/gameerr" Mode="rw" Description="Settings, database and logs" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/gameerr</Config>
+  <Config Name="Time zone" Target="TZ" Default="Europe/Berlin" Mode="" Description="TZ database name of your time zone" Type="Variable" Display="always" Required="false" Mask="false">Europe/Berlin</Config>
+  <Config Name="IGDB client id" Target="IGDB_CLIENT_ID" Default="" Mode="" Description="Client id of your Twitch application, required for game data" Type="Variable" Display="always" Required="true" Mask="false"/>
+  <Config Name="IGDB client secret" Target="IGDB_CLIENT_SECRET" Default="" Mode="" Description="Client secret of your Twitch application" Type="Variable" Display="always" Required="true" Mask="true"/>
+  <Config Name="Steam API key" Target="STEAM_API_KEY" Default="" Mode="" Description="Optional, for Steam libraries" Type="Variable" Display="advanced" Required="false" Mask="true"/>
+  <Config Name="Questarr URL" Target="QUESTARR_URL" Default="" Mode="" Description="Optional, for example http://questarr:5000. Takes PC, Linux and Mac requests." Type="Variable" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="Questarr API key" Target="QUESTARR_API_KEY" Default="" Mode="" Description="Optional, SeerrNG provider key of QuestarrNG" Type="Variable" Display="advanced" Required="false" Mask="true"/>
+  <Config Name="ROMarrNG URL" Target="ROMARR_URL" Default="" Mode="" Description="Optional, for example http://romarr:6868. Takes every other platform." Type="Variable" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="ROMarrNG API key" Target="ROMARR_API_KEY" Default="" Mode="" Description="Optional, SeerrNG provider key of ROMarrNG" Type="Variable" Display="advanced" Required="false" Mask="true"/>
+</Container>

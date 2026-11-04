@@ -1,11 +1,31 @@
+# Gameerr, production. Build from this checkout:
+#   docker compose up -d --build
+# Keys come from the environment or from a .env file next to this file,
+# see .env.example. Never commit that file.
 services:
   gameerr:
     build:
       context: .
-      dockerfile: Dockerfile.local
+      dockerfile: Dockerfile
+    image: gameerr:latest
+    container_name: gameerr
+    init: true
+    environment:
+      TZ: ${TZ:-Europe/Berlin}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      PORT: 5055
+      # Game data, required
+      IGDB_CLIENT_ID: ${IGDB_CLIENT_ID:-}
+      IGDB_CLIENT_SECRET: ${IGDB_CLIENT_SECRET:-}
+      # Steam library, optional
+      STEAM_API_KEY: ${STEAM_API_KEY:-}
+      # Fulfillment backends, optional. Switch them on in Settings > General.
+      QUESTARR_URL: ${QUESTARR_URL:-}
+      QUESTARR_API_KEY: ${QUESTARR_API_KEY:-}
+      ROMARR_URL: ${ROMARR_URL:-}
+      ROMARR_API_KEY: ${ROMARR_API_KEY:-}
+    volumes:
+      - ./config:/app/config
     ports:
       - 5055:5055
-    volumes:
-      - .:/app:rw,cached
-      - /app/node_modules
-      - /app/.next
+    restart: unless-stopped

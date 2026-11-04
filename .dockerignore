@@ -20,7 +20,9 @@ config/*.json
 cypress
 dist
 Dockerfile*
-compose.yaml
+compose*.yaml
+.env*
+unraid
 gen-docs
 docs
 LICENSE
