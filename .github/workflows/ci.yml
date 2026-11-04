@@ -14,8 +14,6 @@ on:
 permissions:
   contents: read
 
-env:
-  DOCKER_HUB: seerr/seerr
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -234,12 +232,6 @@ jobs:
           - name: Set up Docker Buildx
             uses: docker/setup-buildx-action@v4.3.0
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v4.6.0
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_TOKEN }}
-
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v4.6.0
         with:
@@ -255,9 +247,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v6.2.0
         with:
-          images: |
-            ${{ env.DOCKER_HUB }}
-            ghcr.io/${{ github.repository }}
+          images: ghcr.io/${{ github.repository }}
           tags: |
             type=raw,value=develop
             type=sha
