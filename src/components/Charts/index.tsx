@@ -72,15 +72,22 @@ const categoryMessages: Record<ChartId, keyof typeof messages> = {
   music: 'music',
 };
 
-const pill = (selected: boolean) =>
+export const pill = (selected: boolean) =>
   `rounded-full border px-4 py-1 text-sm font-medium transition ${
     selected
       ? 'border-indigo-500 bg-indigo-600 text-white'
       : 'border-gray-600 bg-gray-800 text-gray-300 hover:border-gray-400 hover:text-white'
   }`;
 
+export const useChartLabel = () => {
+  const intl = useIntl();
+
+  return (id: ChartId) => intl.formatMessage(messages[categoryMessages[id]]);
+};
+
 const Charts = () => {
   const intl = useIntl();
+  const chartLabel = useChartLabel();
   const router = useRouter();
   const { byId } = usePlatforms();
   const preferred = usePreferredPlatforms();
@@ -152,7 +159,7 @@ const Charts = () => {
             onClick={() => select({ chart: id })}
             className={pill(id === chart)}
           >
-            {intl.formatMessage(messages[categoryMessages[id]])}
+            {chartLabel(id)}
           </button>
         ))}
       </div>

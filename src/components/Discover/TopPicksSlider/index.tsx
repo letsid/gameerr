@@ -1,26 +1,10 @@
+import { pill, useChartLabel } from '@app/components/Charts';
 import { sliderTitles } from '@app/components/Discover/constants';
 import MediaSlider from '@app/components/MediaSlider';
-import defineMessages from '@app/utils/defineMessages';
 import type { ChartId } from '@server/lib/charts';
 import { useState } from 'react';
 import { useIntl } from 'react-intl';
-
-const messages = defineMessages('components.Discover.TopPicksSlider', {
-  rpg: 'RPG',
-  actionRpg: 'Action RPG',
-  roguelike: 'Roguelike',
-  shooter: 'Shooter',
-  strategy: 'Strategy',
-});
-
-// The genres shown on Discover, the Charts page has all of them
-const picks: { chart: ChartId; label: keyof typeof messages }[] = [
-  { chart: 'rpg', label: 'rpg' },
-  { chart: 'action-rpg', label: 'actionRpg' },
-  { chart: 'roguelike', label: 'roguelike' },
-  { chart: 'shooter', label: 'shooter' },
-  { chart: 'strategy', label: 'strategy' },
-];
+import useSWR from 'swr';
 
 interface TopPicksSliderProps {
   platform?: number;
@@ -28,24 +12,35 @@ interface TopPicksSliderProps {
 
 const TopPicksSlider = ({ platform }: TopPicksSliderProps) => {
   const intl = useIntl();
-  const [chart, setChart] = useState<ChartId>(picks[0].chart);
+  const chartLabel = useChartLabel();
+  const { data: categories } = useSWR<{ results: ChartId[] }>('/api/v1/charts');
+  const [selected, setSelected] = useState<ChartId>();
+
+  const ids = categories?.results ?? [];
+  const chart = selected && ids.includes(selected) ? selected : ids[0];
+
+  if (!chart) {
+    return null;
+  }
 
   return (
     <>
-      <div className="mt-6 flex flex-wrap gap-2">
-        {picks.map((pick) => (
+      <div
+        className="mt-6 flex gap-2 overflow-x-auto pb-1"
+        role="tablist"
+        data-testid="top-picks-tabs"
+      >
+        {ids.map((id) => (
           <button
-            key={pick.chart}
+            key={id}
             type="button"
-            onClick={() => setChart(pick.chart)}
-            data-testid={`top-picks-${pick.chart}`}
-            className={`rounded-full border px-4 py-1 text-sm font-medium transition ${
-              chart === pick.chart
-                ? 'border-indigo-500 bg-indigo-600 text-white'
-                : 'border-gray-600 bg-gray-800 text-gray-300 hover:border-gray-400 hover:text-white'
-            }`}
+            role="tab"
+            aria-selected={id === chart}
+            onClick={() => setSelected(id)}
+            data-testid={`top-picks-${id}`}
+            className={`flex-shrink-0 ${pill(id === chart)}`}
           >
-            {intl.formatMessage(messages[pick.label])}
+            {chartLabel(id)}
           </button>
         ))}
       </div>
