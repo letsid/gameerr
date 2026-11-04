@@ -9,6 +9,7 @@ import {
   CogIcon,
   EyeSlashIcon,
   SparklesIcon,
+  TrophyIcon,
   UsersIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
@@ -20,6 +21,7 @@ import { useIntl } from 'react-intl';
 
 export const menuMessages = defineMessages('components.Layout.Sidebar', {
   dashboard: 'Discover',
+  charts: 'Charts',
   requests: 'Requests',
   blocklist: 'Blocklist',
   users: 'Users',
@@ -50,6 +52,12 @@ const SidebarLinks: SidebarLinkProps[] = [
     messagesKey: 'dashboard',
     svgIcon: <SparklesIcon className="mr-3 h-6 w-6" />,
     activeRegExp: /^\/(discover\/?)?$/,
+  },
+  {
+    href: '/charts',
+    messagesKey: 'charts',
+    svgIcon: <TrophyIcon className="mr-3 h-6 w-6" />,
+    activeRegExp: /^\/charts/,
   },
   {
     href: '/requests',

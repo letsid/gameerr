@@ -1,4 +1,5 @@
 import { MediaServerType } from '@server/constants/server';
+import { refreshAllCharts } from '@server/lib/charts';
 import {
   isDiscoverRefreshRunning,
   refreshAllDiscoverLists,
@@ -84,12 +85,14 @@ export const startJobs = (): void => {
       logger.info('Starting scheduled job: Discover Lists Refresh', {
         label: 'Jobs',
       });
-      refreshAllDiscoverLists().catch((e) =>
-        logger.error('Discover lists refresh failed', {
-          label: 'Jobs',
-          errorMessage: e.message,
-        })
-      );
+      refreshAllDiscoverLists()
+        .then(() => refreshAllCharts())
+        .catch((e) =>
+          logger.error('Discover lists refresh failed', {
+            label: 'Jobs',
+            errorMessage: e.message,
+          })
+        );
     }),
   });
 
@@ -138,12 +141,14 @@ export const startJobs = (): void => {
   );
 
   // Fill in lists that are missing, e.g. on first start
-  refreshAllDiscoverLists({ force: false }).catch((e) =>
-    logger.error('Initial discover lists refresh failed', {
-      label: 'Jobs',
-      errorMessage: e.message,
-    })
-  );
+  refreshAllDiscoverLists({ force: false })
+    .then(() => refreshAllCharts({ force: false }))
+    .catch((e) =>
+      logger.error('Initial discover lists refresh failed', {
+        label: 'Jobs',
+        errorMessage: e.message,
+      })
+    );
 
   logger.info('Scheduled jobs loaded', { label: 'Jobs' });
 };

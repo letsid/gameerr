@@ -477,6 +477,37 @@ class IgdbAPI extends ExternalAPI {
       0
     );
   }
+
+  /**
+   * Best rated games that match a category filter, over all platforms or
+   * on one. The filter is an Apicalypse condition such as `genres = (12)`.
+   */
+  public async getTopRatedByCategory({
+    categoryFilter,
+    platform,
+    minRatingCount,
+    limit,
+  }: {
+    categoryFilter: string;
+    platform?: number;
+    minRatingCount: number;
+    limit: number;
+  }): Promise<IgdbGame[]> {
+    const filters = [
+      `(${categoryFilter})`,
+      `total_rating_count > ${Math.trunc(minRatingCount)}`,
+      STANDALONE_GAME_FILTER,
+      ...(platform !== undefined
+        ? [`platforms = (${Math.trunc(platform)})`]
+        : []),
+    ];
+
+    return this.query<IgdbGame[]>(
+      'games',
+      `fields ${GAME_LIST_FIELDS.join(',')}; where ${filters.join(' & ')}; sort total_rating desc; limit ${Math.min(limit, IGDB_MAX_LIMIT)};`,
+      0
+    );
+  }
 }
 
 // One shared instance, so the rate limit and the open request cap apply

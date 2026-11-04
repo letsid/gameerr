@@ -3756,6 +3756,81 @@ paths:
                       $ref: '#/components/schemas/GameResult'
         '503':
           description: IGDB is not configured
+  /charts:
+    get:
+      summary: List the chart categories
+      tags:
+        - search
+      responses:
+        '200':
+          description: Chart category ids
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      type: string
+                      enum: [rpg, action-rpg, roguelike, shooter, strategy, adventure, indie, platform, puzzle, simulator, hack-and-slash, arcade, racing, sport, fighting, turn-based-strategy, real-time-strategy, tactical, point-and-click, visual-novel, card-and-board-game, music]
+  /charts/{chart}:
+    get:
+      summary: Get the all-time chart of a genre
+      description: |
+        The best rated games of all time in a category, ranked by IGDB total rating among games with enough ratings. The vote minimum starts at 200 and drops for small categories until the chart holds 40 games, the response reports the one used. `roguelike` and `action-rpg` are built from IGDB keywords, they are no IGDB genres. Charts are rebuilt nightly, platform charts on first request.
+      tags:
+        - search
+      parameters:
+        - in: path
+          name: chart
+          required: true
+          schema:
+            type: string
+            enum: [rpg, action-rpg, roguelike, shooter, strategy, adventure, indie, platform, puzzle, simulator, hack-and-slash, arcade, racing, sport, fighting, turn-based-strategy, real-time-strategy, tactical, point-and-click, visual-novel, card-and-board-game, music]
+        - in: query
+          name: platform
+          description: IGDB platform ID, 0 or none for all platforms
+          schema:
+            type: number
+            example: 6
+            default: 0
+        - in: query
+          name: page
+          schema:
+            type: number
+            example: 1
+            default: 1
+      responses:
+        '200':
+          description: Chart
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  chart:
+                    type: string
+                  platform:
+                    type: number
+                  generatedAt:
+                    type: string
+                  minRatingCount:
+                    type: number
+                  page:
+                    type: number
+                  totalPages:
+                    type: number
+                  totalResults:
+                    type: number
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/GameResult'
+        '404':
+          description: Unknown chart
+        '503':
+          description: IGDB is not configured
   /request:
     get:
       summary: Get all requests

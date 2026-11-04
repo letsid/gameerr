@@ -1,4 +1,5 @@
 import type Media from '@server/entity/Media';
+import type { ChartId } from '@server/lib/charts';
 import type { DiscoverGame, DiscoverListId } from '@server/lib/discover';
 import type { GameDetails } from '@server/lib/gameDetails';
 import type { ScoreBadge } from '@server/lib/gameScores';
@@ -41,4 +42,16 @@ export interface GameScoresResponse {
 
 export interface PlatformsResponse {
   results: Platform[];
+}
+
+export interface ChartResponse extends GameResultsResponse {
+  chart: ChartId;
+  // 0 for all platforms
+  platform: number;
+  generatedAt: string;
+  minRatingCount: number;
+}
+
+export interface ChartCategoriesResponse {
+  results: ChartId[];
 }
