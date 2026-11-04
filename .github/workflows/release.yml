@@ -6,6 +6,8 @@ on:
   push:
     tags:
       - 'v*'
+  # Start a release by hand, pick the tag as the ref
+  workflow_dispatch:
 
 permissions:
   contents: read
