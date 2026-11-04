@@ -2,6 +2,7 @@ import JellyfinAPI from '@server/api/jellyfin';
 import PlexAPI from '@server/api/plexapi';
 import PlexTvAPI from '@server/api/plextv';
 import { getQuestarr, QuestarrNotConfiguredError } from '@server/api/questarr';
+import { getRomarr, RomarrNotConfiguredError } from '@server/api/romarr';
 import { ApiErrorCode } from '@server/constants/error';
 import { getRepository } from '@server/datasource';
 import Media from '@server/entity/Media';
@@ -150,16 +151,21 @@ settingsRoutes.post<never, MetadataSettingsResponse>(
   }
 );
 
+const backendUrl = (name: string) =>
+  z
+    .string()
+    .trim()
+    .max(500)
+    .refine((value) => value === '' || /^https?:\/\/[^\s]+$/.test(value), {
+      message: `${name} URL must start with http:// or https://`,
+    });
+
 const fulfillmentSettingsBody = z
   .object({
-    provider: z.enum(['manual', 'questarr']),
-    questarrUrl: z
-      .string()
-      .trim()
-      .max(500)
-      .refine((value) => value === '' || /^https?:\/\/[^\s]+$/.test(value), {
-        message: 'Questarr URL must start with http:// or https://',
-      }),
+    questarrEnabled: z.boolean(),
+    questarrUrl: backendUrl('Questarr'),
+    romarrEnabled: z.boolean(),
+    romarrUrl: backendUrl('ROMarrNG'),
     // SteamID64 values are 17 digits
     steamIds: z
       .array(
@@ -177,11 +183,14 @@ const fulfillmentSettingsResponse = (): FulfillmentSettingsResponse => {
   const credentials = getMetadataCredentials();
 
   return {
-    provider: settings.fulfillment.provider,
+    questarrEnabled: settings.fulfillment.questarrEnabled,
     questarrUrl: settings.fulfillment.questarrUrl,
+    romarrEnabled: settings.fulfillment.romarrEnabled,
+    romarrUrl: settings.fulfillment.romarrUrl,
     steamIds: settings.library.steamIds,
     questarrConfigured:
       !!credentials.questarrUrl && !!credentials.questarrApiKey,
+    romarrConfigured: !!credentials.romarrUrl && !!credentials.romarrApiKey,
     steamConfigured: !!credentials.steamApiKey,
   };
 };
@@ -208,9 +217,17 @@ settingsRoutes.post<never, FulfillmentSettingsResponse>(
     const settings = getSettings();
     settings.fulfillment = {
       ...settings.fulfillment,
-      ...(body.data.provider ? { provider: body.data.provider } : {}),
+      ...(body.data.questarrEnabled !== undefined
+        ? { questarrEnabled: body.data.questarrEnabled }
+        : {}),
       ...(body.data.questarrUrl !== undefined
         ? { questarrUrl: body.data.questarrUrl.replace(/\/+$/, '') }
+        : {}),
+      ...(body.data.romarrEnabled !== undefined
+        ? { romarrEnabled: body.data.romarrEnabled }
+        : {}),
+      ...(body.data.romarrUrl !== undefined
+        ? { romarrUrl: body.data.romarrUrl.replace(/\/+$/, '') }
         : {}),
     };
     if (body.data.steamIds) {
@@ -237,6 +254,22 @@ settingsRoutes.post('/fulfillment/questarr/test', async (_req, res, next) => {
         (e instanceof QuestarrNotConfiguredError
           ? e.message
           : `Questarr did not answer: ${e.message}`),
+    });
+  }
+});
+
+settingsRoutes.post('/fulfillment/romarr/test', async (_req, res, next) => {
+  try {
+    const handshake = await getRomarr().ping();
+    return res.status(200).json(handshake);
+  } catch (e) {
+    return next({
+      status: e instanceof RomarrNotConfiguredError ? 400 : 502,
+      message:
+        e?.response?.data?.error ??
+        (e instanceof RomarrNotConfiguredError
+          ? e.message
+          : `ROMarrNG did not answer: ${e.message}`),
     });
   }
 });

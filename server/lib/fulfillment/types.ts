@@ -36,3 +36,9 @@ export interface FulfillmentProvider {
   submit(request: MediaRequest, media: Media): Promise<FulfillmentResult>;
   status(request: MediaRequest, media: Media): Promise<FulfillmentResult>;
 }
+
+/**
+ * The backend does not take the request's platform. The request goes to
+ * the manual backend instead of failing.
+ */
+export class UnsupportedPlatformError extends Error {}

@@ -1,10 +1,13 @@
 import igdb from '@server/api/igdb';
 import { getQuestarr, isQuestarrConfigured } from '@server/api/questarr';
+import { getRomarr, isRomarrConfigured } from '@server/api/romarr';
 import { getOwnedAppIds } from '@server/api/steam';
 import { getRepository } from '@server/datasource';
 import type { LibrarySource } from '@server/entity/LibraryItem';
 import LibraryItem from '@server/entity/LibraryItem';
 import Media from '@server/entity/Media';
+import { isQuestarrPlatform } from '@server/lib/fulfillment/questarr';
+import { withRomarrPlatform } from '@server/lib/fulfillment/romarr';
 import { PC_PLATFORM_ID } from '@server/lib/platforms';
 import { getMetadataCredentials, getSettings } from '@server/lib/settings';
 import logger from '@server/logger';
@@ -142,6 +145,63 @@ export const fetchQuestarrLibrary = async (): Promise<
     }));
 };
 
+/**
+ * ROMarrNG knows its library by title and system, so the sync asks about
+ * every game Gameerr knows on each of its non-PC platforms. Systems
+ * ROMarrNG does not manage are skipped.
+ */
+export const fetchRomarrLibrary = async (): Promise<
+  OwnedGame[] | undefined
+> => {
+  if (!isRomarrConfigured()) {
+    return undefined;
+  }
+
+  const media = await getRepository(Media).find({
+    select: { igdbId: true, title: true, platforms: true },
+  });
+  const byPlatform = new Map<number, Map<string, number[]>>();
+  media.forEach((item) => {
+    const title = item.title?.trim();
+    if (!title) {
+      return;
+    }
+    (item.platforms ?? [])
+      .filter((platform) => !isQuestarrPlatform(platform))
+      .forEach((platform) => {
+        const titles = byPlatform.get(platform) ?? new Map<string, number[]>();
+        titles.set(title, [...(titles.get(title) ?? []), item.igdbId]);
+        byPlatform.set(platform, titles);
+      });
+  });
+
+  if (byPlatform.size === 0) {
+    return [];
+  }
+
+  const romarr = getRomarr();
+  const owned: OwnedGame[] = [];
+
+  for (const [platformId, titles] of byPlatform) {
+    const matches = await withRomarrPlatform(platformId, (name) =>
+      romarr.lookupLibrary(
+        [...titles.keys()].map((title) => ({ title, platform: name }))
+      )
+    );
+    (matches ?? []).forEach((match) =>
+      (titles.get(match.title) ?? []).forEach((igdbId) =>
+        owned.push({
+          igdbId,
+          platform: platformId,
+          externalId: match.platform,
+        })
+      )
+    );
+  }
+
+  return owned;
+};
+
 let syncRunning = false;
 
 export const isLibrarySyncRunning = () => syncRunning;
@@ -160,6 +220,7 @@ export const syncLibrary = async (): Promise<void> => {
     const sources: [LibrarySource, () => Promise<OwnedGame[] | undefined>][] = [
       ['steam', fetchSteamLibrary],
       ['questarr', fetchQuestarrLibrary],
+      ['romarr', fetchRomarrLibrary],
     ];
 
     for (const [source, fetch] of sources) {

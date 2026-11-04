@@ -4,36 +4,49 @@ import Media from '@server/entity/Media';
 import { MediaRequest } from '@server/entity/MediaRequest';
 import ManualFulfillmentProvider from '@server/lib/fulfillment/manual';
 import QuestarrFulfillmentProvider from '@server/lib/fulfillment/questarr';
+import RomarrFulfillmentProvider from '@server/lib/fulfillment/romarr';
 import type {
   FulfillmentProvider,
   FulfillmentResult,
 } from '@server/lib/fulfillment/types';
+import { UnsupportedPlatformError } from '@server/lib/fulfillment/types';
 import { Notification } from '@server/lib/notifications';
 import { completeRequest } from '@server/lib/requestCompletion';
 import type { FulfillmentProviderId } from '@server/lib/settings';
 import { getSettings } from '@server/lib/settings';
 import logger from '@server/logger';
+import { In } from 'typeorm';
 
 const providers: Record<FulfillmentProviderId, FulfillmentProvider> = {
   manual: new ManualFulfillmentProvider(),
   questarr: new QuestarrFulfillmentProvider(),
+  romarr: new RomarrFulfillmentProvider(),
 };
+
+// Backends that work on their own and report back through the status sync
+const POLLED_PROVIDERS: FulfillmentProviderId[] = ['questarr', 'romarr'];
 
 export const getProviderById = (id?: string | null) =>
   providers[id as FulfillmentProviderId];
 
 /**
- * The configured backend when it takes the platform, else manual
+ * The enabled backend that takes the platform: Questarr for PC, Linux and
+ * Mac, ROMarrNG for the rest, else manual
  */
 export const getFulfillmentProvider = (
   platform?: number
 ): FulfillmentProvider => {
-  const configured =
-    providers[getSettings().fulfillment.provider] ?? providers.manual;
+  const { questarrEnabled, romarrEnabled } = getSettings().fulfillment;
+  const enabled = [
+    ...(questarrEnabled ? [providers.questarr] : []),
+    ...(romarrEnabled ? [providers.romarr] : []),
+  ];
 
-  return platform === undefined || configured.supports(platform)
-    ? configured
-    : providers.manual;
+  return (
+    (platform !== undefined &&
+      enabled.find((provider) => provider.supports(platform))) ||
+    providers.manual
+  );
 };
 
 // Without listeners, so the request subscriber neither resubmits nor
@@ -116,7 +129,7 @@ const applyResult = async (
 export const submitForFulfillment = async (
   request: MediaRequest
 ): Promise<void> => {
-  const provider = getFulfillmentProvider(request.platform);
+  let provider = getFulfillmentProvider(request.platform);
   const media = await getRepository(Media).findOne({
     where: { id: request.media.id },
   });
@@ -130,7 +143,23 @@ export const submitForFulfillment = async (
   }
 
   try {
-    const result = await provider.submit(request, media);
+    let result: FulfillmentResult;
+    try {
+      result = await provider.submit(request, media);
+    } catch (e) {
+      if (!(e instanceof UnsupportedPlatformError)) {
+        throw e;
+      }
+      logger.info('Backend does not take the platform, handing to manual', {
+        label: 'Fulfillment',
+        provider: provider.id,
+        requestId: request.id,
+        platform: request.platform,
+        errorMessage: e.message,
+      });
+      provider = providers.manual;
+      result = await provider.submit(request, media);
+    }
     logger.info('Submitted request for fulfillment', {
       label: 'Fulfillment',
       provider: provider.id,
@@ -170,7 +199,7 @@ export const syncFulfillment = async (): Promise<void> => {
     const requests = await getRepository(MediaRequest).find({
       where: {
         status: MediaRequestStatus.APPROVED,
-        fulfillmentProvider: 'questarr',
+        fulfillmentProvider: In(POLLED_PROVIDERS),
       },
     });
 

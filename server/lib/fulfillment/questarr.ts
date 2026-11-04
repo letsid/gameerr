@@ -19,6 +19,9 @@ const QUESTARR_PLATFORMS: Record<number, QuestarrVariant['operatingSystem']> = {
   14: 'macos',
 };
 
+export const isQuestarrPlatform = (platform: number): boolean =>
+  platform in QUESTARR_PLATFORMS;
+
 /**
  * Stable per Gameerr request, so a repeated hand-over replays the request
  * in Questarr instead of creating a second one. The creation time is part
@@ -56,7 +59,7 @@ class QuestarrFulfillmentProvider implements FulfillmentProvider {
   public readonly name = 'Questarr';
 
   public supports(platform: number): boolean {
-    return platform in QUESTARR_PLATFORMS && isQuestarrConfigured();
+    return isQuestarrPlatform(platform) && isQuestarrConfigured();
   }
 
   public async submit(

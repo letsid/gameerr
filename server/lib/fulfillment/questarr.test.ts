@@ -58,7 +58,7 @@ setupTestDb();
 beforeEach(() => {
   process.env.QUESTARR_URL = 'http://questarr.test:5000/';
   process.env.QUESTARR_API_KEY = 'qsr_test_key';
-  getSettings().fulfillment.provider = 'questarr';
+  getSettings().fulfillment.questarrEnabled = true;
   sendNotificationMock = mock.method(
     MediaRequest,
     'sendNotification',
@@ -70,7 +70,7 @@ afterEach(() => {
   mock.restoreAll();
   delete process.env.QUESTARR_URL;
   delete process.env.QUESTARR_API_KEY;
-  getSettings().fulfillment.provider = 'manual';
+  getSettings().fulfillment.questarrEnabled = false;
 });
 
 const captureAxios = (

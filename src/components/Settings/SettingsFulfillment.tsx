@@ -7,7 +7,7 @@ import { ArrowDownOnSquareIcon, BeakerIcon } from '@heroicons/react/24/outline';
 import type { FulfillmentSettingsResponse } from '@server/interfaces/api/settingsInterfaces';
 import axios from 'axios';
 import { Field, Form, Formik } from 'formik';
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { useIntl } from 'react-intl';
 import useSWR from 'swr';
 import * as Yup from 'yup';
@@ -16,19 +16,23 @@ const messages = defineMessages('components.Settings.SettingsFulfillment', {
   fulfillment: 'Fulfillment & Library',
   fulfillmentDescription:
     'Where approved requests go and which libraries count as owned games.',
-  provider: 'Fulfillment Backend',
-  providerTip:
-    'Questarr takes PC, Linux and Mac games. Requests for other platforms notify the request managers.',
-  providerManual: 'Manual (notify request managers)',
-  providerQuestarr: 'Questarr',
+  questarrEnabled: 'Use Questarr',
+  questarrEnabledTip:
+    'Hands PC, Linux and Mac requests to Questarr or QuestarrNG.',
   questarrUrl: 'Questarr URL',
   questarrUrlTip:
     'Address Gameerr reaches Questarr at. The API key comes from QUESTARR_API_KEY.',
+  romarrEnabled: 'Use ROMarrNG',
+  romarrEnabledTip:
+    'Hands requests for every other platform to ROMarrNG. Systems it does not manage, and requests no enabled backend takes, notify the request managers.',
+  romarrUrl: 'ROMarrNG URL',
+  romarrUrlTip:
+    'Address Gameerr reaches ROMarrNG at. The API key comes from ROMARR_API_KEY.',
   keyConfigured: 'API key set',
   keyMissing: 'API key missing',
   testConnection: 'Test',
   testSuccess: 'Connected to {service} {version}.',
-  testFailed: 'Questarr connection failed: {error}',
+  testFailed: '{backend} connection failed: {error}',
   steamIds: 'Steam Accounts',
   steamIdsTip:
     'SteamID64 values, one per line. Their public libraries count as owned PC games. The Web API key comes from STEAM_API_KEY.',
@@ -38,10 +42,38 @@ const messages = defineMessages('components.Settings.SettingsFulfillment', {
   toastFailed: 'Something went wrong while saving the fulfillment settings.',
 });
 
+type Backend = 'questarr' | 'romarr';
+
+const backends: {
+  id: Backend;
+  name: string;
+  placeholder: string;
+  enabled: 'questarrEnabled' | 'romarrEnabled';
+  url: 'questarrUrl' | 'romarrUrl';
+  configured: 'questarrConfigured' | 'romarrConfigured';
+}[] = [
+  {
+    id: 'questarr',
+    name: 'Questarr',
+    placeholder: 'http://questarr:5000',
+    enabled: 'questarrEnabled',
+    url: 'questarrUrl',
+    configured: 'questarrConfigured',
+  },
+  {
+    id: 'romarr',
+    name: 'ROMarrNG',
+    placeholder: 'http://romarr:6868',
+    enabled: 'romarrEnabled',
+    url: 'romarrUrl',
+    configured: 'romarrConfigured',
+  },
+];
+
 const SettingsFulfillment = () => {
   const intl = useIntl();
   const { addToast } = useToasts();
-  const [isTesting, setTesting] = useState(false);
+  const [testing, setTesting] = useState<Backend>();
   const { data, mutate } = useSWR<FulfillmentSettingsResponse>(
     '/api/v1/settings/fulfillment'
   );
@@ -50,10 +82,12 @@ const SettingsFulfillment = () => {
     return null;
   }
 
+  const urlSchema = Yup.string().matches(/^(https?:\/\/\S+)?$/, {
+    message: intl.formatMessage(messages.validationUrl),
+  });
   const schema = Yup.object().shape({
-    questarrUrl: Yup.string().matches(/^(https?:\/\/\S+)?$/, {
-      message: intl.formatMessage(messages.validationUrl),
-    }),
+    questarrUrl: urlSchema,
+    romarrUrl: urlSchema,
     steamIds: Yup.string().test(
       'steam-ids',
       intl.formatMessage(messages.validationSteamIds),
@@ -65,11 +99,11 @@ const SettingsFulfillment = () => {
     ),
   });
 
-  const testConnection = async () => {
-    setTesting(true);
+  const testConnection = async (backend: (typeof backends)[number]) => {
+    setTesting(backend.id);
     try {
       const response = await axios.post<{ service: string; version: string }>(
-        '/api/v1/settings/fulfillment/questarr/test'
+        `/api/v1/settings/fulfillment/${backend.id}/test`
       );
       addToast(
         intl.formatMessage(messages.testSuccess, {
@@ -81,12 +115,13 @@ const SettingsFulfillment = () => {
     } catch (e) {
       addToast(
         intl.formatMessage(messages.testFailed, {
+          backend: backend.name,
           error: e?.response?.data?.message ?? e.message,
         }),
         { appearance: 'error', autoDismiss: true }
       );
     } finally {
-      setTesting(false);
+      setTesting(undefined);
     }
   };
 
@@ -101,8 +136,10 @@ const SettingsFulfillment = () => {
       <div className="section">
         <Formik
           initialValues={{
-            provider: data.provider,
+            questarrEnabled: data.questarrEnabled,
             questarrUrl: data.questarrUrl,
+            romarrEnabled: data.romarrEnabled,
+            romarrUrl: data.romarrUrl,
             steamIds: data.steamIds.join('\n'),
           }}
           enableReinitialize
@@ -110,8 +147,10 @@ const SettingsFulfillment = () => {
           onSubmit={async (values) => {
             try {
               await axios.post('/api/v1/settings/fulfillment', {
-                provider: values.provider,
+                questarrEnabled: values.questarrEnabled,
                 questarrUrl: values.questarrUrl.trim(),
+                romarrEnabled: values.romarrEnabled,
+                romarrUrl: values.romarrUrl.trim(),
                 steamIds: values.steamIds.split(/\s+/).filter(Boolean),
               });
               addToast(intl.formatMessage(messages.toastSaved), {
@@ -130,70 +169,73 @@ const SettingsFulfillment = () => {
         >
           {({ errors, touched, isSubmitting, isValid }) => (
             <Form className="section">
-              <div className="form-row">
-                <label htmlFor="provider" className="text-label">
-                  <span>{intl.formatMessage(messages.provider)}</span>
-                  <span className="label-tip">
-                    {intl.formatMessage(messages.providerTip)}
-                  </span>
-                </label>
-                <div className="form-input-area">
-                  <div className="form-input-field">
-                    <Field as="select" id="provider" name="provider">
-                      <option value="manual">
-                        {intl.formatMessage(messages.providerManual)}
-                      </option>
-                      <option value="questarr">
-                        {intl.formatMessage(messages.providerQuestarr)}
-                      </option>
-                    </Field>
+              {backends.map((backend) => (
+                <Fragment key={backend.id}>
+                  <div className="form-row">
+                    <label htmlFor={backend.enabled} className="checkbox-label">
+                      <span>
+                        {intl.formatMessage(messages[backend.enabled])}
+                      </span>
+                      <span className="label-tip">
+                        {intl.formatMessage(messages[`${backend.enabled}Tip`])}
+                      </span>
+                    </label>
+                    <div className="form-input-area">
+                      <Field
+                        type="checkbox"
+                        id={backend.enabled}
+                        name={backend.enabled}
+                      />
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div className="form-row">
-                <label htmlFor="questarrUrl" className="text-label">
-                  <span>{intl.formatMessage(messages.questarrUrl)}</span>
-                  <span className="label-tip">
-                    {intl.formatMessage(messages.questarrUrlTip)}
-                  </span>
-                </label>
-                <div className="form-input-area">
-                  <div className="form-input-field">
-                    <Field
-                      id="questarrUrl"
-                      name="questarrUrl"
-                      type="text"
-                      placeholder="http://questarr:5000"
-                    />
-                    <Button
-                      type="button"
-                      buttonType="warning"
-                      className="ml-2 whitespace-nowrap"
-                      disabled={isTesting}
-                      onClick={() => testConnection()}
-                    >
-                      <BeakerIcon />
-                      <span>{intl.formatMessage(messages.testConnection)}</span>
-                    </Button>
-                  </div>
-                  <div className="mt-1">
-                    <Badge
-                      badgeType={
-                        data.questarrConfigured ? 'success' : 'warning'
-                      }
-                    >
-                      {intl.formatMessage(
-                        data.questarrConfigured
-                          ? messages.keyConfigured
-                          : messages.keyMissing
+                  <div className="form-row">
+                    <label htmlFor={backend.url} className="text-label">
+                      <span>{intl.formatMessage(messages[backend.url])}</span>
+                      <span className="label-tip">
+                        {intl.formatMessage(messages[`${backend.url}Tip`])}
+                      </span>
+                    </label>
+                    <div className="form-input-area">
+                      <div className="form-input-field">
+                        <Field
+                          id={backend.url}
+                          name={backend.url}
+                          type="text"
+                          placeholder={backend.placeholder}
+                        />
+                        <Button
+                          type="button"
+                          buttonType="warning"
+                          className="ml-2 whitespace-nowrap"
+                          disabled={!!testing}
+                          onClick={() => testConnection(backend)}
+                        >
+                          <BeakerIcon />
+                          <span>
+                            {intl.formatMessage(messages.testConnection)}
+                          </span>
+                        </Button>
+                      </div>
+                      <div className="mt-1">
+                        <Badge
+                          badgeType={
+                            data[backend.configured] ? 'success' : 'warning'
+                          }
+                        >
+                          {intl.formatMessage(
+                            data[backend.configured]
+                              ? messages.keyConfigured
+                              : messages.keyMissing
+                          )}
+                        </Badge>
+                      </div>
+                      {errors[backend.url] && touched[backend.url] && (
+                        <div className="error">{errors[backend.url]}</div>
                       )}
-                    </Badge>
+                    </div>
                   </div>
-                  {errors.questarrUrl && touched.questarrUrl && (
-                    <div className="error">{errors.questarrUrl}</div>
-                  )}
-                </div>
-              </div>
+                </Fragment>
+              ))}
               <div className="form-row">
                 <label htmlFor="steamIds" className="text-label">
                   <span>{intl.formatMessage(messages.steamIds)}</span>

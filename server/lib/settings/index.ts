@@ -124,14 +124,17 @@ export interface MetadataSettings {
   bestReleaseGapYears: number;
 }
 
-export type FulfillmentProviderId = 'manual' | 'questarr';
+export type FulfillmentProviderId = 'manual' | 'questarr' | 'romarr';
 
 export interface FulfillmentSettings {
-  // Backend approved requests are handed to. Questarr only takes PC, Linux
-  // and Mac games, requests for other platforms stay manual.
-  provider: FulfillmentProviderId;
+  // Questarr takes PC, Linux and Mac games, ROMarrNG every other system it
+  // manages. Requests no enabled backend takes stay manual.
+  questarrEnabled: boolean;
   questarrUrl: string;
   questarrApiKey: string;
+  romarrEnabled: boolean;
+  romarrUrl: string;
+  romarrApiKey: string;
 }
 
 export interface LibrarySettings {
@@ -339,6 +342,8 @@ export interface MetadataCredentials {
   rapidApiKey: string;
   questarrUrl: string;
   questarrApiKey: string;
+  romarrUrl: string;
+  romarrApiKey: string;
   steamApiKey: string;
 }
 
@@ -362,6 +367,11 @@ export const getMetadataCredentials = (
       ''
     ),
     questarrApiKey: env.QUESTARR_API_KEY || settings.fulfillment.questarrApiKey,
+    romarrUrl: (env.ROMARR_URL || settings.fulfillment.romarrUrl).replace(
+      /\/+$/,
+      ''
+    ),
+    romarrApiKey: env.ROMARR_API_KEY || settings.fulfillment.romarrApiKey,
     steamApiKey: env.STEAM_API_KEY || settings.library.steamApiKey,
   };
 };
@@ -430,9 +440,12 @@ class Settings {
         bestReleaseGapYears: 5,
       },
       fulfillment: {
-        provider: 'manual',
+        questarrEnabled: false,
         questarrUrl: '',
         questarrApiKey: '',
+        romarrEnabled: false,
+        romarrUrl: '',
+        romarrApiKey: '',
       },
       library: {
         steamApiKey: '',

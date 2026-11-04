@@ -89,10 +89,13 @@ export interface MetadataSettingsResponse {
 }
 
 export interface FulfillmentSettingsResponse {
-  provider: 'manual' | 'questarr';
+  questarrEnabled: boolean;
   questarrUrl: string;
+  romarrEnabled: boolean;
+  romarrUrl: string;
   steamIds: string[];
   // Whether a key is set, the keys themselves are never sent
   questarrConfigured: boolean;
+  romarrConfigured: boolean;
   steamConfigured: boolean;
 }

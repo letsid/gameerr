@@ -1,7 +1,7 @@
 import { DbAwareColumn } from '@server/utils/DbColumnHelper';
 import { Column, Entity, Index, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
-export type LibrarySource = 'steam' | 'questarr';
+export type LibrarySource = 'steam' | 'questarr' | 'romarr';
 
 /**
  * A game a library source reports as present, per IGDB game and platform.

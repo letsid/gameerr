@@ -2096,7 +2096,7 @@ paths:
   /settings/fulfillment:
     get:
       summary: Get fulfillment and library settings
-      description: Backend for approved requests and Steam accounts for the library. Keys are never returned.
+      description: Backends for approved requests and Steam accounts for the library. Keys are never returned.
       tags:
         - settings
       responses:
@@ -2118,12 +2118,18 @@ paths:
             schema:
               type: object
               properties:
-                provider:
-                  type: string
-                  enum: [manual, questarr]
+                questarrEnabled:
+                  type: boolean
+                  description: Hand PC, Linux and Mac requests to Questarr
                 questarrUrl:
                   type: string
                   example: http://questarr:5000
+                romarrEnabled:
+                  type: boolean
+                  description: Hand requests for other platforms to ROMarrNG
+                romarrUrl:
+                  type: string
+                  example: http://romarr:6868
                 steamIds:
                   type: array
                   items:
@@ -2153,6 +2159,23 @@ paths:
           description: Questarr is not configured
         '502':
           description: Questarr did not answer
+  /settings/fulfillment/romarr/test:
+    post:
+      summary: Test the ROMarrNG connection
+      description: Calls the ping endpoint of ROMarrNG's provider contract and returns its handshake.
+      tags:
+        - settings
+      responses:
+        '200':
+          description: ROMarrNG handshake
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: ROMarrNG is not configured
+        '502':
+          description: ROMarrNG did not answer
   /settings/discover:
     get:
       summary: Get all discover sliders
