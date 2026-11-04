@@ -2,7 +2,7 @@
 <img src="./public/logo_full.svg" alt="Gameerr" style="margin: 20px 0;">
 </p>
 
-**Gameerr** is a self-hosted request and discovery manager for video games. Users pick their platforms, browse recent releases, upcoming and trending games and all-time charts per genre, and request games. An admin approves a request and Gameerr hands it to a download backend: Questarr or QuestarrNG for PC, Linux and Mac, ROMarrNG for every other platform.
+**Gameerr** is a self-hosted request and discovery manager for video games. Users pick their platforms, browse recent releases, upcoming and trending games and all-time charts per genre, and request games. An admin approves a request and Gameerr hands it to a download backend: [Questarr](https://github.com/Doezer/Questarr) or [QuestarrNG](https://github.com/snapetech-org/QuestarrNG) for PC, Linux and Mac, [ROMarrNG](https://github.com/snapetech-org/ROMarrNG) for every other platform.
 
 Gameerr is a hard fork of [Seerr](https://github.com/seerr-team/seerr), the movie and TV request manager, and keeps its sign-in, permissions, notifications and settings.
 
@@ -12,7 +12,7 @@ Gameerr is a hard fork of [Seerr](https://github.com/seerr-team/seerr), the movi
 - **Charts**: the best rated games of all time in 22 categories (RPG, Action RPG, Roguelike, Shooter, Strategy and more), over all platforms or one.
 - **Game pages** with screenshots, videos, release dates per platform, scores from IGDB and Steam (and Metacritic where Steam reports it) and the time users took to finish the game.
 - **Requests** per game and platform, with approval, quotas and notifications.
-- **Fulfillment** through Questarr, QuestarrNG and ROMarrNG, with a manual fallback that notifies your admins.
+- **Fulfillment** through [Questarr](https://github.com/Doezer/Questarr), [QuestarrNG](https://github.com/snapetech-org/QuestarrNG) and [ROMarrNG](https://github.com/snapetech-org/ROMarrNG), with a manual fallback that notifies your admins.
 - **Library awareness**: games you own on Steam, in Questarr or in ROMarrNG are marked and cannot be requested twice.
 - Sign in with a local account, Jellyfin or Plex. The interface is available in English and German.
 
@@ -60,7 +60,7 @@ Switch each backend on in **Settings > General**, enter its URL and press **Test
 | Every other platform            | ROMarrNG                     |
 | Not managed by the backend, or no backend switched on | The request managers are notified, the request stays approved |
 
-Questarr and [QuestarrNG](https://github.com/snapetech-org/QuestarrNG) only acquire PC games, [ROMarrNG](https://github.com/snapetech-org/ROMarrNG) only emulated and console titles. Both speak the SeerrNG provider contract, version 2.
+[Questarr](https://github.com/Doezer/Questarr) and [QuestarrNG](https://github.com/snapetech-org/QuestarrNG) only acquire PC games, [ROMarrNG](https://github.com/snapetech-org/ROMarrNG) only emulated and console titles. Gameerr talks to them through the SeerrNG provider contract, version 2. It was checked against QuestarrNG 2.1.1 and ROMarrNG 0.14.11, plain Questarr was not tested.
 
 - Gameerr checks the status of handed over requests every 5 minutes and completes them when the backend reports the game as available.
 - ROMarrNG runs at most four acquisitions at once. When it is full the request waits and is handed over again on the next check.
