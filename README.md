@@ -16,6 +16,20 @@ Gameerr is a hard fork of [Seerr](https://github.com/seerr-team/seerr), the movi
 - **Library awareness**: games you own on Steam, in Questarr or in ROMarrNG are marked and cannot be requested twice.
 - Sign in with a local account, Jellyfin or Plex. The interface is available in English and German.
 
+## Screenshots
+
+### Discover
+
+<img src="./public/screenshots/discover.jpg" alt="Gameerr Discover page with trending, recent and upcoming games" />
+
+### Charts
+
+<img src="./public/screenshots/charts.jpg" alt="Gameerr Charts page showing the best rated games per genre" />
+
+### Game details
+
+<img src="./public/screenshots/game-details.jpg" alt="Gameerr game details page with overview, screenshots and request button" />
+
 ## Quick start
 
 You need an IGDB key. Create an application at the [Twitch developer console](https://dev.twitch.tv/console) and copy its client id and secret.
