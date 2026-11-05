@@ -202,8 +202,9 @@ jobs:
           - name: Install Cosign
             uses: sigstore/cosign-installer@v4.1.2
 
-          - name: Install Trivy
-            uses: aquasecurity/setup-trivy@v0.3.1
+      # Not in the parallel group, it checks out into the workspace as well
+      - name: Install Trivy
+        uses: aquasecurity/setup-trivy@v0.3.1
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v4.6.0
